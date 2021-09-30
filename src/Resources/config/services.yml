@@ -1,0 +1,12 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    numero2\TagsBundle\Controller\FrontendModule\TagCloudController:
+
+    numero2\TagsBundle\EventSubscriber\KernelRequestSubscriber:
+        arguments:
+            - '@contao.routing.scope_matcher'
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

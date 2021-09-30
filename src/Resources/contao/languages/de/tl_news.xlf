@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xliff version="1.1">
+<file datatype="php" original="src/Resources/contao/languages/en/tl_news.php" source-language="en" target-language="de">
+<body>
+    <trans-unit id="tl_news.tags_legend">
+        <source>Tags / Keywords</source>
+        <target>Tags / Schlagwörter</target>
+    </trans-unit>
+    <trans-unit id="tl_news.tags.0">
+        <source>Tags</source>
+        <target>Tags</target>
+    </trans-unit>
+    <trans-unit id="tl_news.tags.1">
+        <source>List of tags / keywords describing this news item.</source>
+        <target>Liste von Tags / Schlagwörtern die diese Nachricht beschreiben.</target>
+    </trans-unit>
+</body>
+</file>
+</xliff>

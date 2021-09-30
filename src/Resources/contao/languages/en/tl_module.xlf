@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xliff version="1.1">
+<file datatype="php" original="src/Resources/contao/languages/en/tl_module.php" source-language="en">
+<body>
+    <trans-unit id="tl_module.jumpToTags.0">
+        <source>Redirect page for tags</source>
+    </trans-unit>
+    <trans-unit id="tl_module.jumpToTags.1">
+        <source>This page should contain a news list whose entries are then filtered according to the selected tag.</source>
+    </trans-unit>
+</body>
+</file>
+</xliff>

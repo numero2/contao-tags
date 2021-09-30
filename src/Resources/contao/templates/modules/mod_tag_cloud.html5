@@ -1,0 +1,25 @@
+<?php if( $this->tags ): ?>
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+
+    <ul>
+        <?php foreach( $this->tags as $t ) : ?>
+        <li<?php if($t['active']): ?> class="active"<?php endif; ?>>
+            <?php if( $t['active'] ): ?>
+                <strong><?= $t['label']; ?></strong>
+            <?php else: ?>
+                <a href="<?= $t['href']; ?>" rel="noindex nofollow"><?= $t['label']; ?></a>
+            <?php endif; ?>
+        </li>
+        <?php endforeach; ?>
+    </ul>
+
+    <?php if( $this->resetHref ): ?>
+    <a class="reset" href="<?= $this->resetHref; ?>">
+        <span><?= $GLOBALS['TL_LANG']['mod_tag_cloud']['reset_filter']; ?></span>
+    </a>
+    <?php endif; ?>
+
+<?php $this->endblock(); ?>
+<?php endif; ?>

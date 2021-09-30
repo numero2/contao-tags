@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<xliff version="1.1">
+<file datatype="php" original="src/Resources/contao/languages/en/modules.php" source-language="en">
+<body>
+    <!-- FRONTEND -->
+    <trans-unit id="FMD.news_tag_cloud.0">
+        <source>Tag Cloud</source>
+    </trans-unit>
+    <trans-unit id="FMD.news_tag_cloud.1">
+        <source>Creates a list of tags that can be filtered by.</source>
+    </trans-unit>
+</body>
+</file>
+</xliff>
