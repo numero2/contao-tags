@@ -75,9 +75,9 @@ class TagsListener {
      * @param mixed $varValue
      * @param DataContainer $dc
      *
-     * @return string
+     * @return string|null
      */
-    public function saveTags( $varValue, DataContainer $dc ): string {
+    public function saveTags( $varValue, DataContainer $dc ): ?string {
 
         if( !empty($varValue) ) {
 
