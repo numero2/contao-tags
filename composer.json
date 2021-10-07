@@ -1,6 +1,6 @@
 {
     "name": "numero2/contao-tags",
-    "type": "contao-module",
+    "type": "contao-bundle",
     "description": "Adds the possibility to assign tags to individual elements (news articles only at the moment).",
     "keywords": ["contao", "news", "tags", "tagcloud", "blog"],
     "license": "LGPL-3.0-or-later",
