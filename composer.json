@@ -10,6 +10,7 @@
         }
     ],
     "require": {
+        "contao/core-bundle": "^4.9.0",
         "contao/news-bundle": "^4.9.0"
     },
     "require-dev": {
