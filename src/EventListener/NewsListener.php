@@ -177,28 +177,30 @@ class NewsListener {
             if( !empty($aTagIDs) ) {
 
                 $oTags = null;
-                $oTags = TagsModel::findMultipleByIds( $aTagIDs );
+                $oTags = TagsModel::findMultipleByIds($aTagIDs);
 
-                if( $pageList ) {
+                if( $oTags ) {
 
-                    $aLinks = [];
+                    if( $pageList ) {
 
-                    foreach( $oTags->fetchEach('tag') as $id => $tag ) {
+                        $aLinks = [];
 
-                        $href = $pageList->getFrontendUrl( '/tag/'.$tag );
+                        foreach( $oTags->fetchEach('tag') as $id => $tag ) {
 
-                        $aLinks[] = sprintf(
-                            '<a href="%s" rel="nofollow">%s</a>'
-                        ,   $href
-                        ,   $tag
-                        );
+                            $href = $pageList->getFrontendUrl('/tag/'.$tag);
+
+                            $aLinks[] = sprintf(
+                                '<a href="%s" rel="nofollow">%s</a>'
+                                ,   $href
+                                ,   $tag
+                            );
+                        }
+
+                        $objTemplate->tags = $aLinks;
+
+                    } else {
+                        $objTemplate->tags = $oTags->fetchEach('tag');
                     }
-
-                    $objTemplate->tags = $aLinks;
-
-                } else {
-
-                    $objTemplate->tags = $oTags->fetchEach('tag');
                 }
             }
         }
