@@ -31,3 +31,5 @@ Installation & Configuration
 
 * Configure your `Newslist` or `Newsreader` front end modules and set a `Redirect page for tags`
 
+* Additionally add the new `Tag Cloud` module anywhere on your page
+
