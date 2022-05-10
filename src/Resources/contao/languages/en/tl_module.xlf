@@ -8,6 +8,12 @@
     <trans-unit id="tl_module.jumpToTags.1">
         <source>This page should contain a news list whose entries are then filtered according to the selected tag.</source>
     </trans-unit>
+    <trans-unit id="tl_module.ignoreTags.0">
+        <source>Deactivate tag filter</source>
+    </trans-unit>
+    <trans-unit id="tl_module.ignoreTags.1">
+        <source>If set this module will not be changed by any selected tag.</source>
+    </trans-unit>
 </body>
 </file>
 </xliff>

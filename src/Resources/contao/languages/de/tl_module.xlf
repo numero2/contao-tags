@@ -10,6 +10,14 @@
         <source>This page should contain a news list whose entries are then filtered according to the selected tag.</source>
         <target>Diese Seite sollte eine Nachrichtenliste beinhalten deren Einträge dann nach dem gewählten Tag gefiltert werden.</target>
     </trans-unit>
+    <trans-unit id="tl_module.ignoreTags.0">
+        <source>Deactivate tag filter</source>
+        <target>Filterung nach Tags deaktivieren</target>
+    </trans-unit>
+    <trans-unit id="tl_module.ignoreTags.1">
+        <source>If set this module will not be changed by any selected tag.</source>
+        <target>Wenn gesetzt wird dieses Modul nicht durch eventuell gesetzte Tags beinflusst.</target>
+    </trans-unit>
 </body>
 </file>
 </xliff>
