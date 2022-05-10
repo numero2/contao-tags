@@ -18,3 +18,11 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['news_tag_cloud'] = '{title_legend},
 $GLOBALS['TL_DCA']['tl_module']['fields']['jumpToTags'] = $GLOBALS['TL_DCA']['tl_module']['fields']['jumpTo'];
 $GLOBALS['TL_DCA']['tl_module']['fields']['jumpToTags']['label'] = &$GLOBALS['TL_LANG']['tl_module']['jumpToTags'];
 $GLOBALS['TL_DCA']['tl_module']['fields']['jumpToTags']['eval']['tl_class'] = 'clr w50';
+
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['ignoreTags'] = [
+    'exclude'           => true
+,   'inputType'         => 'checkbox'
+,   'eval'              => ['tl_class'=>'w50']
+,   'sql'               => "char(1) NOT NULL default ''"
+];

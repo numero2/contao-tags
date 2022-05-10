@@ -33,19 +33,24 @@ class NewsListener {
      *
      * @param array $newsArchives
      * @param boolean $blnFeatured
+     * @param ModuleNewsList $module
      *
      * @return integer|false
      *
      * @Hook("newsListCountItems")
      */
-    public function newsListCountItems($newsArchives, $blnFeatured) {
+    public function newsListCountItems($newsArchives, $blnFeatured, ModuleNewsList $module ) {
+
+        if( $module->ignoreTags ) {
+            return false;
+        }
 
         $tag = Input::get('tag');
 
         if( !empty($tag) ) {
 
             $oArticles = null;
-            $oArticles = $this->newsListFetchItems( $newsArchives, $blnFeatured, 0, 0 );
+            $oArticles = $this->newsListFetchItems( $newsArchives, $blnFeatured, 0, 0, $module );
 
             return count($oArticles);
         }
@@ -57,18 +62,23 @@ class NewsListener {
     /**
      * Sort out non matching articles if tag was given
      *
-     * @param array   $newsArchives
+     * @param array $newsArchives
      * @param boolean $blnFeatured
      * @param integer $limit
      * @param integer $offset
+     * @param ModuleNewsList $module
      *
      * @return Model\Collection|NewsModel|false
      *
      * @Hook("newsListFetchItems")
      */
-    public function newsListFetchItems( $newsArchives, $blnFeatured, $limit, $offset, ModuleNewsList $module=null ) {
+    public function newsListFetchItems( $newsArchives, $blnFeatured, $limit, $offset, ModuleNewsList $module ) {
 
         global $objPage;
+
+        if( $module->ignoreTags ) {
+            return false;
+        }
 
         $tag = Input::get('tag');
 
@@ -142,7 +152,7 @@ class NewsListener {
                 $articles = array_slice($articles, $offset, $limit);
             }
 
-            return new Collection($articles,NewsModel::getTable());
+            return new Collection($articles, NewsModel::getTable());
         }
 
         return false;

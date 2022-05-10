@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2021, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2022, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -20,11 +20,15 @@ class ModuleListener {
 
 
     /**
-     * Add jumpToTags to existing modules
+     * Add jumpToTags and ignoreTags to existing modules
      *
      * @param Contao\DataContainer $dc
      */
     public function modifyPalettes( DataContainer $dc ): void {
+
+        $pm = PaletteManipulator::create()
+            ->addField('ignoreTags', 'config_legend', 'append')
+            ->applyToPalette('newslist', $dc->table);
 
         $pm = PaletteManipulator::create()
             ->addField('jumpToTags', 'config_legend', 'append');
