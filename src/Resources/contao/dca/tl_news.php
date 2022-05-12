@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2021, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2022, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -23,7 +23,7 @@ $GLOBALS['TL_DCA']['tl_news']['fields']['tags'] = [
 ,   'inputType'         => 'select'
 ,   'foreignKey'        => 'tl_tags.tag'
 ,   'options_callback'  => ['numero2_tags.listener.data_container.tags', 'getTagOptions']
-,   'save_callback'     => [ ['numero2_tags.listener.data_container.tags', 'saveTags'] ]
+,   'save_callback'     => [['numero2_tags.listener.data_container.tags', 'saveTags']]
 ,   'eval'              => ['multiple'=>true, 'size'=>8, 'tl_class'=>'clr long tags', 'chosen'=>true]
 ,   'sql'               => "blob NULL"
 ,   'relation'          => ['type'=>'hasMany', 'load'=>'eager']

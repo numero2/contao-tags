@@ -11,6 +11,14 @@
         <source>Creates a list of tags that can be filtered by.</source>
         <target>Erzeugt eine Auflistung von Tags nach denen gefiltert werden kann.</target>
     </trans-unit>
+    <trans-unit id="FMD.newslist_related_tags.0">
+        <source>Newslist related tags</source>
+        <target>Nachrichtenliste mit ähnlichen Tags</target>
+    </trans-unit>
+    <trans-unit id="FMD.newslist_related_tags.1">
+        <source>Adds a list of news items to the page which are related to the tags of the current news.</source>
+        <target>Fügt der Seite eine Nachrichtenliste hinzu mit ähnlichen Tags wie die aktuelle Nachricht.</target>
+    </trans-unit>
 </body>
 </file>
 </xliff>

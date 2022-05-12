@@ -6,13 +6,12 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2021, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2022, numero2 - Agentur für digitales Marketing GbR
  */
 
 
 namespace numero2\TagsBundle\EventListener\DataContainer;
 
-use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\Database;
 use Contao\DataContainer;
 use Contao\Input;
@@ -55,7 +54,7 @@ class TagsListener {
                 }
             }
 
-            Input::setPost($dc->field,$tagsSelected);
+            Input::setPost($dc->field, $tagsSelected);
         }
 
         $oTags = null;
@@ -86,12 +85,12 @@ class TagsListener {
 
             // remove all tag relations for this element
             $db->prepare("DELETE FROM ".TagsRelModel::getTable()." WHERE pid = ? AND ptable = ? AND field = ?")
-                ->execute( $dc->activeRecord->id, $dc->table, $dc->field );
+                ->execute($dc->activeRecord->id, $dc->table, $dc->field);
 
             // add tag relations for this element
             foreach( $tags as $i => $id ) {
                 $db->prepare("INSERT INTO ".TagsRelModel::getTable()." (tag_id, pid, ptable, field) VALUES(?,?,?,?)")
-                    ->execute( $id, $dc->activeRecord->id, $dc->table, $dc->field );
+                    ->execute($id, $dc->activeRecord->id, $dc->table, $dc->field);
                 $tags[$i] = (int)$id;
             }
 

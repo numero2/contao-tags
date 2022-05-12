@@ -9,6 +9,12 @@
     <trans-unit id="FMD.news_tag_cloud.1">
         <source>Creates a list of tags that can be filtered by.</source>
     </trans-unit>
+    <trans-unit id="FMD.newslist_related_tags.0">
+        <source>Newslist related tags</source>
+    </trans-unit>
+    <trans-unit id="FMD.newslist_related_tags.1">
+        <source>Adds a list of news items to the page which are related to the tags of the current news.</source>
+    </trans-unit>
 </body>
 </file>
 </xliff>

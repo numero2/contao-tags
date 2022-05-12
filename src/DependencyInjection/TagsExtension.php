@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2021, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2022, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -16,7 +16,6 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\Yaml\Yaml;
 
 
 class TagsExtension extends Extension {

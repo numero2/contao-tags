@@ -33,8 +33,12 @@ class ModuleListener {
         $pm = PaletteManipulator::create()
             ->addField('jumpToTags', 'config_legend', 'append');
 
-        foreach( ['newslist','newsreader'] as $palette ) {
+        foreach( ['newslist', 'newsreader'] as $palette ) {
             $pm->applyToPalette($palette, $dc->table);
         }
+
+        $pm = PaletteManipulator::create()
+            ->removeField('news_readerModule')
+            ->applyToPalette('newslist_related_tags', $dc->table);
     }
 }

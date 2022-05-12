@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2021, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2022, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -21,6 +21,7 @@ use Contao\ModuleNewsList;
 use Contao\NewsModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use numero2\TagsBundle\ModuleNewsListRelatedTags;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
 
@@ -41,6 +42,21 @@ class NewsListener {
      */
     public function newsListCountItems($newsArchives, $blnFeatured, ModuleNewsList $module ) {
 
+        if( $module instanceof ModuleNewsListRelatedTags ) {
+
+            $alias = Input::get('items');
+
+            $currentNews = NewsModel::findPublishedByParentAndIdOrAlias(Input::get('items'), $newsArchives);
+
+            $oNews = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives);
+
+            if( $oNews ) {
+                return $oNews->count();
+            }
+
+            return 0;
+        }
+
         if( $module->ignoreTags ) {
             return false;
         }
@@ -50,7 +66,7 @@ class NewsListener {
         if( !empty($tag) ) {
 
             $oArticles = null;
-            $oArticles = $this->newsListFetchItems( $newsArchives, $blnFeatured, 0, 0, $module );
+            $oArticles = $this->newsListFetchItems($newsArchives, $blnFeatured, 0, 0, $module);
 
             return count($oArticles);
         }
@@ -76,6 +92,42 @@ class NewsListener {
 
         global $objPage;
 
+        // determine sorting
+        $t = NewsModel::getTable();
+        $arrOptions = [];
+
+        if( $module ) {
+
+            switch( $module->news_order ) {
+
+                case 'order_headline_asc':
+                    $arrOptions['order'] = "$t.headline";
+                    break;
+                case 'order_headline_desc':
+                    $arrOptions['order'] = "$t.headline DESC";
+                    break;
+                case 'order_random':
+                    $arrOptions['order'] = "RAND()";
+                    break;
+                case 'order_date_asc':
+                    $arrOptions['order'] = "$t.date";
+                    break;
+                default:
+                    $arrOptions['order'] = "$t.date DESC";
+            }
+        }
+
+        if( $module instanceof ModuleNewsListRelatedTags ) {
+
+            $alias = Input::get('items');
+
+            $currentNews = NewsModel::findPublishedByParentAndIdOrAlias(Input::get('items'), $newsArchives);
+
+            $oNews = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured, 0, 0, $arrOptions);
+
+            return $oNews;
+        }
+
         if( $module->ignoreTags ) {
             return false;
         }
@@ -87,31 +139,6 @@ class NewsListener {
             // set current page to noindex, add canonical
             $objPage->robots = 'noindex,nofollow';
             $GLOBALS['TL_HEAD'][] = '<link rel="canonical" href="'.$objPage->getAbsoluteUrl().'" />';
-
-            // determine sorting
-            $t = NewsModel::getTable();
-            $arrOptions = array();
-
-            if( $module ) {
-
-                switch( $module->news_order ) {
-
-                    case 'order_headline_asc':
-                        $arrOptions['order'] = "$t.headline";
-                        break;
-                    case 'order_headline_desc':
-                        $arrOptions['order'] = "$t.headline DESC";
-                        break;
-                    case 'order_random':
-                        $arrOptions['order'] = "RAND()";
-                        break;
-                    case 'order_date_asc':
-                        $arrOptions['order'] = "$t.date";
-                        break;
-                    default:
-                        $arrOptions['order'] = "$t.date DESC";
-                }
-            }
 
             // TODO: Replace with custom query
             $collection = null;
