@@ -136,9 +136,13 @@ class NewsListener {
 
         if( !empty($tag) ) {
 
-            // set current page to noindex, add canonical
+            // set current page to noindex
             $objPage->robots = 'noindex,nofollow';
-            $GLOBALS['TL_HEAD'][] = '<link rel="canonical" href="'.$objPage->getAbsoluteUrl().'" />';
+
+            // add canonical (if not enabled in the core)
+            if( !$objPage->enableCanonical ) {
+                $GLOBALS['TL_HEAD'][] = '<link rel="canonical" href="'.$objPage->getAbsoluteUrl().'" />';
+            }
 
             // TODO: Replace with custom query
             $collection = null;
