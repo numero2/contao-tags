@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2021, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2022, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -55,8 +55,9 @@ class TagCloudController extends AbstractFrontendModuleController {
 
                 $aTags[] = [
                     'label' => $oTag->tag
-                ,   'active' => $alias == Input::get('tag')
-                ,   'href' => $oPageRedirect->getFrontendUrl('/tag/'.$alias)
+                ,   'active'=> $alias == Input::get('tag')
+                ,   'href'  => $oPageRedirect->getFrontendUrl('/tag/'.$alias)
+                ,   'count' => TagsModel::countById($oTag->id,$aArchives)
                 ];
             }
 

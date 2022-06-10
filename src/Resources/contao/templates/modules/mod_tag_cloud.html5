@@ -6,11 +6,21 @@
     <ul>
         <?php foreach( $this->tags as $t ) : ?>
         <li<?php if($t['active']): ?> class="active"<?php endif; ?>>
+
             <?php if( $t['active'] ): ?>
-                <strong><?= $t['label']; ?></strong>
+                <strong>
             <?php else: ?>
-                <a href="<?= $t['href']; ?>" rel="noindex nofollow"><?= $t['label']; ?></a>
+                <a href="<?= $t['href']; ?>" rel="noindex nofollow">
             <?php endif; ?>
+
+                <?= $t['label']; ?><span class="count"><?= $t['count']; ?></span>
+            
+            <?php if( $t['active'] ): ?>
+                </strong>
+            <?php else: ?>
+                </a>
+            <?php endif; ?>
+
         </li>
         <?php endforeach; ?>
     </ul>
