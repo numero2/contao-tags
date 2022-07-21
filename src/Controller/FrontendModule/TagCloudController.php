@@ -17,6 +17,7 @@ use Contao\CoreBundle\ServiceAnnotation\FrontendModule;
 use Contao\Input;
 use Contao\ModuleModel;
 use Contao\PageModel;
+use Contao\StringUtil;
 use Contao\Template;
 use numero2\TagsBundle\TagsModel;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,11 +36,11 @@ class TagCloudController extends AbstractFrontendModuleController {
     /**
      * {@inheritdoc}
      */
-    protected function getResponse( Template $template, ModuleModel $model, Request $request ): ?Response {
+    protected function getResponse( Template $template, ModuleModel $model, Request $request ): Response {
 
         $page = $this->getPageModel();
 
-        $aArchives = deserialize($model->news_archives);
+        $aArchives = StringUtil::deserialize($model->news_archives);
         $oTags = TagsModel::findByArchives($aArchives);
 
         if( $oTags && !empty($aArchives) ) {

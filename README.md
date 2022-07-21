@@ -10,7 +10,7 @@ Adds the possibility to assign tags to individual elements (news articles only a
 System requirements
 --
 
-* [Contao](https://github.com/contao/contao) 4.9 or newer
+* [Contao 4.9 or newer](https://github.com/contao/contao)
 
 Installation & Configuration
 --

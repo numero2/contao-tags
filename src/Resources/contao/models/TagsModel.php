@@ -40,13 +40,13 @@ class TagsModel extends Model {
         $aArchives = (array)$aArchives;
 
         $objResult = Database::getInstance()->prepare("
-            SELECT DISTINCT 
+            SELECT DISTINCT
                 t.*
             FROM ".NewsArchiveModel::getTable()." AS a
                 JOIN ".NewsModel::getTable()." AS n ON (n.pid = a.id)
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = n.id AND r.ptable = '".NewsModel::getTable()."' AND r.field = 'tags')
                 JOIN ".self::getTable()." AS t ON (t.id = r.tag_id)
-            WHERE 
+            WHERE
                 a.id in (".implode(',', $aArchives).")
             ORDER BY t.tag ASC
         ")->execute();
@@ -54,7 +54,7 @@ class TagsModel extends Model {
         return static::createCollectionFromDbResult($objResult, self::$strTable);
     }
 
-    
+
     /**
      * Count how many times the given tag was used
      *
@@ -68,13 +68,13 @@ class TagsModel extends Model {
         $aArchives = (array)$aArchives;
 
         $objResult = Database::getInstance()->prepare("
-            SELECT 
+            SELECT
                 COUNT(*) AS count
             FROM ".NewsArchiveModel::getTable()." AS a
                 JOIN ".NewsModel::getTable()." AS n ON (n.pid = a.id)
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = n.id AND r.ptable = '".NewsModel::getTable()."' AND r.field = 'tags')
                 JOIN ".self::getTable()." AS t ON (t.id = r.tag_id)
-            WHERE 
+            WHERE
                 a.id in (".implode(',', $aArchives).") AND t.id = ?
         ")->execute( $id );
 
