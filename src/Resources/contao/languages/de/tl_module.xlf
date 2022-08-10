@@ -18,6 +18,14 @@
         <source>If set this module will not be changed by any selected tag.</source>
         <target>Wenn gesetzt wird dieses Modul nicht durch eventuell gesetzte Tags beinflusst.</target>
     </trans-unit>
+    <trans-unit id="tl_module.use_get_parameter.0">
+        <source>Use GET-Parameter</source>
+        <target>Verwende GET-Parameter</target>
+    </trans-unit>
+    <trans-unit id="tl_module.use_get_parameter.1">
+        <source>If set this module will use GET-Parameter to set the selected tags instead of auto_item.</source>
+        <target>Wenn gesetzt wird das Modul GET-Parameter verwenden um die ausgewählten Tags zu setzen, anstatt dem auto_item. Das ist notwendig falls die Liste- und Leser-Seite den gleichen Seitenalias besitzen.</target>
+    </trans-unit>
 </body>
 </file>
 </xliff>

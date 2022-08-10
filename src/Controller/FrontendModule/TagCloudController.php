@@ -57,8 +57,8 @@ class TagCloudController extends AbstractFrontendModuleController {
                 $aTags[] = [
                     'label' => $oTag->tag
                 ,   'active'=> $alias == Input::get('tag')
-                ,   'href'  => $oPageRedirect->getFrontendUrl('/tag/'.$alias)
-                ,   'count' => TagsModel::countById($oTag->id,$aArchives)
+                ,   'href'  => $model->use_get_parameter?$oPageRedirect->getFrontendUrl().'?tag='.$alias:$oPageRedirect->getFrontendUrl('/tag/'.$alias)
+                ,   'count' => TagsModel::countById($oTag->id, $aArchives)
                 ];
             }
 
