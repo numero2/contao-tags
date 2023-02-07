@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2022, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -32,8 +32,9 @@ class TagsListener {
      */
     public function getTagOptions( DataContainer $dc ) {
 
-        $tagsSelected = Input::post($dc->field);
+        $tagsSelected = Input::post($dc->inputName);
 
+        // adds a newly created tag on POST
         if( $tagsSelected ) {
 
             foreach( $tagsSelected as $i => $tag ) {
@@ -54,17 +55,36 @@ class TagsListener {
                 }
             }
 
-            Input::setPost($dc->field, $tagsSelected);
+            Input::setPost($dc->inputName, $tagsSelected);
         }
 
-        $oTags = null;
-        $oTags = TagsModel::findAll();
+        // generate a list of all available tags
+        $availableTags = [];
 
-        if( $oTags ) {
-            return $oTags->fetchEach('tag');
+        $tags = null;
+
+        // limit list of tags to ones already used for that field/table combination
+        if( $dc->field && !empty($GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field]['eval']['groupTagsByField']) ) {
+            $tags = TagsModel::findAllByFieldAndTable($dc->field,$dc->table);
+        } else {
+            $tags = TagsModel::findAll();
         }
 
-        return [];
+        if( $tags ) {
+            $availableTags= $tags->fetchEach('tag');
+        }
+
+        if( !empty($tagsSelected) ) {
+
+            $selected = null;
+            $selected = TagsModel::findMultipleByIds($tagsSelected);
+
+            if( $selected ) {
+                $availableTags = $availableTags + $selected->fetchEach('tag');
+            }
+        }
+
+        return $availableTags;
     }
 
 
@@ -91,7 +111,9 @@ class TagsListener {
             foreach( $tags as $i => $id ) {
                 $db->prepare("INSERT INTO ".TagsRelModel::getTable()." (tag_id, pid, ptable, field) VALUES(?,?,?,?)")
                     ->execute($id, $dc->activeRecord->id, $dc->table, $dc->field);
-                $tags[$i] = (int)$id;
+                
+                // explicitly cast the id into a string, otherwise the filter options in the backend won't work
+                $tags[$i] = (string)$id;
             }
 
             return serialize($tags);

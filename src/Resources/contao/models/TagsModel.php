@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2022, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -79,5 +79,27 @@ class TagsModel extends Model {
         ")->execute( $id );
 
         return (int)$objResult->count;
+    }
+
+
+    /**
+     * Find all used tags for the given field and table
+     *
+     * @param string $field
+     * @param string $table
+     *
+     * @return Collection|TagsModel|null A collection of models or null if there are no tags
+     */
+    public static function findAllByFieldAndTable( string $field, string $table ) {
+
+        $objResult = Database::getInstance()->prepare("
+            SELECT DISTINCT
+                t.*
+            FROM ".self::getTable()." AS t
+                JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id = t.id AND r.ptable = '".$table."' AND r.field = '".$field."')
+            ORDER BY t.tag ASC
+        ")->execute();
+
+        return static::createCollectionFromDbResult($objResult, self::$strTable);
     }
 }
