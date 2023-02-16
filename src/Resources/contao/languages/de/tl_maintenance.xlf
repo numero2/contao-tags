@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xliff version="1.1">
+<file datatype="php" original="src/Resources/contao/languages/en/tl_maintenance.php" source-language="en" target-language="de">
+<body>
+    <trans-unit id="tl_maintenance_jobs.purgeTags.0">
+        <source>Clear tags</source>
+        <target>Tags bereinigen</target>
+    </trans-unit>
+    <trans-unit id="tl_maintenance_jobs.purgeTags.1">
+        <source>Delete unused tags.</source>
+        <target>Löscht unbenutzte Tags.</target>
+    </trans-unit>
+</body>
+</file>
+</xliff>

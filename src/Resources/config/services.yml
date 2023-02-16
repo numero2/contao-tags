@@ -10,3 +10,12 @@ services:
             - '@contao.routing.scope_matcher'
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+
+    numero2.purgeTagsCommand:
+        class: numero2\TagsBundle\Command\PurgeTagsCommand
+        public: true
+        arguments:
+            - '@contao.framework'
+        tags:
+            - { name: console.command }
