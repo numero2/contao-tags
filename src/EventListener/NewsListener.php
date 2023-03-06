@@ -231,8 +231,9 @@ class NewsListener {
                             $href = $pageList->getFrontendUrl('/tag/'.$tag);
 
                             $aLinks[] = sprintf(
-                                '<a href="%s" rel="nofollow">%s</a>'
+                                '<a href="%s" class="tag_%s" rel="nofollow">%s</a>'
                                 ,   $href
+                                ,   StringUtil::standardize($tag)
                                 ,   $tag
                             );
                         }
