@@ -66,7 +66,9 @@ class TagsListener {
         // limit list of tags to ones already used for that field/table combination
         if( $dc->field && !empty($GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field]['eval']['groupTagsByField']) ) {
             $tags = TagsModel::findAllByFieldAndTable($dc->field,$dc->table);
-        } else {
+        }
+        
+        if( $tags === null || $tags->count() == 0 ) {
             $tags = TagsModel::findAll();
         }
 
