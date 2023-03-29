@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xliff version="1.1">
+<file datatype="php" original="src/Resources/contao/languages/de/tl_tags.php" source-language="en" target-language="de">
+<body>
+    <trans-unit id="tl_tags.title_legend">
+        <source>Title</source>
+        <target>Titel</target>
+    </trans-unit>
+    <trans-unit id="tl_tags.tag.0">
+        <source>Tag</source>
+        <target>Tag</target>
+    </trans-unit>
+    <trans-unit id="tl_tags.tag.1">
+        <source>Enter the name of the tag.</source>
+        <target>Geben Sie die Bezeichnung des Tags ein.</target>
+    </trans-unit>
+</body>
+</file>
+</xliff>

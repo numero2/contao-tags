@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        autoconfigure: true
+
+    numero2\TagsBundle\Migration\Version007Update:
+        arguments:
+            - '@contao.framework'
+            - '@database_connection'

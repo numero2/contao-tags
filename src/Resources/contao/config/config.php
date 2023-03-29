@@ -30,6 +30,14 @@ $GLOBALS['FE_MOD']['news']['newslist_related_tags'] = ModuleNewsListRelatedTags:
 
 
 /**
+ * BACKEND MODULES
+ */
+$GLOBALS['BE_MOD']['system']['contao_tags'] = [
+    'tables' => TagsModel::getTable()
+];
+
+
+/**
  * PURGE
  */
 $GLOBALS['TL_PURGE']['custom']['purgeTags'] = [

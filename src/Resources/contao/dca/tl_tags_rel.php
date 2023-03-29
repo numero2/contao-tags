@@ -6,15 +6,17 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2022, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
  */
+
+use Contao\DataContainer;
+use Contao\DC_Table;
 
 
 $GLOBALS['TL_DCA']['tl_tags_rel'] = [
 
     'config' => [
-        'dataContainer' => 'Table'
-    ,   'ptable'        => 'tl_news_tags'
+        'dataContainer' => DC_Table::class
     ,   'sql' => [
             'keys' => [
                 'tag_id'=> 'index'

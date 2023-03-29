@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <xliff version="1.1">
-<file datatype="php" original="src/Resources/contao/languages/en/tl_module.php" source-language="en" target-language="de">
+<file datatype="php" original="src/Resources/contao/languages/de/tl_module.php" source-language="en" target-language="de">
 <body>
     <trans-unit id="tl_module.jumpToTags.0">
         <source>Redirect page for tags</source>
