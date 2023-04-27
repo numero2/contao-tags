@@ -47,7 +47,14 @@ class Version007Update extends AbstractMigration {
 
     public function shouldRun(): bool {
 
+        $schemaManager = $this->connection->getSchemaManager();
+
         $t = TagsModel::getTable();
+
+        // check if our table even exists
+        if( !$schemaManager->tablesExist([$t]) ) {
+            return false;
+        }
 
         // check which DataContainer contain a tags field
         if( !empty($GLOBALS['TL_DCA']) ) {
