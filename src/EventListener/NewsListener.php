@@ -123,9 +123,9 @@ class NewsListener {
 
             $currentNews = NewsModel::findPublishedByParentAndIdOrAlias(Input::get('items'), $newsArchives);
 
-            $oNews = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured, 0, 0, $arrOptions);
+            $news = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured, $limit, $offset, $arrOptions);
 
-            return $oNews;
+            return $news;
         }
 
         if( $module->ignoreTags ) {
@@ -183,7 +183,7 @@ class NewsListener {
                 $articles = array_slice($articles, $offset, $limit);
             }
 
-            return new Collection($articles, NewsModel::getTable());
+            return new Collection($articles, $t);
         }
 
         return false;
