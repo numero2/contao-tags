@@ -68,7 +68,7 @@ class Version007Update extends AbstractMigration {
                         // if a field references our tags table it's a match
                         if( !empty($config['foreignKey']) && stripos($config['foreignKey'], $t.'.') !== false ) {
 
-                            if( !is_array($this->fields[$dca]) ) {
+                            if( !array_key_exists($dca,$this->fields) ) {
                                 $this->fields[$dca] = [];
                             }
                             
