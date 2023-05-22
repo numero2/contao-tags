@@ -50,6 +50,9 @@ $GLOBALS['TL_DCA']['tl_tags'] = [
         'id' => [
             'sql'       => "int(10) unsigned NOT NULL auto_increment"
         ]
+    ,   'tstamp' => [
+            'sql'       => "int(10) unsigned NOT NULL default 1684736465"
+        ]
     ,   'tag' => [
             'inputType' => 'text'
         ,   'sorting'   => true
