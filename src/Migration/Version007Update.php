@@ -88,11 +88,17 @@ class Version007Update extends AbstractMigration {
 
                 foreach( $fields as $field ) {
 
-                    $res = $this->connection->prepare("SELECT 1 FROM $dca WHERE $field IS NOT NULL AND $field NOT LIKE '%:\"%'; ")->executeQuery();
+                    // check if field already exists
+                    $columns = $schemaManager->listTableColumns($dca);
 
-                    // return as soon as we found our first value in the wrong format
-                    if( $res && $res->rowCount() ) {
-                        return true;
+                    if( in_array($field, $columns) ) {
+
+                        $res = $this->connection->prepare("SELECT 1 FROM $dca WHERE $field IS NOT NULL AND $field NOT LIKE '%:\"%'; ")->executeQuery();
+    
+                        // return as soon as we found our first value in the wrong format
+                        if( $res && $res->rowCount() ) {
+                            return true;
+                        }
                     }
                 }
             }

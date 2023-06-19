@@ -6,7 +6,7 @@ Contao Tags
 About
 --
 
-Adds the possibility to assign tags to individual elements (news articles only at the moment).
+Adds the possibility to assign tags to individual elements.
 
 System requirements
 --
