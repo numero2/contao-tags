@@ -15,7 +15,10 @@ use Contao\CoreBundle\DataContainer\PaletteManipulator;
 PaletteManipulator::create()
     ->addLegend('tags_legend', 'teaser_legend', 'before')
     ->addField('tags', 'tags_legend', 'append')
-    ->applyToPalette('default', 'tl_news');
+    ->applyToPalette('default', 'tl_news')
+    ->applyToPalette('internal', 'tl_news')
+    ->applyToPalette('article', 'tl_news')
+    ->applyToPalette('external', 'tl_news');
 
 
 $GLOBALS['TL_DCA']['tl_news']['fields']['tags'] = [
