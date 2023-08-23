@@ -19,6 +19,14 @@
         <source>Adds a list of news items to the page which are related to the tags of the current news.</source>
         <target>Fügt der Seite eine Nachrichtenliste hinzu mit ähnlichen Tags wie die aktuelle Nachricht.</target>
     </trans-unit>
+    <trans-unit id="FMD.newslist_tags.0">
+        <source>Newslist (filtered by tags)</source>
+        <target>Nachrichtenliste (nach Tags gefiltert)</target>
+    </trans-unit>
+    <trans-unit id="FMD.newslist_tags.1">
+        <source>Adds a list of news items to the page which are filtered by tags.</source>
+        <target>Fügt der Seite eine Nachrichtenliste hinzu die nach Tags gefiltert ist.</target>
+    </trans-unit>
     <!-- BACKEND -->
     <trans-unit id="MOD.contao_tags.0">
         <source>Tags</source>

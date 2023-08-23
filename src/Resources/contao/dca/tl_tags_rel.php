@@ -9,7 +9,6 @@
  * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
  */
 
-use Contao\DataContainer;
 use Contao\DC_Table;
 
 

@@ -15,6 +15,12 @@
     <trans-unit id="FMD.newslist_related_tags.1">
         <source>Adds a list of news items to the page which are related to the tags of the current news.</source>
     </trans-unit>
+    <trans-unit id="FMD.newslist_tags.0">
+        <source>Newslist (filtered by tags)</source>
+    </trans-unit>
+    <trans-unit id="FMD.newslist_tags.1">
+        <source>Adds a list of news items to the page which are filtered by tags.</source>
+    </trans-unit>
     <!-- BACKEND -->
     <trans-unit id="MOD.contao_tags.0">
         <source>Tags</source>

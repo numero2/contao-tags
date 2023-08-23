@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2022, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -22,6 +22,7 @@ use Contao\NewsModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use numero2\TagsBundle\ModuleNewsListRelatedTags;
+use numero2\TagsBundle\ModuleNewsListTags;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
 
@@ -48,7 +49,20 @@ class NewsListener {
 
             $currentNews = NewsModel::findPublishedByParentAndIdOrAlias(Input::get('items'), $newsArchives);
 
-            $oNews = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives);
+            $oNews = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured);
+
+            if( $oNews ) {
+                return $oNews->count();
+            }
+
+            return 0;
+
+        } else if( $module instanceof ModuleNewsListTags ) {
+
+            $tags = StringUtil::deserialize($module->news_tags, true);
+            $blnMatchAll = !empty($module->tags_match_all);
+
+            $oNews = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMatchAll);
 
             if( $oNews ) {
                 return $oNews->count();
@@ -124,6 +138,15 @@ class NewsListener {
             $currentNews = NewsModel::findPublishedByParentAndIdOrAlias(Input::get('items'), $newsArchives);
 
             $news = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured, $limit, $offset, $arrOptions);
+
+            return $news;
+
+        } else if( $module instanceof ModuleNewsListTags ) {
+
+            $tags = StringUtil::deserialize($module->news_tags, true);
+            $blnMatchAll = !empty($module->tags_match_all);
+
+            $news = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMatchAll, $limit, $offset, $arrOptions);
 
             return $news;
         }

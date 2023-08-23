@@ -11,9 +11,10 @@
 
 
 use numero2\TagsBundle\ModuleNewsListRelatedTags;
+use numero2\TagsBundle\ModuleNewsListTags;
+use numero2\TagsBundle\PurgeTags;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
-use numero2\TagsBundle\PurgeTags;
 
 
 /**
@@ -27,6 +28,7 @@ $GLOBALS['TL_MODELS'][TagsRelModel::getTable()] = TagsRelModel::class;
  * FRONTEND MODULES
  */
 $GLOBALS['FE_MOD']['news']['newslist_related_tags'] = ModuleNewsListRelatedTags::class;
+$GLOBALS['FE_MOD']['news']['newslist_tags'] = ModuleNewsListTags::class;
 
 
 /**
