@@ -48,6 +48,9 @@ class ModuleNewsListTags extends ModuleNewsList {
             return $objTemplate->parse();
         }
 
+        // add original css class
+        $this->objModel->classes = array_merge((array)$this->objModel->classes, ['mod_newslist']);
+
         return parent::generate();
     }
 }
