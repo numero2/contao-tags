@@ -41,7 +41,7 @@ class TagCloudController extends AbstractFrontendModuleController {
         $page = $this->getPageModel();
 
         $aArchives = StringUtil::deserialize($model->news_archives);
-        $oTags = TagsModel::findByArchives($aArchives);
+        $oTags = TagsModel::findByNewsArchives($aArchives);
 
         if( $oTags && !empty($aArchives) ) {
 
@@ -58,7 +58,7 @@ class TagCloudController extends AbstractFrontendModuleController {
                     'label' => $oTag->tag
                 ,   'active'=> $alias == Input::get('tag')
                 ,   'href'  => $model->use_get_parameter?$oPageRedirect->getFrontendUrl().'?tag='.urlencode($alias):$oPageRedirect->getFrontendUrl('/tag/'.$alias)
-                ,   'count' => TagsModel::countById($oTag->id, $aArchives)
+                ,   'count' => TagsModel::countByIdAndNewsArchives($oTag->id, $aArchives)
                 ,   'class' => 'tag_' . StringUtil::standardize($oTag->tag)
                 ];
             }

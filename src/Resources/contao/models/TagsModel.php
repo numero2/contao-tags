@@ -35,7 +35,7 @@ class TagsModel extends Model {
      *
      * @return Collection|TagsModel|null A collection of models or null if there are no tags
      */
-    public static function findByArchives( array $aArchives ) {
+    public static function findByNewsArchives( array $aArchives ) {
 
         $aArchives = (array)$aArchives;
 
@@ -63,7 +63,7 @@ class TagsModel extends Model {
      *
      * @return int
      */
-    public static function countById( $id, array $aArchives ): int {
+    public static function countByIdAndNewsArchives( $id, array $aArchives ): int {
 
         $aArchives = (array)$aArchives;
 
@@ -96,10 +96,60 @@ class TagsModel extends Model {
             SELECT DISTINCT
                 t.*
             FROM ".self::getTable()." AS t
-                JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id = t.id AND r.ptable = '".$table."' AND r.field = '".$field."')
+                JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=? )
             ORDER BY t.tag ASC
-        ")->execute();
+        ")->execute($field, $table);
 
         return static::createCollectionFromDbResult($objResult, self::$strTable);
+    }
+
+
+    /**
+     * Find used tags for the given id, field and table
+     *
+     * @param int $id
+     * @param string $field
+     * @param string $table
+     *
+     * @return Collection|TagsModel|null A collection of models or null if there are no tags
+     */
+    public static function findByIdForFieldAndTable( $id, string $field, string $table ) {
+
+        $objResult = Database::getInstance()->prepare("
+            SELECT t.*
+            FROM ".self::getTable()." AS t
+                JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=? )
+            WHERE r.pid=?
+            ORDER BY t.tag ASC
+        ")->execute($field, $table, $id);
+
+        return static::createCollectionFromDbResult($objResult, self::$strTable);
+    }
+
+
+    /**
+     * Count used tags for the given id, field and table
+     *
+     * @param int $id
+     * @param string $field
+     * @param string $table
+     *
+     * @return Collection|TagsModel|null A collection of models or null if there are no tags
+     */
+    public static function countByIdForFieldAndTable( $id, string $field, string $table ): int {
+
+        $objResult = Database::getInstance()->prepare("
+            SELECT count(1) as count
+            FROM ".self::getTable()." AS t
+                JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=? )
+            WHERE r.pid=?
+            ORDER BY t.tag ASC
+        ")->execute($field, $table, $id);
+
+        if( $objResult && $objResult->count() ) {
+            return $objResult->count;
+        }
+
+        return 0;
     }
 }
