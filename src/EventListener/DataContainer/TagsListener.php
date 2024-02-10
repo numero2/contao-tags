@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -67,7 +67,7 @@ class TagsListener {
         if( $dc->field && !empty($GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field]['eval']['groupTagsByField']) ) {
             $tags = TagsModel::findAllByFieldAndTable($dc->field,$dc->table);
         }
-        
+
         if( $tags === null || $tags->count() == 0 ) {
             $tags = TagsModel::findAll();
         }
@@ -100,20 +100,21 @@ class TagsListener {
      */
     public function saveTags( $varValue, DataContainer $dc ): ?string {
 
+        $db = Database::getInstance();
+
+        // remove all tag relations for this element
+        $db->prepare("DELETE FROM ".TagsRelModel::getTable()." WHERE pid = ? AND ptable = ? AND field = ?")
+            ->execute($dc->activeRecord->id, $dc->table, $dc->field);
+
         if( !empty($varValue) ) {
 
             $tags = StringUtil::deserialize( $varValue );
-            $db = Database::getInstance();
-
-            // remove all tag relations for this element
-            $db->prepare("DELETE FROM ".TagsRelModel::getTable()." WHERE pid = ? AND ptable = ? AND field = ?")
-                ->execute($dc->activeRecord->id, $dc->table, $dc->field);
 
             // add tag relations for this element
             foreach( $tags as $i => $id ) {
                 $db->prepare("INSERT INTO ".TagsRelModel::getTable()." (tag_id, pid, ptable, field) VALUES(?,?,?,?)")
                     ->execute($id, $dc->activeRecord->id, $dc->table, $dc->field);
-                
+
                 // explicitly cast the id into a string, otherwise the filter options in the backend won't work
                 $tags[$i] = (string)$id;
             }

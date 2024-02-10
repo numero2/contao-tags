@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -46,8 +46,7 @@ class NewsListener {
         if( $module instanceof ModuleNewsListRelatedTags ) {
 
             $alias = Input::get('items');
-
-            $currentNews = NewsModel::findPublishedByParentAndIdOrAlias(Input::get('items'), $newsArchives);
+            $currentNews = NewsModel::findPublishedByParentAndIdOrAlias($alias, $newsArchives);
 
             $oNews = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured);
 
@@ -134,8 +133,7 @@ class NewsListener {
         if( $module instanceof ModuleNewsListRelatedTags ) {
 
             $alias = Input::get('items');
-
-            $currentNews = NewsModel::findPublishedByParentAndIdOrAlias(Input::get('items'), $newsArchives);
+            $currentNews = NewsModel::findPublishedByParentAndIdOrAlias($alias, $newsArchives);
 
             $news = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured, $limit, $offset, $arrOptions);
 
