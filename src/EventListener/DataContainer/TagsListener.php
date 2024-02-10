@@ -39,6 +39,11 @@ class TagsListener {
 
             foreach( $tagsSelected as $i => $tag ) {
 
+                if( empty($tag) ) {
+                    unset($tagsSelected[$i]);
+                    continue;
+                }
+
                 if( !is_numeric($tag) ) {
 
                     $model = TagsModel::findByTag($tag);
