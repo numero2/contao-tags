@@ -68,6 +68,7 @@ class TagsModel extends Model {
             ORDER BY t.tag ASC
         ")->execute();
 
+
         return static::createCollectionFromDbResult($objResult, self::$strTable);
     }
 
