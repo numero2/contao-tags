@@ -7,17 +7,19 @@
         <?php foreach( $this->tags as $t ) : ?>
         <li<?php if($t['active']): ?> class="active"<?php endif; ?>>
 
+            <?php if( !$t['active'] || $this->selectMultiple ): ?>
+                <a href="<?= $t['href']; ?>" class="<?= $t['class'] ?>" rel="noindex nofollow">
+            <?php endif; ?>
             <?php if( $t['active'] ): ?>
                 <strong class="<?= $t['class'] ?>">
-            <?php else: ?>
-                <a href="<?= $t['href']; ?>" class="<?= $t['class'] ?>" rel="noindex nofollow">
             <?php endif; ?>
 
                 <?= $t['label']; ?><span class="count"><?= $t['count']; ?></span>
-            
+
             <?php if( $t['active'] ): ?>
                 </strong>
-            <?php else: ?>
+            <?php endif; ?>
+            <?php if( !$t['active'] || $this->selectMultiple ): ?>
                 </a>
             <?php endif; ?>
 

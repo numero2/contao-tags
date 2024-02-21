@@ -18,6 +18,14 @@
         <source>If set this module will not be changed by any selected tag.</source>
         <target>Wenn gesetzt wird dieses Modul nicht durch eventuell gesetzte Tags beinflusst.</target>
     </trans-unit>
+    <trans-unit id="tl_module.tags_select_multiple.0">
+        <source>Select multiple tags</source>
+        <target>Mehrfacheauswahl von Tags</target>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_select_multiple.1">
+        <source>If set the user can select multiple tags.</source>
+        <target>Wenn gesetzt kann der Nutzer mehrere Tags auswählen.</target>
+    </trans-unit>
     <trans-unit id="tl_module.use_get_parameter.0">
         <source>Use GET-Parameter</source>
         <target>Verwende GET-Parameter</target>

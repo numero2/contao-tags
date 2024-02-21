@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -25,6 +25,7 @@ use numero2\TagsBundle\ModuleNewsListRelatedTags;
 use numero2\TagsBundle\ModuleNewsListTags;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
+use numero2\TagsBundle\Util\TagUtil;
 
 
 class NewsListener {
@@ -60,7 +61,7 @@ class NewsListener {
         } else if( $module instanceof ModuleNewsListTags ) {
 
             $tags = StringUtil::deserialize($module->news_tags, true);
-            $blnMatchAll = !empty($module->tags_match_all);
+            $blnMultiple = !empty($module->tags_match_all);
 
             $oNews = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMatchAll);
 
@@ -155,9 +156,9 @@ class NewsListener {
             return false;
         }
 
-        $tag = Input::get('tag');
+        $tags = TagUtil::getTagsFromUrl();
 
-        if( !empty($tag) ) {
+        if( !empty($tags) ) {
 
             // set current page to noindex
             $objPage->robots = 'noindex,nofollow';
@@ -175,23 +176,35 @@ class NewsListener {
             $articles = $collection->getModels();
 
             // sort out non matching tags
-            if( !empty($tag) ) {
+            if( !empty($tags) ) {
 
-                // get tag id
-                $oTag = null;
-                $oTag = TagsModel::findOneByTag( $tag );
+                // get tags id
+                $aTags = [];
+                foreach( $tags as $tag ) {
+                    $oTag = TagsModel::findOneByTag($tag);
+                    if( $oTag ) {
+                        $aTags[] = $oTag->id;
+                    }
+                }
 
-                if( $oTag ) {
+                if( !empty($aTags) ) {
 
-                    foreach( $articles as $i => $current ) {
+                    foreach( $articles as $i => $article ) {
 
-                        $tags = $current->getRelated('tags');
+                        $newsTags = $article->getRelated('tags');
 
-                        if( !empty($tags) ) {
+                        if( empty($newsTags) ) {
+                            $newsTags = [];
+                        } else {
+                            $newsTags = $newsTags->fetchEach('id');
+                        }
 
-                            $tags = $tags->fetchEach('id');
-
-                            if( in_array($oTag->id, $tags) ) {
+                        if( !empty($module->tags_match_all) ) {
+                            if( count(array_intersect($aTags, $newsTags)) === count($aTags) ) {
+                                continue;
+                            }
+                        } else {
+                            if( count(array_intersect($aTags, $newsTags)) ) {
                                 continue;
                             }
                         }
@@ -269,5 +282,55 @@ class NewsListener {
                 }
             }
         }
+    }
+
+
+    /**
+     * Replace inserttags for tags
+     *
+     * @param string $insertTag
+     * @param bool $useCache
+     * @param string $cachedValue
+     * @param array $flags
+     *
+     * @return string|bool
+     *
+     * @Hook("replaceInsertTags")
+     */
+    public function replaceInsertTags( string $insertTag, bool $useCache, string $cachedValue, array $flags ) {
+
+        $tag = explode('::', $insertTag);
+
+        if( $tag[0] === 'tag_link' ) {
+
+            $page = PageModel::findByIdOrAlias($tag[1]);
+            $tags = array_slice($tag, 2);
+
+            if( !$page || empty($tags) ) {
+                return '';
+            }
+
+            $tagNames = [];
+            foreach( $tags as $t ) {
+
+                $oTag = TagsModel::findByIdOrName($t);
+
+                if( $oTag ) {
+                    $tagNames[] = $oTag->tag;
+                }
+            }
+
+            $tagNames = array_unique($tagNames);
+            if( empty($tagNames) ) {
+                return '';
+            }
+
+            $blnGetParameter = \in_array('get', $flags, true);
+            $blnAbsolute = \in_array('absolute', $flags, true);
+
+            return TagUtil::generateUrlWithTags($page, $tagNames, $blnGetParameter, $blnAbsolute);
+        }
+
+        return false;
     }
 }

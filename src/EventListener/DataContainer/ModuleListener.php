@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -45,7 +45,7 @@ class ModuleListener {
     public function modifyPalettes( DataContainer $dc ): void {
 
         PaletteManipulator::create()
-            ->addField('ignoreTags', 'config_legend', 'append')
+            ->addField(['ignoreTags', 'tags_match_all'], 'config_legend', 'append')
             ->applyToPalette('newslist', $dc->table);
 
         $pm = PaletteManipulator::create()

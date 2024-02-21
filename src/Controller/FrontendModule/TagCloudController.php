@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -20,6 +20,7 @@ use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\Template;
 use numero2\TagsBundle\TagsModel;
+use numero2\TagsBundle\Util\TagUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -46,24 +47,49 @@ class TagCloudController extends AbstractFrontendModuleController {
         if( $oTags && !empty($aArchives) ) {
 
             $aTags = [];
+            $aTagsAvailable = $oTags->fetchEach('tag');
 
             $oPageRedirect = $model->jumpToTags?PageModel::findOneById($model->jumpToTags):$page;
             $oPageRedirect = $oPageRedirect?:$page;
+
+            $activeTags = TagUtil::getTagsFromUrl();
+            $activeTags = array_intersect($aTagsAvailable, $activeTags);
 
             foreach( $oTags as $oTag ) {
 
                 $alias = $oTag->tag;
 
+                $parameterTags = null;
+                $active = null;
+
+                if( empty($model->tags_select_multiple) ) {
+
+                    $active = in_array($alias, $activeTags);
+                    $parameterTags = [$alias];
+
+                } else {
+
+                    $active = in_array($alias, $activeTags);
+                    if( $active ) {
+                        $parameterTags = array_diff($activeTags, [$alias]);
+                    } else {
+                        $parameterTags = [...$activeTags, $alias];
+                    }
+                }
+
+                $href = TagUtil::generateUrlWithTags($oPageRedirect, $parameterTags, !empty($model->use_get_parameter));
+
                 $aTags[] = [
                     'label' => $oTag->tag
-                ,   'active'=> $alias == Input::get('tag')
-                ,   'href'  => $model->use_get_parameter?$oPageRedirect->getFrontendUrl().'?tag='.urlencode($alias):$oPageRedirect->getFrontendUrl('/tag/'.$alias)
+                ,   'active'=> $active
+                ,   'href'  => $href
                 ,   'count' => TagsModel::countByIdAndNewsArchives($oTag->id, $aArchives)
-                ,   'class' => 'tag_' . StringUtil::standardize($oTag->tag)
+                ,   'class' => 'tag_' . StringUtil::standardize($oTag->tag).($active?' active':'')
                 ];
             }
 
             $template->tags = $aTags;
+            $template->selectMultiple = !empty($model->tags_select_multiple);
 
             if( Input::get('tag') !== null ) {
                 $template->resetHref = $page->getFrontendUrl();
