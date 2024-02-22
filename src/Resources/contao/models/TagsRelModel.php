@@ -91,7 +91,7 @@ class TagsRelModel extends Model {
 
         if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
-            $arrColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
+            $aColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
         }
 
         if( !isset($aOptions['order']) ) {
@@ -179,7 +179,7 @@ class TagsRelModel extends Model {
 
         if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
-            $arrColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
+            $aColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
         }
 
         if( !isset($aOptions['order']) ) {
