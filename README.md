@@ -3,23 +3,20 @@ Contao Tags
 
 [![](https://img.shields.io/packagist/v/numero2/contao-tags.svg?style=flat-square)](https://packagist.org/packages/numero2/contao-tags) [![](https://img.shields.io/badge/License-LGPL%20v3-blue.svg?style=flat-square)](http://www.gnu.org/licenses/lgpl-3.0)
 
-About
---
+## About
 
 Adds the possibility to assign tags to individual elements.
 
-System requirements
---
+## System requirements
 
-* [Contao 4.9 or newer](https://github.com/contao/contao)
+* [Contao 4.13 or newer](https://github.com/contao/contao)
 
-Installation & Configuration
---
+## Installation & Configuration
 
 * Install via Contao Manager or Composer (`composer require numero2/contao-tags`)
 
 * Add the following code snippet into your `news_(full|latest|short|simple).html5` template
-  
+
   ```php
   <?php if( $this->tags ): ?>
     <div class="tags">
@@ -33,6 +30,21 @@ Installation & Configuration
 * Configure your `Newslist` or `Newsreader` front end modules and set a `Redirect page for tags`
 
 * Additionally add the new `Tag Cloud` module anywhere on your page
+
+## Insert-Tags
+
+This extensions comes with a couple of Insert-Tags that can be used to link to a page which will only show entries with matching tags.
+
+| Insert-Tag      | Description                    |
+| ------------- | ------------------------------ |
+| {{tag_link::1::foo}} | Creates a link URL to the page with ID 1 and the tag `foo` |
+| {{tag_link::1::foo::bar}} | Creates a link URL to the page with ID 1 and the tags `foo` and `bar` |
+| {{tag_link::1::foo&#124;absolute}} | Creates an absolute link URL to the page with ID 1 and the tag `foo` |
+| {{tag_link::1::foo&#124;get}} | Creates an link URL to the page with ID 1 and the tag `foo` using GET parameters |
+| {{tag_link::1::foo&#124;absolute&#124;get}} | Creates an absolute link URL to the page with ID 1 and the tag `foo` using GET parameters |
+
+A more robust way for the links would be to use the tag's ID instead of its name (which can be changed under `System › Tags`).
+So instead of `{{tag_link::1::foo}}` you could also write `{{tag_link::1::69}}` (assuming the ID of `foo` is 69).
 
 ## For Developers
 

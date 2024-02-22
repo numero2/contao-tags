@@ -30,7 +30,7 @@ class TagUtil {
         $tag = Input::get('tag');
 
         if( $tag === null ) {
-            return  [];
+            return [];
         }
 
         $tags = json_decode(base64_decode(StringUtil::revertInputEncoding($tag))) ?? [];
@@ -67,7 +67,7 @@ class TagUtil {
 
 
     /**
-     * Generate url
+     * Generate url for the given page with the given tags
      *
      * @param Contao\PageModel $page
      * @param array $tags
@@ -82,6 +82,10 @@ class TagUtil {
         $parameter = self::generateParameterForUrl($tags);
 
         $href = '';
+
+        if( !strlen($parameter) ) {
+            return $page->{$method}();
+        }
 
         if( $blnGetParameter ) {
             $href = $page->{$method}().'?tag='.urlencode($parameter);

@@ -89,10 +89,9 @@ class TagsRelModel extends Model {
             $aColumns[] = "$t.featured=''";
         }
 
-        // Never return unpublished elements in the back end, so they don't end up in the RSS feed
-        if( !BE_USER_LOGGED_IN || TL_MODE == 'BE' ) {
+        if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
-            $aColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'$time')";
+            $arrColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
         }
 
         if( !isset($aOptions['order']) ) {
@@ -178,10 +177,9 @@ class TagsRelModel extends Model {
             $aColumns[] = "$t.featured=''";
         }
 
-        // Never return unpublished elements in the back end, so they don't end up in the RSS feed
-        if( !BE_USER_LOGGED_IN || TL_MODE == 'BE' ) {
+        if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
-            $aColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'$time')";
+            $arrColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
         }
 
         if( !isset($aOptions['order']) ) {

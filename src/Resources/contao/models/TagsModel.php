@@ -13,6 +13,7 @@
 namespace numero2\TagsBundle;
 
 use Contao\Database;
+use Contao\Date;
 use Contao\Model;
 use Contao\NewsArchiveModel;
 use Contao\NewsModel;
@@ -49,12 +50,22 @@ class TagsModel extends Model {
      * Find all used tags in the given archives
      *
      * @param array $aArchives
+     * @param array $aOptions
      *
      * @return Collection|TagsModel|null A collection of models or null if there are no tags
      */
-    public static function findByNewsArchives( array $aArchives ) {
+    public static function findByNewsArchives( array $aArchives, array $aOptions=[] ) {
 
-        $aArchives = (array)$aArchives;
+        $aArchives = array_map('\intval', $aArchives);
+        if( !count($aArchives) ) {
+            return null;
+        }
+
+        $publishedNews = '';
+        if( !static::isPreviewMode($aOptions) ) {
+            $time = Date::floorToMinute();
+            $publishedNews = " AND n.published='1' AND (n.start='' OR n.start<=$time) AND (n.stop='' OR n.stop>$time)";
+        }
 
         $objResult = Database::getInstance()->prepare("
             SELECT DISTINCT
@@ -64,10 +75,9 @@ class TagsModel extends Model {
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = n.id AND r.ptable = '".NewsModel::getTable()."' AND r.field = 'tags')
                 JOIN ".self::getTable()." AS t ON (t.id = r.tag_id)
             WHERE
-                a.id in (".implode(',', $aArchives).")
+                a.id in (".implode(',', $aArchives).")".$publishedNews."
             ORDER BY t.tag ASC
         ")->execute();
-
 
         return static::createCollectionFromDbResult($objResult, self::$strTable);
     }
@@ -78,12 +88,22 @@ class TagsModel extends Model {
      *
      * @param int $id
      * @param array $aArchives
+     * @param array $aOptions
      *
      * @return int
      */
-    public static function countByIdAndNewsArchives( $id, array $aArchives ): int {
+    public static function countByIdAndNewsArchives( $id, array $aArchives, array $aOptions=[] ): int {
 
-        $aArchives = (array)$aArchives;
+        $aArchives = array_map('\intval', $aArchives);
+        if( !count($aArchives) ) {
+            return null;
+        }
+
+        $publishedNews = '';
+        if( !static::isPreviewMode($aOptions) ) {
+            $time = Date::floorToMinute();
+            $publishedNews = " AND n.published='1' AND (n.start='' OR n.start<=$time) AND (n.stop='' OR n.stop>$time)";
+        }
 
         $objResult = Database::getInstance()->prepare("
             SELECT
@@ -93,8 +113,8 @@ class TagsModel extends Model {
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = n.id AND r.ptable = '".NewsModel::getTable()."' AND r.field = 'tags')
                 JOIN ".self::getTable()." AS t ON (t.id = r.tag_id)
             WHERE
-                a.id in (".implode(',', $aArchives).") AND t.id = ?
-        ")->execute( $id );
+                a.id in (".implode(',', $aArchives).") AND t.id=? ".$publishedNews."
+        ")->execute($id);
 
         return (int)$objResult->count;
     }

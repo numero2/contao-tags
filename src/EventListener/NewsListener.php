@@ -62,7 +62,7 @@ class NewsListener {
             $tags = StringUtil::deserialize($module->news_tags, true);
             $blnMultiple = !empty($module->tags_match_all);
 
-            $oNews = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMatchAll);
+            $oNews = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMultiple);
 
             if( $oNews ) {
                 return $oNews->count();
