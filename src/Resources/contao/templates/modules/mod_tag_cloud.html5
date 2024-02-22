@@ -4,7 +4,7 @@
 <?php $this->block('content'); ?>
 
     <ul>
-        <?php foreach( $this->tags as $t ) : ?>
+        <?php foreach( $this->tags as $t ): ?>
         <li<?php if($t['active']): ?> class="active"<?php endif; ?>>
 
             <?php if( !$t['active'] || $this->selectMultiple ): ?>

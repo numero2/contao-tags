@@ -256,6 +256,8 @@ class NewsListener {
 
                 if( $oTags ) {
 
+                    $objTemplate->tagsRaw = $oTags->fetchAll();
+
                     if( $pageList ) {
 
                         $aLinks = [];
@@ -266,9 +268,9 @@ class NewsListener {
 
                             $aLinks[] = sprintf(
                                 '<a href="%s" class="tag_%s" rel="nofollow">%s</a>'
-                                ,   $href
-                                ,   StringUtil::standardize($tag)
-                                ,   $tag
+                            ,   $href
+                            ,   StringUtil::standardize($tag)
+                            ,   $tag
                             );
                         }
 

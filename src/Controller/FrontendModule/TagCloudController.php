@@ -85,6 +85,7 @@ class TagCloudController extends AbstractFrontendModuleController {
                 ,   'href'  => $href
                 ,   'count' => TagsModel::countByIdAndNewsArchives($oTag->id, $aArchives)
                 ,   'class' => 'tag_' . StringUtil::standardize($oTag->tag).($active?' active':'')
+                ,   'tag'   => $oTag->row()
                 ];
             }
 
