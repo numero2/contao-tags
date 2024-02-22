@@ -14,11 +14,29 @@
     <trans-unit id="tl_module.ignoreTags.1">
         <source>If set this module will not be changed by any selected tag.</source>
     </trans-unit>
+    <trans-unit id="tl_module.tags_select_multiple.0">
+        <source>Select multiple tags</source>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_select_multiple.1">
+        <source>If set the user can select multiple tags.</source>
+    </trans-unit>
     <trans-unit id="tl_module.use_get_parameter.0">
         <source>Use GET-Parameter</source>
     </trans-unit>
     <trans-unit id="tl_module.use_get_parameter.1">
         <source>If set this module will use GET-Parameter to set the selected tags instead of auto_item.</source>
+    </trans-unit>
+    <trans-unit id="tl_module.news_tags.0">
+        <source>News tags</source>
+    </trans-unit>
+    <trans-unit id="tl_module.news_tags.1">
+        <source>Please select one or more news tags.</source>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_match_all.0">
+        <source>All tags must match</source>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_match_all.1">
+        <source>If set only news will be display that matches all selected tags.</source>
     </trans-unit>
 </body>
 </file>

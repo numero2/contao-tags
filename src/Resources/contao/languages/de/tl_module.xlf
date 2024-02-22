@@ -20,7 +20,7 @@
     </trans-unit>
     <trans-unit id="tl_module.tags_select_multiple.0">
         <source>Select multiple tags</source>
-        <target>Mehrfacheauswahl von Tags</target>
+        <target>Mehrfachauswahl von Tags</target>
     </trans-unit>
     <trans-unit id="tl_module.tags_select_multiple.1">
         <source>If set the user can select multiple tags.</source>
