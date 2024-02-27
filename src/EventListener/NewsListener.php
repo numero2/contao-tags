@@ -100,7 +100,7 @@ class NewsListener {
      *
      * @return Model\Collection|NewsModel|false
      *
-     * @Hook("newsListFetchItems")
+     * @Hook("newsListFetchItems", priority=100)
      */
     public function newsListFetchItems( $newsArchives, $blnFeatured, $limit, $offset, ModuleNewsList $module ) {
 
