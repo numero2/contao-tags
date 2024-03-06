@@ -16,17 +16,15 @@ use Contao\Database;
 use Contao\Date;
 use Contao\Model;
 use Contao\NewsModel;
-
+use Contao\System;
 
 class TagsRelModel extends Model {
-
 
     /**
      * Table name
      * @var string
      */
     protected static $strTable = 'tl_tags_rel';
-
 
     /**
      * Find all related news for the given news id
@@ -89,9 +87,11 @@ class TagsRelModel extends Model {
             $aColumns[] = "$t.featured=''";
         }
 
-        if( !static::isPreviewMode($aOptions) ) {
+        // Never return unpublished elements in the back end, so they don't end up in the RSS feed
+        $securityChecker = System::getContainer()->get('security.authorization_checker');
+        if( (!$securityChecker->isGranted('ROLE_ADMIN') || !$securityChecker->isGranted('ROLE_USER')) || System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest()) ) {
             $time = Date::floorToMinute();
-            $aColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
+            $aColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'$time')";
         }
 
         if( !isset($aOptions['order']) ) {
@@ -177,9 +177,12 @@ class TagsRelModel extends Model {
             $aColumns[] = "$t.featured=''";
         }
 
-        if( !static::isPreviewMode($aOptions) ) {
+
+        // Never return unpublished elements in the back end, so they don't end up in the RSS feed
+        $securityChecker = System::getContainer()->get('security.authorization_checker');
+        if( (!$securityChecker->isGranted('ROLE_ADMIN') || !$securityChecker->isGranted('ROLE_USER')) || System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest()) ) {
             $time = Date::floorToMinute();
-            $aColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
+            $aColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'$time')";
         }
 
         if( !isset($aOptions['order']) ) {
