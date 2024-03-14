@@ -26,7 +26,7 @@ class TagsListener {
     /**
      * Returns a list of possible tags
      *
-     * @param DataContainer $dc
+     * @param Contao\DataContainer $dc
      *
      * @return array
      */
@@ -99,7 +99,7 @@ class TagsListener {
      * Save new tags to database
      *
      * @param mixed $varValue
-     * @param DataContainer $dc
+     * @param Contao\DataContainer $dc
      *
      * @return string|null
      */

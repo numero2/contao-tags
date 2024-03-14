@@ -7,8 +7,8 @@
         <target>Weiterleitungsseite für Tags</target>
     </trans-unit>
     <trans-unit id="tl_module.jumpToTags.1">
-        <source>This page should contain a news list whose entries are then filtered according to the selected tag.</source>
-        <target>Diese Seite sollte eine Nachrichtenliste beinhalten deren Einträge dann nach dem gewählten Tag gefiltert werden.</target>
+        <source>This page should contain a list module whose entries are then filtered according to the selected tag.</source>
+        <target>Diese Seite sollte eine Listenmodul beinhalten deren Einträge dann nach dem gewählten Tag gefiltert werden.</target>
     </trans-unit>
     <trans-unit id="tl_module.ignoreTags.0">
         <source>Deactivate tag filter</source>
@@ -34,6 +34,22 @@
         <source>If set this module will use GET-Parameter to set the selected tags instead of auto_item.</source>
         <target>Wenn gesetzt wird das Modul GET-Parameter verwenden um die ausgewählten Tags zu setzen, anstatt dem auto_item. Das ist notwendig falls die Liste- und Leser-Seite den gleichen Seitenalias besitzen.</target>
     </trans-unit>
+    <trans-unit id="tl_module.tags_match_all.0">
+        <source>All tags must match</source>
+        <target>Alle Tags müssen übereinstimmen</target>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_match_all.1">
+        <source>If set only items will be display that matches all selected tags.</source>
+        <target>Wenn gesetzt werden nur Einträge angezeigt, die alle ausgewählten Tags beinhalten.</target>
+    </trans-unit>
+    <trans-unit id="tl_module.event_tags.0">
+        <source>Event tags</source>
+        <target>Event-Tags</target>
+    </trans-unit>
+    <trans-unit id="tl_module.event_tags.1">
+        <source>Please select one or more event tags.</source>
+        <target>Bitte wählen Sie ein oder mehrere Event-Tags.</target>
+    </trans-unit>
     <trans-unit id="tl_module.news_tags.0">
         <source>News tags</source>
         <target>Nachrichten-Tags</target>
@@ -41,14 +57,6 @@
     <trans-unit id="tl_module.news_tags.1">
         <source>Please select one or more news tags.</source>
         <target>Bitte wählen Sie ein oder mehrere Nachrichten-Tags.</target>
-    </trans-unit>
-    <trans-unit id="tl_module.tags_match_all.0">
-        <source>All tags must match</source>
-        <target>Alle Tags müssen übereinstimmen</target>
-    </trans-unit>
-    <trans-unit id="tl_module.tags_match_all.1">
-        <source>If set only news will be display that matches all selected tags.</source>
-        <target>Wenn gesetzt werden nur Nachrichten angezeigt, die alle ausgewählten Tags beinhalten.</target>
     </trans-unit>
 </body>
 </file>

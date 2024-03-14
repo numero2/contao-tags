@@ -6,19 +6,23 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
  */
 
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 
-PaletteManipulator::create()
+$pm = PaletteManipulator::create()
     ->addLegend('tags_legend', 'teaser_legend', 'before')
-    ->addField('tags', 'tags_legend', 'append')
-    ->applyToPalette('default', 'tl_news')
-    ->applyToPalette('internal', 'tl_news')
-    ->applyToPalette('article', 'tl_news')
-    ->applyToPalette('external', 'tl_news');
+    ->addField('tags', 'tags_legend', 'append');
+
+foreach( $GLOBALS['TL_DCA']['tl_news']['palettes'] as $key => $value ) {
+    if( $key === '__selector__' ) {
+        continue;
+    }
+
+    $pm->applyToPalette($key, 'tl_news');
+}
 
 
 $GLOBALS['TL_DCA']['tl_news']['fields']['tags'] = [

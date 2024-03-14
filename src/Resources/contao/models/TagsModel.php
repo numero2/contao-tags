@@ -12,6 +12,8 @@
 
 namespace numero2\TagsBundle;
 
+use Contao\CalendarEventsModel;
+use Contao\CalendarModel;
 use Contao\Database;
 use Contao\Date;
 use Contao\Model;
@@ -47,6 +49,80 @@ class TagsModel extends Model {
 
 
     /**
+     * Find all used tags in the given calendar
+     *
+     * @param array $aCalendar
+     * @param array $aOptions
+     *
+     * @return Collection|TagsModel|null A collection of models or null if there are no tags
+     */
+    public static function findByCalendar( array $aCalendar, array $aOptions=[] ) {
+
+        $aCalendar = array_map('\intval', $aCalendar);
+        if( !count($aCalendar) ) {
+            return null;
+        }
+
+        $publishedEvent = '';
+        if( !static::isPreviewMode($aOptions) ) {
+            $time = Date::floorToMinute();
+            $publishedEvent = " AND e.published='1' AND (e.start='' OR e.start<=$time) AND (e.stop='' OR e.stop>$time)";
+        }
+
+        $objResult = Database::getInstance()->prepare("
+            SELECT DISTINCT
+                t.*
+            FROM ".CalendarModel::getTable()." AS c
+                JOIN ".CalendarEventsModel::getTable()." AS e ON (e.pid = c.id)
+                JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = e.id AND r.ptable = '".CalendarEventsModel::getTable()."' AND r.field = 'tags')
+                JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
+            WHERE
+                c.id in (".implode(',', $aCalendar).")".$publishedEvent."
+            ORDER BY t.tag ASC
+        ")->execute();
+
+        return static::createCollectionFromDbResult($objResult, static::$strTable);
+    }
+
+
+    /**
+     * Count how many times the given tag was used
+     *
+     * @param int $id
+     * @param array $aCalendar
+     * @param array $aOptions
+     *
+     * @return int
+     */
+    public static function countByIdAndCalendar( $id, array $aCalendar, array $aOptions=[] ): int {
+
+        $aCalendar = array_map('\intval', $aCalendar);
+        if( !count($aCalendar) ) {
+            return null;
+        }
+
+        $publishedEvent = '';
+        if( !static::isPreviewMode($aOptions) ) {
+            $time = Date::floorToMinute();
+            $publishedEvent = " AND e.published='1' AND (e.start='' OR e.start<=$time) AND (e.stop='' OR e.stop>$time)";
+        }
+
+        $objResult = Database::getInstance()->prepare("
+            SELECT
+                COUNT(*) AS count
+            FROM ".CalendarModel::getTable()." AS c
+                JOIN ".CalendarEventsModel::getTable()." AS e ON (e.pid = c.id)
+                JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = e.id AND r.ptable = '".CalendarEventsModel::getTable()."' AND r.field = 'tags')
+                JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
+            WHERE
+                c.id in (".implode(',', $aCalendar).") AND t.id=? ".$publishedEvent."
+        ")->execute($id);
+
+        return (int)$objResult->count;
+    }
+
+
+    /**
      * Find all used tags in the given archives
      *
      * @param array $aArchives
@@ -73,13 +149,13 @@ class TagsModel extends Model {
             FROM ".NewsArchiveModel::getTable()." AS a
                 JOIN ".NewsModel::getTable()." AS n ON (n.pid = a.id)
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = n.id AND r.ptable = '".NewsModel::getTable()."' AND r.field = 'tags')
-                JOIN ".self::getTable()." AS t ON (t.id = r.tag_id)
+                JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
             WHERE
                 a.id in (".implode(',', $aArchives).")".$publishedNews."
             ORDER BY t.tag ASC
         ")->execute();
 
-        return static::createCollectionFromDbResult($objResult, self::$strTable);
+        return static::createCollectionFromDbResult($objResult, static::$strTable);
     }
 
 
@@ -111,7 +187,7 @@ class TagsModel extends Model {
             FROM ".NewsArchiveModel::getTable()." AS a
                 JOIN ".NewsModel::getTable()." AS n ON (n.pid = a.id)
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = n.id AND r.ptable = '".NewsModel::getTable()."' AND r.field = 'tags')
-                JOIN ".self::getTable()." AS t ON (t.id = r.tag_id)
+                JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
             WHERE
                 a.id in (".implode(',', $aArchives).") AND t.id=? ".$publishedNews."
         ")->execute($id);
@@ -133,12 +209,12 @@ class TagsModel extends Model {
         $objResult = Database::getInstance()->prepare("
             SELECT DISTINCT
                 t.*
-            FROM ".self::getTable()." AS t
+            FROM ".static::$strTable." AS t
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=? )
             ORDER BY t.tag ASC
         ")->execute($field, $table);
 
-        return static::createCollectionFromDbResult($objResult, self::$strTable);
+        return static::createCollectionFromDbResult($objResult, static::$strTable);
     }
 
 
@@ -155,13 +231,13 @@ class TagsModel extends Model {
 
         $objResult = Database::getInstance()->prepare("
             SELECT t.*
-            FROM ".self::getTable()." AS t
+            FROM ".static::$strTable." AS t
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=? )
             WHERE r.pid=?
             ORDER BY t.tag ASC
         ")->execute($field, $table, $id);
 
-        return static::createCollectionFromDbResult($objResult, self::$strTable);
+        return static::createCollectionFromDbResult($objResult, static::$strTable);
     }
 
 
@@ -178,7 +254,7 @@ class TagsModel extends Model {
 
         $objResult = Database::getInstance()->prepare("
             SELECT count(1) as count
-            FROM ".self::getTable()." AS t
+            FROM ".static::$strTable." AS t
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=? )
             WHERE r.pid=?
             ORDER BY t.tag ASC

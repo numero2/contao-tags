@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -31,7 +31,7 @@ class PurgeTagsCommand extends Command {
 
 
     public function __construct( ContaoFramework $framework ) {
-        
+
         $this->framework = $framework;
         $this->framework->initialize();
 
@@ -43,7 +43,7 @@ class PurgeTagsCommand extends Command {
 
         $db = $this->framework->createInstance(Database::getInstance());
 
-        $sql = 'DELETE tl_tags FROM tl_tags 
+        $sql = 'DELETE tl_tags FROM tl_tags
             LEFT JOIN tl_tags_rel ON tl_tags.id = tl_tags_rel.tag_id
             WHERE tl_tags_rel.tag_id IS NULL';
         $db->execute($sql);
@@ -51,7 +51,7 @@ class PurgeTagsCommand extends Command {
         System::getContainer()->get('monolog.logger.contao.cron')->info('Purged unused tags via console');
 
         $output->writeln('Unused Tags deleted.');
-        
+
         return Command::SUCCESS;
     }
 }

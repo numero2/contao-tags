@@ -3,8 +3,26 @@
 <file datatype="php" original="src/Resources/contao/languages/en/modules.php" source-language="en">
 <body>
     <!-- FRONTEND -->
+    <trans-unit id="FMD.events_tag_cloud.0">
+        <source>Event Tag Cloud</source>
+    </trans-unit>
+    <trans-unit id="FMD.events_tag_cloud.1">
+        <source>Creates a list of tags that can be filtered by.</source>
+    </trans-unit>
+    <trans-unit id="FMD.eventlist_related_tags.0">
+        <source>Event list related tags</source>
+    </trans-unit>
+    <trans-unit id="FMD.eventlist_related_tags.1">
+        <source>Adds a list of events to the page which are related to the tags of the current event.</source>
+    </trans-unit>
+    <trans-unit id="FMD.eventlist_tags.0">
+        <source>Event list (filtered by tags)</source>
+    </trans-unit>
+    <trans-unit id="FMD.eventlist_tags.1">
+        <source>Adds a list of events to the page which are pre-filtered by chosen tags.</source>
+    </trans-unit>
     <trans-unit id="FMD.news_tag_cloud.0">
-        <source>Tag Cloud</source>
+        <source>News Tag Cloud</source>
     </trans-unit>
     <trans-unit id="FMD.news_tag_cloud.1">
         <source>Creates a list of tags that can be filtered by.</source>

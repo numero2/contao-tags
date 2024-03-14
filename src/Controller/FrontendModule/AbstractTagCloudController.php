@@ -13,8 +13,8 @@
 namespace numero2\TagsBundle\Controller\FrontendModule;
 
 use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
-use Contao\CoreBundle\ServiceAnnotation\FrontendModule;
 use Contao\Input;
+use Contao\Model\Collection;
 use Contao\ModuleModel;
 use Contao\PageModel;
 use Contao\StringUtil;
@@ -25,13 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-/**
- * @FrontendModule("news_tag_cloud",
- *   category="news",
- *   template="mod_news_tag_cloud",
- * )
- */
-class TagCloudController extends AbstractFrontendModuleController {
+abstract class AbstractTagCloudController extends AbstractFrontendModuleController {
 
 
     /**
@@ -41,10 +35,9 @@ class TagCloudController extends AbstractFrontendModuleController {
 
         $page = $this->getPageModel();
 
-        $aArchives = StringUtil::deserialize($model->news_archives);
-        $oTags = TagsModel::findByNewsArchives($aArchives);
+        $oTags = $this->getTags($model, $request);
 
-        if( $oTags && !empty($aArchives) ) {
+        if( $oTags ) {
 
             $aTags = [];
             $aTagsAvailable = $oTags->fetchEach('tag');
@@ -83,7 +76,7 @@ class TagCloudController extends AbstractFrontendModuleController {
                     'label' => $oTag->tag
                 ,   'active'=> $active
                 ,   'href'  => $href
-                ,   'count' => TagsModel::countByIdAndNewsArchives($oTag->id, $aArchives)
+                ,   'count' => $this->getTagCount($oTag, $model, $request)
                 ,   'class' => 'tag_' . StringUtil::standardize($oTag->tag).($active?' active':'')
                 ,   'tag'   => $oTag->row()
                 ];
@@ -101,4 +94,10 @@ class TagCloudController extends AbstractFrontendModuleController {
 
         return new Response('');
     }
+
+
+    abstract protected function getTags( ModuleModel $model, Request $request ): ?Collection;
+
+
+    abstract protected function getTagCount( TagsModel $tag, ModuleModel $model, Request $request ): int;
 }

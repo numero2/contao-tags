@@ -12,9 +12,12 @@
 
 namespace numero2\TagsBundle\EventListener\DataContainer;
 
+use Contao\CalendarBundle\ContaoCalendarBundle;
+use Contao\CalendarEventsModel;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
+use Contao\NewsModel;
 use Doctrine\DBAL\Connection;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
@@ -44,6 +47,31 @@ class ModuleListener {
      */
     public function modifyPalettes( DataContainer $dc ): void {
 
+        if( class_exists(ContaoCalendarBundle::class) ) {
+
+            PaletteManipulator::create()
+                ->addField(['ignoreTags', 'tags_match_all'], 'config_legend', 'append')
+                ->applyToPalette('eventlist', $dc->table);
+
+            $pm = PaletteManipulator::create()
+                ->addField('jumpToTags', 'config_legend', 'append');
+
+            foreach( ['eventlist', 'eventreader', 'eventlist_related_tags', 'eventlist_tags'] as $palette ) {
+                $pm->applyToPalette($palette, $dc->table);
+            }
+
+            PaletteManipulator::create()
+                ->removeField('cal_readerModule')
+                ->applyToPalette('eventlist_related_tags', $dc->table);
+
+            PaletteManipulator::create()
+                ->addField('event_tags', 'cal_calendar', 'after')
+                ->addField('tags_match_all', 'config_legend', 'append')
+                ->applyToPalette('eventlist_tags', $dc->table);
+
+        }
+
+
         PaletteManipulator::create()
             ->addField(['ignoreTags', 'tags_match_all'], 'config_legend', 'append')
             ->applyToPalette('newslist', $dc->table);
@@ -51,7 +79,7 @@ class ModuleListener {
         $pm = PaletteManipulator::create()
             ->addField('jumpToTags', 'config_legend', 'append');
 
-        foreach( ['newslist', 'newsreader'] as $palette ) {
+        foreach( ['newslist', 'newsreader', 'newslist_related_tags', 'newslist_tags'] as $palette ) {
             $pm->applyToPalette($palette, $dc->table);
         }
 
@@ -71,6 +99,7 @@ class ModuleListener {
      *
      * @param Contao\DataContainer $dc
      *
+     * @Callback(table="tl_module", target="fields.event_tags.options")
      * @Callback(table="tl_module", target="fields.news_tags.options")
      */
     public function getNewsTags( DataContainer $dc ): array {
@@ -78,14 +107,25 @@ class ModuleListener {
         $tTag = TagsModel::getTable();
         $tRel = TagsRelModel::getTable();
 
-        $result = $this->connection
-            ->prepare(
-                "SELECT DISTINCT tag.id, tag.tag
-                FROM $tTag AS tag
-                JOIN $tRel AS rel ON (rel.tag_id=tag.id AND rel.ptable=:ptable AND rel.field=:field)
-                ORDER BY tag.tag ASC")
-            ->executeQuery(['ptable'=>'tl_news', 'field'=>'tags'])
-        ;
+        $ptable = null;
+        if( $dc->field === 'event_tags' ) {
+            $ptable = CalendarEventsModel::getTable();
+        } else if( $dc->field === 'news_tags' ) {
+            $ptable = NewsModel::getTable();
+        }
+
+        $result = null;
+        if( $ptable ) {
+
+            $result = $this->connection
+                ->prepare(
+                    "SELECT DISTINCT tag.id, tag.tag
+                    FROM $tTag AS tag
+                    JOIN $tRel AS rel ON (rel.tag_id=tag.id AND rel.ptable=:ptable AND rel.field=:field)
+                    ORDER BY tag.tag ASC")
+                ->executeQuery(['ptable'=>$ptable, 'field'=>'tags'])
+            ;
+        }
 
         $tags = [];
 

@@ -6,12 +6,13 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2022, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
  */
 
 
 namespace numero2\TagsBundle\ContaoManager;
 
+use Contao\CalendarBundle\ContaoCalendarBundle;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
@@ -32,7 +33,8 @@ class Plugin implements BundlePluginInterface {
             BundleConfig::create(TagsBundle::class)
                 ->setLoadAfter([
                     ContaoCoreBundle::class,
-                    ContaoNewsBundle::class
+                    ContaoNewsBundle::class,
+                    ContaoCalendarBundle::class
                 ])
         ];
     }

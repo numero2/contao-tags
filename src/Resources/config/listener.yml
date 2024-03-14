@@ -2,6 +2,7 @@ services:
     _defaults:
         public: true
 
+
     numero2_tags.listener.data_container.module:
         class: numero2\TagsBundle\EventListener\DataContainer\ModuleListener
         arguments:
@@ -9,6 +10,10 @@ services:
 
     numero2_tags.listener.data_container.tags:
         class: numero2\TagsBundle\EventListener\DataContainer\TagsListener
+
+
+    numero2_tags.listener.events:
+        class: numero2\TagsBundle\EventListener\EventsListener
 
     numero2_tags.listener.news:
         class: numero2\TagsBundle\EventListener\NewsListener

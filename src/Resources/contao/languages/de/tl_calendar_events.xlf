@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xliff version="1.1">
+<file datatype="php" original="src/Resources/contao/languages/de/tl_calendar_events.php" source-language="en" target-language="de">
+<body>
+    <trans-unit id="tl_calendar_events.tags_legend">
+        <source>Tags / Keywords</source>
+        <target>Tags / Schlagwörter</target>
+    </trans-unit>
+    <trans-unit id="tl_calendar_events.tags.0">
+        <source>Tags</source>
+        <target>Tags</target>
+    </trans-unit>
+    <trans-unit id="tl_calendar_events.tags.1">
+        <source>List of tags / keywords describing this event.</source>
+        <target>Liste von Tags / Schlagwörtern die diese Event beschreiben.</target>
+    </trans-unit>
+</body>
+</file>
+</xliff>

@@ -42,7 +42,7 @@ class NewsListener {
      *
      * @Hook("newsListCountItems")
      */
-    public function newsListCountItems($newsArchives, $blnFeatured, ModuleNewsList $module ) {
+    public function newsListCountItems( $newsArchives, $blnFeatured, ModuleNewsList $module ) {
 
         if( $module instanceof ModuleNewsListRelatedTags ) {
 
@@ -246,39 +246,34 @@ class NewsListener {
                 $pageList = PageModel::findWithDetails($objModule->jumpToTags);
             }
 
-            $aTagIDs = [];
-            $aTagIDs = StringUtil::deserialize($arrArticle['tags']);
+            $oTags = null;
+            $oTags = TagsModel::findByIdForFieldAndTable($arrArticle['id'], 'tags', NewsModel::getTable());
 
-            if( !empty($aTagIDs) ) {
+            if( $oTags ) {
 
-                $oTags = null;
-                $oTags = TagsModel::findMultipleByIds($aTagIDs);
+                $objTemplate->tagsRaw = $oTags->fetchAll();
 
-                if( $oTags ) {
+                if( $pageList ) {
 
-                    $objTemplate->tagsRaw = $oTags->fetchAll();
+                    $aLinks = [];
 
-                    if( $pageList ) {
+                    foreach( $oTags->fetchEach('tag') as $id => $tag ) {
 
-                        $aLinks = [];
+                        $href = $pageList->getFrontendUrl('/tag/'.$tag);
 
-                        foreach( $oTags->fetchEach('tag') as $id => $tag ) {
-
-                            $href = $pageList->getFrontendUrl('/tag/'.$tag);
-
-                            $aLinks[] = sprintf(
-                                '<a href="%s" class="tag_%s" rel="nofollow">%s</a>'
-                            ,   $href
-                            ,   StringUtil::standardize($tag)
-                            ,   $tag
-                            );
-                        }
-
-                        $objTemplate->tags = $aLinks;
-
-                    } else {
-                        $objTemplate->tags = $oTags->fetchEach('tag');
+                        $aLinks[] = sprintf(
+                            '<a href="%s" class="tag_%s" rel="nofollow">%s</a>'
+                        ,   $href
+                        ,   StringUtil::standardize($tag)
+                        ,   $tag
+                        );
                     }
+
+                    $objTemplate->tags = $aLinks;
+
+                } else {
+
+                    $objTemplate->tags = array_values($oTags->fetchEach('tag'));
                 }
             }
         }

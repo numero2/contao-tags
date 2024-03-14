@@ -10,6 +10,16 @@
  */
 
 
+use Contao\CalendarBundle\ContaoCalendarBundle;
+
+
+if( class_exists(ContaoCalendarBundle::class) ) {
+
+    $GLOBALS['TL_DCA']['tl_module']['palettes']['events_tag_cloud'] = '{title_legend},name,headline,type;{config_legend},cal_calendar;{redirect_legend},jumpToTags,tags_select_multiple,use_get_parameter;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
+    $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist_related_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist'];
+    $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist'];
+}
+
 $GLOBALS['TL_DCA']['tl_module']['palettes']['news_tag_cloud'] = '{title_legend},name,headline,type;{config_legend},news_archives;{redirect_legend},jumpToTags,tags_select_multiple,use_get_parameter;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist_related_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist'];
 $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist'];
@@ -41,16 +51,26 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['use_get_parameter'] = [
 ,   'sql'               => "char(1) NOT NULL default ''"
 ];
 
+$GLOBALS['TL_DCA']['tl_module']['fields']['tags_match_all'] = [
+    'exclude'           => true
+    ,   'inputType'         => 'checkbox'
+    ,   'eval'              => ['tl_class'=>'w50']
+    ,   'sql'               => "char(1) NOT NULL default ''"
+];
+
+if( class_exists(ContaoCalendarBundle::class) ) {
+
+    $GLOBALS['TL_DCA']['tl_module']['fields']['event_tags'] = [
+        'exclude'           => true
+    ,   'inputType'         => 'checkbox'
+    ,   'eval'              => ['mandatory'=>true, 'multiple'=>true]
+    ,   'sql'               => "blob NULL"
+    ];
+}
+
 $GLOBALS['TL_DCA']['tl_module']['fields']['news_tags'] = [
     'exclude'           => true
 ,   'inputType'         => 'checkbox'
 ,   'eval'              => ['mandatory'=>true, 'multiple'=>true]
 ,   'sql'               => "blob NULL"
-];
-
-$GLOBALS['TL_DCA']['tl_module']['fields']['tags_match_all'] = [
-    'exclude'           => true
-,   'inputType'         => 'checkbox'
-,   'eval'              => ['tl_class'=>'w50']
-,   'sql'               => "char(1) NOT NULL default ''"
 ];
