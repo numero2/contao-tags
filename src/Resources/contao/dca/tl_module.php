@@ -11,6 +11,7 @@
 
 
 use Contao\CalendarBundle\ContaoCalendarBundle;
+use Contao\NewsBundle\ContaoNewsBundle;
 
 
 if( class_exists(ContaoCalendarBundle::class) ) {
@@ -20,9 +21,12 @@ if( class_exists(ContaoCalendarBundle::class) ) {
     $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist'];
 }
 
-$GLOBALS['TL_DCA']['tl_module']['palettes']['news_tag_cloud'] = '{title_legend},name,headline,type;{config_legend},news_archives;{redirect_legend},jumpToTags,tags_select_multiple,use_get_parameter;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
-$GLOBALS['TL_DCA']['tl_module']['palettes']['newslist_related_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist'];
-$GLOBALS['TL_DCA']['tl_module']['palettes']['newslist_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist'];
+if( class_exists(ContaoNewsBundle::class) ) {
+
+    $GLOBALS['TL_DCA']['tl_module']['palettes']['news_tag_cloud'] = '{title_legend},name,headline,type;{config_legend},news_archives;{redirect_legend},jumpToTags,tags_select_multiple,use_get_parameter;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
+    $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist_related_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist'];
+    $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist'];
+}
 
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['jumpToTags'] = $GLOBALS['TL_DCA']['tl_module']['fields']['jumpTo'];
@@ -68,9 +72,12 @@ if( class_exists(ContaoCalendarBundle::class) ) {
     ];
 }
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['news_tags'] = [
-    'exclude'           => true
-,   'inputType'         => 'checkbox'
-,   'eval'              => ['mandatory'=>true, 'multiple'=>true]
-,   'sql'               => "blob NULL"
-];
+if( class_exists(ContaoNewsBundle::class) ) {
+
+    $GLOBALS['TL_DCA']['tl_module']['fields']['news_tags'] = [
+        'exclude'           => true
+    ,   'inputType'         => 'checkbox'
+    ,   'eval'              => ['mandatory'=>true, 'multiple'=>true]
+    ,   'sql'               => "blob NULL"
+    ];
+}

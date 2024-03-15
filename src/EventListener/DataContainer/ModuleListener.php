@@ -17,6 +17,7 @@ use Contao\CalendarEventsModel;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
+use Contao\NewsBundle\ContaoNewsBundle;
 use Contao\NewsModel;
 use Doctrine\DBAL\Connection;
 use numero2\TagsBundle\TagsModel;
@@ -71,26 +72,28 @@ class ModuleListener {
 
         }
 
+        if( class_exists(ContaoNewsBundle::class) ) {
 
-        PaletteManipulator::create()
-            ->addField(['ignoreTags', 'tags_match_all'], 'config_legend', 'append')
-            ->applyToPalette('newslist', $dc->table);
+            PaletteManipulator::create()
+                ->addField(['ignoreTags', 'tags_match_all'], 'config_legend', 'append')
+                ->applyToPalette('newslist', $dc->table);
 
-        $pm = PaletteManipulator::create()
-            ->addField('jumpToTags', 'config_legend', 'append');
+            $pm = PaletteManipulator::create()
+                ->addField('jumpToTags', 'config_legend', 'append');
 
-        foreach( ['newslist', 'newsreader', 'newslist_related_tags', 'newslist_tags'] as $palette ) {
-            $pm->applyToPalette($palette, $dc->table);
+            foreach( ['newslist', 'newsreader', 'newslist_related_tags', 'newslist_tags'] as $palette ) {
+                $pm->applyToPalette($palette, $dc->table);
+            }
+
+            PaletteManipulator::create()
+                ->removeField('news_readerModule')
+                ->applyToPalette('newslist_related_tags', $dc->table);
+
+            PaletteManipulator::create()
+                ->addField('news_tags', 'news_archives', 'after')
+                ->addField('tags_match_all', 'config_legend', 'append')
+                ->applyToPalette('newslist_tags', $dc->table);
         }
-
-        PaletteManipulator::create()
-            ->removeField('news_readerModule')
-            ->applyToPalette('newslist_related_tags', $dc->table);
-
-        PaletteManipulator::create()
-            ->addField('news_tags', 'news_archives', 'after')
-            ->addField('tags_match_all', 'config_legend', 'append')
-            ->applyToPalette('newslist_tags', $dc->table);
     }
 
 

@@ -29,7 +29,9 @@ Adds the possibility to assign tags to individual elements.
 
 * Configure your `Newslist` or `Newsreader` front end modules and set a `Redirect page for tags`
 
-* Additionally add the new `Tag Cloud` module anywhere on your page
+* Additionally add the `News Tag Cloud` module anywhere on your page
+
+* All of the above is now also possible for the templates `event_(full|list|teaser|upcoming).html5`, used in `Eventlist` or `Eventreader` and there is an `Events Tag Cloud` module
 
 ## Insert-Tags
 

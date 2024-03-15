@@ -6,12 +6,14 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
  */
 
 
 namespace numero2\TagsBundle\DependencyInjection;
 
+use Contao\CalendarBundle\ContaoCalendarBundle;
+use Contao\NewsBundle\ContaoNewsBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -34,5 +36,13 @@ class TagsExtension extends Extension {
         $loader->load('listener.yml');
         $loader->load('services.yml');
         $loader->load('migrations.yml');
+
+        //only load some services if bundle it depends on exists
+        if( class_exists(ContaoCalendarBundle::class) ) {
+            $loader->load('services_events.yml');
+        }
+        if( class_exists(ContaoNewsBundle::class) ) {
+            $loader->load('services_news.yml');
+        }
     }
 }

@@ -4,11 +4,6 @@ services:
         autoconfigure: true
 
 
-    numero2\TagsBundle\Controller\FrontendModule\NewsTagCloudController:
-
-    numero2\TagsBundle\Controller\FrontendModule\EventsTagCloudController:
-
-
     numero2\TagsBundle\EventSubscriber\KernelRequestSubscriber:
         arguments:
             - '@contao.routing.scope_matcher'

@@ -11,6 +11,7 @@
 
 
 use Contao\CalendarBundle\ContaoCalendarBundle;
+use Contao\NewsBundle\ContaoNewsBundle;
 use numero2\TagsBundle\ModuleEventlistRelatedTags;
 use numero2\TagsBundle\ModuleEventlistTags;
 use numero2\TagsBundle\ModuleNewsListRelatedTags;
@@ -34,8 +35,10 @@ if( class_exists(ContaoCalendarBundle::class) ) {
     $GLOBALS['FE_MOD']['events']['eventlist_related_tags'] = ModuleEventlistRelatedTags::class;
     $GLOBALS['FE_MOD']['events']['eventlist_tags'] = ModuleEventlistTags::class;
 }
-$GLOBALS['FE_MOD']['news']['newslist_related_tags'] = ModuleNewsListRelatedTags::class;
-$GLOBALS['FE_MOD']['news']['newslist_tags'] = ModuleNewsListTags::class;
+if( class_exists(ContaoNewsBundle::class) ) {
+    $GLOBALS['FE_MOD']['news']['newslist_related_tags'] = ModuleNewsListRelatedTags::class;
+    $GLOBALS['FE_MOD']['news']['newslist_tags'] = ModuleNewsListTags::class;
+}
 
 
 /**

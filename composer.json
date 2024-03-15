@@ -1,8 +1,8 @@
 {
     "name": "numero2/contao-tags",
     "type": "contao-bundle",
-    "description": "Adds the possibility to assign tags to individual elements (news articles only at the moment).",
-    "keywords": ["contao", "news", "tags", "tagcloud", "blog"],
+    "description": "Adds the possibility to assign tags to individual elements.",
+    "keywords": ["contao", "news", "events", "tags", "tagcloud", "blog"],
     "license": "LGPL-3.0-or-later",
     "authors": [{
             "name": "numero2 - Agentur für digitales Marketing GbR",
@@ -10,11 +10,14 @@
         }
     ],
     "require": {
-        "contao/core-bundle": "^4.13 || ^5.0",
-        "contao/news-bundle": "^4.13 || ^5.0"
+        "contao/core-bundle": "^4.13 || ^5.0"
     },
     "require-dev": {
         "contao/manager-plugin": "^2.0"
+    },
+    "suggest": {
+        "contao/news-bundle": "Enables tagging of news",
+        "contao/calendar-bundle": "Enables tagging of events"
     },
     "conflict": {
         "contao/core": "*",
