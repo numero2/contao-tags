@@ -98,6 +98,24 @@ class ModuleListener {
 
 
     /**
+     * Changes the field to not be mandatory on some module types
+     *
+     * @param mixed $value
+     * @param Contao\DataContainer $dc
+     *
+     * @Callback(table="tl_module", target="fields.event_tags.load")
+     * @Callback(table="tl_module", target="fields.news_tags.load")
+     */
+    public function changeFieldToNotMandatory( $value,  DataContainer $dc ) {
+
+        if( in_array($dc->activeRecord->type, ['events_tag_cloud', 'news_tag_cloud']) ) {
+            $GLOBALS['TL_DCA']['tl_module']['fields'][$dc->field]['eval']['mandatory'] = false;
+        }
+
+        return $value;
+    }
+
+    /**
      * Get all tags for news
      *
      * @param Contao\DataContainer $dc
@@ -105,7 +123,7 @@ class ModuleListener {
      * @Callback(table="tl_module", target="fields.event_tags.options")
      * @Callback(table="tl_module", target="fields.news_tags.options")
      */
-    public function getNewsTags( DataContainer $dc ): array {
+    public function getTags( DataContainer $dc ): array {
 
         $tTag = TagsModel::getTable();
         $tRel = TagsRelModel::getTable();

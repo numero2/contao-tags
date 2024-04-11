@@ -16,14 +16,14 @@ use Contao\NewsBundle\ContaoNewsBundle;
 
 if( class_exists(ContaoCalendarBundle::class) ) {
 
-    $GLOBALS['TL_DCA']['tl_module']['palettes']['events_tag_cloud'] = '{title_legend},name,headline,type;{config_legend},cal_calendar;{redirect_legend},jumpToTags,tags_select_multiple,use_get_parameter;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
+    $GLOBALS['TL_DCA']['tl_module']['palettes']['events_tag_cloud'] = '{title_legend},name,headline,type;{config_legend},cal_calendar,event_tags,cal_format,cal_featured,tags_match_all;{redirect_legend},jumpToTags,tags_select_multiple,use_get_parameter;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
     $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist_related_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist'];
     $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist'];
 }
 
 if( class_exists(ContaoNewsBundle::class) ) {
 
-    $GLOBALS['TL_DCA']['tl_module']['palettes']['news_tag_cloud'] = '{title_legend},name,headline,type;{config_legend},news_archives;{redirect_legend},jumpToTags,tags_select_multiple,use_get_parameter;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
+    $GLOBALS['TL_DCA']['tl_module']['palettes']['news_tag_cloud'] = '{title_legend},name,headline,type;{config_legend},news_archives,news_tags,news_featured,tags_match_all;{redirect_legend},jumpToTags,tags_select_multiple,use_get_parameter;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
     $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist_related_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist'];
     $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['newslist'];
 }
