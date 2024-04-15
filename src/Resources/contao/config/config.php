@@ -45,7 +45,7 @@ if( class_exists(ContaoNewsBundle::class) ) {
  * BACKEND MODULES
  */
 $GLOBALS['BE_MOD']['system']['contao_tags'] = [
-    'tables' => TagsModel::getTable()
+    'tables' => [TagsModel::getTable()]
 ];
 
 
