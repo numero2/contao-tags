@@ -16,6 +16,7 @@ use Contao\CalendarEventsModel;
 use Contao\CalendarModel;
 use Contao\Database;
 use Contao\Date;
+use Contao\Frontend;
 use Contao\Model;
 use Contao\NewsArchiveModel;
 use Contao\NewsModel;
@@ -29,6 +30,17 @@ class TagsModel extends Model {
      * @var string
      */
     protected static $strTable = 'tl_tags';
+
+
+    /**
+     * Get the translation data for this model
+     */
+    public function getTranslationData() {
+
+        $aTranslation = Frontend::getMetaData($this->translation, $GLOBALS['TL_LANGUAGE']);
+
+        return $aTranslation;
+    }
 
 
     /**

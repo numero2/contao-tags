@@ -16,8 +16,8 @@ use Contao\DC_Table;
 $GLOBALS['TL_DCA']['tl_tags'] = [
 
     'config' => [
-        'dataContainer' => DC_Table::class
-    ,   'closed' => true
+        'dataContainer'             => DC_Table::class
+    ,   'closed'                    => true
     ,   'sql' => [
             'keys' => [
                 'id' => 'primary'
@@ -26,47 +26,58 @@ $GLOBALS['TL_DCA']['tl_tags'] = [
     ]
 ,   'list' => [
         'sorting' => [
-            'mode'          => DataContainer::MODE_SORTABLE
-        ,   'fields'        => ['tag']
-        ,   'flag'          => DataContainer::SORT_INITIAL_LETTER_ASC
-        ,   'panelLayout'   => 'sort,search,limit'
+            'mode'                  => DataContainer::MODE_SORTABLE
+        ,   'fields'                => ['tag']
+        ,   'flag'                  => DataContainer::SORT_INITIAL_LETTER_ASC
+        ,   'panelLayout'           => 'sort,search,limit'
         ]
     ,   'label' => [
-            'fields'        => ['tag']
-        ,   'showColumns'   => true
+            'fields'                => ['tag']
+        ,   'showColumns'           => true
         ]
     ,   'global_operations' => [
             'all' => [
-                'href'          => 'act=select'
-            ,   'class'         => 'header_edit_all'
-            ,   'attributes'    => 'onclick="Backend.getScrollOffset()" accesskey="e"'
+                'href'              => 'act=select'
+            ,   'class'             => 'header_edit_all'
+            ,   'attributes'        => 'onclick="Backend.getScrollOffset()" accesskey="e"'
             ]
         ]
     ,   'operations' => [
             'edit' => [
-                'href'      => 'act=edit'
-            ,   'icon'      => 'edit.svg'
+                'href'              => 'act=edit'
+            ,   'icon'              => 'edit.svg'
             ]
         ]
     ]
 ,   'palettes' => [
-        'default' => '{title_legend},tag'
+        'default'                   => '{title_legend},tag,translation'
     ]
 ,   'fields' => [
 
         'id' => [
-            'sql'       => "int(10) unsigned NOT NULL auto_increment"
+            'sql'           => "int(10) unsigned NOT NULL auto_increment"
         ]
     ,   'tstamp' => [
-            'sql'       => "int(10) unsigned NOT NULL default 1684736465"
+            'sql'           => "int(10) unsigned NOT NULL default 1684736465"
         ]
     ,   'tag' => [
-            'inputType' => 'text'
-        ,   'sorting'   => true
-        ,   'flag'      => DataContainer::SORT_INITIAL_LETTER_ASC
-        ,   'search'    => true
-        ,   'eval'      => ['mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50']
-        ,   'sql'       => "varchar(255) NOT NULL default ''"
+            'inputType'             => 'text'
+        ,   'sorting'               => true
+        ,   'flag'                  => DataContainer::SORT_INITIAL_LETTER_ASC
+        ,   'search'                => true
+        ,   'eval'                  => ['mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50']
+        ,   'sql'                   => "varchar(255) NOT NULL default ''"
+        ]
+    ,   'translation' => [
+            'inputType'             => 'metaWizard'
+        ,   'eval'                  => [
+                'multiple' => true
+            ,   'metaFields' => [
+                    'title'             => 'maxlength="255"'
+                ]
+            ,   'tl_class' => 'clr'
+            ]
+        ,   'sql'                   => "blob NULL"
         ]
     ]
 ];

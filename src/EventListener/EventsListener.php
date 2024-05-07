@@ -196,30 +196,34 @@ class EventsListener {
 
             if( $oTags ) {
 
-                $event['tagsRaw'] = $oTags->fetchAll();
+                $tagsRaw = [];
+                $tags = [];
 
-                if( $pageList ) {
+                foreach( $oTags as $tag ) {
 
-                    $aLinks = [];
+                    $aTag = TagUtil::parseTag($tag);
 
-                    foreach( $oTags->fetchEach('tag') as $id => $tag ) {
+                    $tagsRaw[] = $aTag;
 
-                        $href = TagUtil::generateUrlWithTags($pageList, [$tag]);
+                    if( $pageList ) {
 
-                        $aLinks[] = sprintf(
+                        $href = TagUtil::generateUrlWithTags($pageList, [$aTag['tag']]);
+
+                        $tags[] = sprintf(
                             '<a href="%s" class="tag_%s" rel="nofollow">%s</a>'
                         ,   $href
-                        ,   StringUtil::standardize($tag)
-                        ,   $tag
+                        ,   StringUtil::standardize($aTag['tag'])
+                        ,   $aTag['title']
                         );
+
+                    } else {
+
+                        $tags[] = $aTag['title'];
                     }
-
-                    $event['tags'] = $aLinks;
-
-                } else {
-
-                    $event['tags'] = array_values($oTags->fetchEach('tag'));
                 }
+
+                $event['tagsRaw'] = $tagsRaw;
+                $event['tags'] = $tags;
             }
         }
 

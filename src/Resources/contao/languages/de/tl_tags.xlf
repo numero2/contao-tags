@@ -14,6 +14,14 @@
         <source>Enter the name of the tag.</source>
         <target>Geben Sie die Bezeichnung des Tags ein.</target>
     </trans-unit>
+    <trans-unit id="tl_tags.translation.0">
+        <source>Translations</source>
+        <target>Übersetzungen</target>
+    </trans-unit>
+    <trans-unit id="tl_tags.translation.1">
+        <source>Here you can enter the tag translations. To add a language, create a matching root page in the site structure.</source>
+        <target>Hier können Sie die Übersetzungen des Tags eingeben. Um eine Sprache hinzuzufügen, legen Sie eine passende Startseite in der Seitenstruktur an.</target>
+    </trans-unit>
 </body>
 </file>
 </xliff>

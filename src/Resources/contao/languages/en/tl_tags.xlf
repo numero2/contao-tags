@@ -11,6 +11,12 @@
     <trans-unit id="tl_tags.tag.1">
         <source>Enter the name of the tag.</source>
     </trans-unit>
+    <trans-unit id="tl_tags.translation.0">
+        <source>Translations</source>
+    </trans-unit>
+    <trans-unit id="tl_tags.translation.1">
+        <source>Here you can enter the tag translations. To add a language, create a matching root page in the site structure.</source>
+    </trans-unit>
 </body>
 </file>
 </xliff>

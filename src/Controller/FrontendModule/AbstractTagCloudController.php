@@ -50,7 +50,8 @@ abstract class AbstractTagCloudController extends AbstractFrontendModuleControll
 
             foreach( $oTags as $oTag ) {
 
-                $alias = $oTag->tag;
+                $aTag = TagUtil::parseTag($oTag);
+                $alias = $aTag['tag'];
 
                 $parameterTags = null;
                 $active = null;
@@ -73,12 +74,12 @@ abstract class AbstractTagCloudController extends AbstractFrontendModuleControll
                 $href = TagUtil::generateUrlWithTags($oPageRedirect, $parameterTags, !empty($model->use_get_parameter));
 
                 $aTags[] = [
-                    'label' => $oTag->tag
+                    'label' => $aTag['title']
                 ,   'active'=> $active
                 ,   'href'  => $href
                 ,   'count' => $this->getTagCount($oTag, $model, $request)
-                ,   'class' => 'tag_' . StringUtil::standardize($oTag->tag).($active?' active':'')
-                ,   'tag'   => $oTag->row()
+                ,   'class' => 'tag_' . StringUtil::standardize($aTag['tag']).($active?' active':'')
+                ,   'tag'   => $aTag
                 ];
             }
 

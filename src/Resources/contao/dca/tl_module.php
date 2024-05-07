@@ -57,9 +57,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['use_get_parameter'] = [
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['tags_match_all'] = [
     'exclude'           => true
-    ,   'inputType'         => 'checkbox'
-    ,   'eval'              => ['tl_class'=>'w50']
-    ,   'sql'               => "char(1) NOT NULL default ''"
+,   'inputType'         => 'checkbox'
+,   'eval'              => ['tl_class'=>'w50']
+,   'sql'               => "char(1) NOT NULL default ''"
 ];
 
 if( class_exists(ContaoCalendarBundle::class) ) {

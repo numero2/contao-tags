@@ -251,30 +251,34 @@ class NewsListener {
 
             if( $oTags ) {
 
-                $objTemplate->tagsRaw = $oTags->fetchAll();
+                $tagsRaw = [];
+                $tags = [];
 
-                if( $pageList ) {
+                foreach( $oTags as $tag ) {
 
-                    $aLinks = [];
+                    $aTag = TagUtil::parseTag($tag);
 
-                    foreach( $oTags->fetchEach('tag') as $id => $tag ) {
+                    $tagsRaw[] = $aTag;
 
-                        $href = TagUtil::generateUrlWithTags($pageList, [$tag]);
+                    if( $pageList ) {
 
-                        $aLinks[] = sprintf(
+                        $href = TagUtil::generateUrlWithTags($pageList, [$aTag['tag']]);
+
+                        $tags[] = sprintf(
                             '<a href="%s" class="tag_%s" rel="nofollow">%s</a>'
                         ,   $href
-                        ,   StringUtil::standardize($tag)
-                        ,   $tag
+                        ,   StringUtil::standardize($aTag['tag'])
+                        ,   $aTag['title']
                         );
+
+                    } else {
+
+                        $tags[] = $aTag['title'];
                     }
-
-                    $objTemplate->tags = $aLinks;
-
-                } else {
-
-                    $objTemplate->tags = array_values($oTags->fetchEach('tag'));
                 }
+
+                $objTemplate->tagsRaw = $tagsRaw;
+                $objTemplate->tags = $tags;
             }
         }
     }

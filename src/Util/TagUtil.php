@@ -15,6 +15,7 @@ namespace numero2\TagsBundle\Util;
 use Contao\Input;
 use Contao\PageModel;
 use Contao\StringUtil;
+use numero2\TagsBundle\TagsModel;
 
 
 class TagUtil {
@@ -94,5 +95,21 @@ class TagUtil {
         }
 
         return $href;
+    }
+
+
+    /**
+     * Parse the given tag model to array
+     *
+     * @param numero2\TagsBundle\TagsModel $tag
+     *
+     * @return array
+     */
+    public static function parseTag( TagsModel $tag ): array {
+
+        $aTag = $tag->row();
+        $aTag['title'] = $tag->getTranslationData()['title'] ?? $tag->tag;
+
+        return $aTag;
     }
 }
