@@ -140,6 +140,10 @@ class EventsTagCloudController extends AbstractTagCloudController {
      */
     protected function getDatesFromFormat( ModuleModel $model ): array {
 
+        $intYear = null;
+        $intMonth = null;
+        $intDay = null;
+
         // Jump to the current period
         if( !isset($_GET['year']) && !isset($_GET['month']) && !isset($_GET['day']) ) {
 

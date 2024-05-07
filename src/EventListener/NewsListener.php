@@ -259,7 +259,7 @@ class NewsListener {
 
                     foreach( $oTags->fetchEach('tag') as $id => $tag ) {
 
-                        $href = $pageList->getFrontendUrl('/tag/'.$tag);
+                        $href = TagUtil::generateUrlWithTags($pageList, [$tag]);
 
                         $aLinks[] = sprintf(
                             '<a href="%s" class="tag_%s" rel="nofollow">%s</a>'
