@@ -16,8 +16,7 @@ use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\Model\Collection;
-use Contao\ModuleNews;
-use Contao\ModuleNewsList;
+use Contao\Module;
 use Contao\NewsModel;
 use Contao\PageModel;
 use Contao\StringUtil;
@@ -36,13 +35,13 @@ class NewsListener {
      *
      * @param array $newsArchives
      * @param boolean $blnFeatured
-     * @param ModuleNewsList $module
+     * @param Module $module
      *
      * @return integer|false
      *
      * @Hook("newsListCountItems")
      */
-    public function newsListCountItems( $newsArchives, $blnFeatured, ModuleNewsList $module ) {
+    public function newsListCountItems( $newsArchives, $blnFeatured, Module $module ) {
 
         if( $module instanceof ModuleNewsListRelatedTags ) {
 
@@ -96,13 +95,13 @@ class NewsListener {
      * @param boolean $blnFeatured
      * @param integer $limit
      * @param integer $offset
-     * @param ModuleNewsList $module
+     * @param Module $module
      *
      * @return Model\Collection|NewsModel|false
      *
      * @Hook("newsListFetchItems", priority=100)
      */
-    public function newsListFetchItems( $newsArchives, $blnFeatured, $limit, $offset, ModuleNewsList $module ) {
+    public function newsListFetchItems( $newsArchives, $blnFeatured, $limit, $offset, Module $module ) {
 
         global $objPage;
 
@@ -229,13 +228,13 @@ class NewsListener {
      *
      * @param FrontendTemplate $objTemplate
      * @param $arrArticle
-     * @param ModuleNews $objModule
+     * @param Module $objModule
      *
      * @return none
      *
      * @Hook("parseArticles")
      */
-    public function parseArticles( FrontendTemplate &$objTemplate, $arrArticle, ModuleNews $objModule ) {
+    public function parseArticles( FrontendTemplate &$objTemplate, $arrArticle, Module $objModule ) {
 
         // add tags
         if( $arrArticle['tags'] ) {
