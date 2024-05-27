@@ -44,15 +44,17 @@ class NewsListener {
      */
     public function newsListCountItems( $newsArchives, $blnFeatured, ModuleNewsList $module ) {
 
+        $tag = Input::get('tag');
+
         if( $module instanceof ModuleNewsListRelatedTags ) {
 
             $alias = Input::get('items');
             $currentNews = NewsModel::findPublishedByParentAndIdOrAlias($alias, $newsArchives);
 
-            $oNews = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured);
+            $news = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured);
 
-            if( $oNews ) {
-                return $oNews->count();
+            if( $news ) {
+                return $news->count();
             }
 
             return 0;
@@ -62,27 +64,23 @@ class NewsListener {
             $tags = StringUtil::deserialize($module->news_tags, true);
             $blnMultiple = !empty($module->tags_match_all);
 
-            $oNews = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMultiple);
+            $news = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMultiple);
 
-            if( $oNews ) {
-                return $oNews->count();
+            if( $news && !$tag ) {
+                return $news->count();
             }
-
-            return 0;
         }
 
         if( $module->ignoreTags ) {
             return false;
         }
 
-        $tag = Input::get('tag');
-
         if( !empty($tag) ) {
 
-            $oArticles = null;
-            $oArticles = $this->newsListFetchItems($newsArchives, $blnFeatured, 0, 0, $module);
+            $articles = null;
+            $articles = $this->newsListFetchItems($newsArchives, $blnFeatured, 0, 0, $module);
 
-            return count($oArticles);
+            return count($articles);
         }
 
         return false;
@@ -105,6 +103,9 @@ class NewsListener {
     public function newsListFetchItems( $newsArchives, $blnFeatured, $limit, $offset, ModuleNewsList $module ) {
 
         global $objPage;
+
+        $preSelectedNews = [];
+        $news = null;
 
         // determine sorting
         $t = NewsModel::getTable();
@@ -145,9 +146,12 @@ class NewsListener {
             $tags = StringUtil::deserialize($module->news_tags, true);
             $blnMatchAll = !empty($module->tags_match_all);
 
-            $news = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMatchAll, $limit, $offset, $arrOptions);
+            $news = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMatchAll, 0, 0, $arrOptions);
 
-            return $news;
+            // fill array with news matching the pre-selected tag
+            if( $news ) {
+                $preSelectedNews = $news->fetchEach('id');
+            }
         }
 
         if( $module->ignoreTags ) {
@@ -156,6 +160,7 @@ class NewsListener {
 
         $tags = TagUtil::getTagsFromUrl();
 
+        // filter by given tag
         if( !empty($tags) ) {
 
             // set current page to noindex
@@ -189,6 +194,13 @@ class NewsListener {
 
                     foreach( $articles as $i => $article ) {
 
+                        // remove all news that do not match the pre-selected set of results
+                        if( !empty($preSelectedNews) && !in_array($article->id, $preSelectedNews) ) {
+
+                            unset($articles[$i]);
+                            continue;
+                        }
+
                         $newsTags = $article->getRelated('tags');
 
                         if( empty($newsTags) ) {
@@ -220,7 +232,7 @@ class NewsListener {
             return new Collection($articles, $t);
         }
 
-        return false;
+        return $news??false;
     }
 
 
