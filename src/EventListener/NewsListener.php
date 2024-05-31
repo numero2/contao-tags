@@ -232,7 +232,17 @@ class NewsListener {
             return new Collection($articles, $t);
         }
 
-        return $news??false;
+        // limit articles
+        if( $module instanceof ModuleNewsListTags && ($limit || $offset) ) {
+
+            $articles = [];
+            $articles = $news->getModels();
+            $articles = array_slice($articles, $offset, $limit);
+
+            return new Collection($articles, $t);
+        }
+
+        return false;
     }
 
 
