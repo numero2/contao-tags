@@ -146,7 +146,7 @@ class NewsListener {
             $tags = StringUtil::deserialize($module->news_tags, true);
             $blnMatchAll = !empty($module->tags_match_all);
 
-            $news = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMatchAll, $limit, $offset, $arrOptions);
+            $news = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMatchAll, 0, 0, $arrOptions);
 
             // fill array with news matching the pre-selected tag
             if( $news ) {
