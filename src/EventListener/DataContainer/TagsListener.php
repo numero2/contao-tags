@@ -12,15 +12,32 @@
 
 namespace numero2\TagsBundle\EventListener\DataContainer;
 
+use Contao\Backend;
+use Contao\Controller;
+use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\Database;
 use Contao\DataContainer;
 use Contao\Input;
 use Contao\StringUtil;
+use Contao\System;
+use Doctrine\DBAL\Connection;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
 
 
 class TagsListener {
+
+
+    /**
+     * @var Doctrine\DBAL\Connection
+     */
+    private $connection;
+
+
+    public function __construct( Connection $connection ) {
+
+        $this->connection = $connection;
+    }
 
 
     /**
@@ -105,20 +122,25 @@ class TagsListener {
      */
     public function saveTags( $varValue, DataContainer $dc ): ?string {
 
-        $db = Database::getInstance();
+        $tRel = TagsRelModel::getTable();
 
         // remove all tag relations for this element
-        $db->prepare("DELETE FROM ".TagsRelModel::getTable()." WHERE pid = ? AND ptable = ? AND field = ?")
-            ->execute($dc->activeRecord->id, $dc->table, $dc->field);
+        $this->connection
+            ->prepare("DELETE FROM $tRel WHERE pid=? AND ptable=? AND field=?")
+            ->executeStatement([$dc->activeRecord->id, $dc->table, $dc->field])
+        ;
 
         if( !empty($varValue) ) {
 
-            $tags = StringUtil::deserialize( $varValue );
+            $tags = StringUtil::deserialize($varValue, true);
 
             // add tag relations for this element
             foreach( $tags as $i => $id ) {
-                $db->prepare("INSERT INTO ".TagsRelModel::getTable()." (tag_id, pid, ptable, field) VALUES(?,?,?,?)")
-                    ->execute($id, $dc->activeRecord->id, $dc->table, $dc->field);
+
+                $this->connection
+                    ->prepare("INSERT INTO $tRel (tag_id, pid, ptable, field) VALUES (?,?,?,?)")
+                    ->executeStatement([$id, $dc->activeRecord->id, $dc->table, $dc->field])
+                ;
 
                 // explicitly cast the id into a string, otherwise the filter options in the backend won't work
                 $tags[$i] = (string)$id;
@@ -128,5 +150,92 @@ class TagsListener {
         }
 
         return $varValue;
+    }
+
+
+    /**
+     * Add tag merge button to the select section and handle it
+     *
+     * @param array $buttons
+     * @param Contao\DataContainer $dc
+     *
+     * @return string
+     *
+     * @Callback(table="tl_tags", target="select.buttons")
+     */
+    public function mergeTagSelectButton( $buttons, DataContainer $dc ): array {
+
+        // start merge selected tags
+        if( Input::post('FORM_SUBMIT') === 'tl_select' && isset($_POST['tags_merge']) ) {
+
+            $objSession = System::getContainer()->get('session');
+            $session = $objSession->all();
+            $ids = $session['CURRENT']['IDS'] ?? [];
+
+            if( count($ids) > 1 ) {
+
+                $tTag = TagsModel::getTable();
+                $tRel = TagsRelModel::getTable();
+
+                $newId = $ids[0];
+
+                $res = $this->connection->executeQuery(
+                    "SELECT * FROM $tRel WHERE tag_id in (:ids)"
+                ,   ['ids'=>$ids]
+                ,   ['ids'=>Connection::PARAM_INT_ARRAY]
+                );
+
+                if( $res && $res->rowCount() ) {
+
+                    $tagsRel = $res->fetchAll();
+                    $rowsProcessed = [];
+
+                    // create rel for first tag and gather entries
+                    foreach( $tagsRel as $rel ) {
+
+                        $hash = md5('pid:' . $rel['pid'] . 'ptable' . $rel['ptable'] . 'field' . $rel['field']);
+
+                        if( !array_key_exists($hash, $rowsProcessed) ) {
+
+                            $rowsProcessed[$hash] = ['pid'=>$rel['pid'], 'ptable'=>$rel['ptable'], 'field'=>$rel['field']];
+
+                            if( $rel['tag_id'] != $newId ) {
+
+                                $this->connection
+                                    ->prepare("INSERT INTO $tRel (tag_id, pid, ptable, field) VALUES (?,?,?,?)")
+                                    ->executeStatement([$newId, $rel['pid'], $rel['ptable'], $rel['field']])
+                                ;
+                            }
+                        }
+                    }
+
+                    // delete rel for other tags
+                    foreach( $rowsProcessed as $hash => $rel ) {
+
+                        $this->connection
+                            ->prepare("DELETE FROM $tRel WHERE tag_id!=? AND pid=? AND ptable=? AND field=?")
+                            ->executeStatement([$newId, $rel['pid'], $rel['ptable'], $rel['field']])
+                        ;
+                    }
+
+                    // delete tag for other tags
+                    $res = $this->connection->executeStatement(
+                        "DELETE FROM $tTag WHERE id!=:id AND id in (:ids)"
+                    ,   ['id'=>$newId, 'ids'=>$ids]
+                    ,   ['ids'=>Connection::PARAM_INT_ARRAY]
+                    );
+                }
+
+                // redirect to edit on that id
+                Controller::redirect(Backend::addToUrl('act=edit&amp;id=' . $newId));
+            }
+
+            Controller::redirect(Controller::getReferer());
+        }
+
+        // add the button
+        $buttons['tags_merge'] = '<button type="submit" name="tags_merge" id="tags_merge" class="tl_submit" accesskey="m">' . $GLOBALS['TL_LANG']['MSC']['tagsMergeSelected'] . '</button> ';
+
+        return $buttons;
     }
 }

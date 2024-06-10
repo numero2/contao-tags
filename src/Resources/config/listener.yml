@@ -10,6 +10,8 @@ services:
 
     numero2_tags.listener.data_container.tags:
         class: numero2\TagsBundle\EventListener\DataContainer\TagsListener
+        arguments:
+            - '@database_connection'
 
 
     numero2_tags.listener.events:
