@@ -611,7 +611,7 @@ class TagsModel extends Model {
             SELECT DISTINCT
                 t.*
             FROM ".static::$strTable." AS t
-                JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=? )
+                JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=?)
             ORDER BY t.tag ASC
         ")->execute($field, $table);
 
@@ -633,7 +633,7 @@ class TagsModel extends Model {
         $objResult = Database::getInstance()->prepare("
             SELECT t.*
             FROM ".static::$strTable." AS t
-                JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=? )
+                JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=?)
             WHERE r.pid=?
             ORDER BY t.tag ASC
         ")->execute($field, $table, $id);
@@ -656,7 +656,7 @@ class TagsModel extends Model {
         $objResult = Database::getInstance()->prepare("
             SELECT count(1) as count
             FROM ".static::$strTable." AS t
-                JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=? )
+                JOIN ".TagsRelModel::getTable()." AS r ON (r.tag_id=t.id AND r.field=? AND r.ptable=?)
             WHERE r.pid=?
             ORDER BY t.tag ASC
         ")->execute($field, $table, $id);

@@ -18,9 +18,9 @@ $GLOBALS['TL_DCA']['tl_tags_rel'] = [
         'dataContainer' => DC_Table::class
     ,   'sql' => [
             'keys' => [
-                'tag_id'=> 'index'
-            ,   'pid'   => 'index'
-            ,   'ptable,field'   => 'index'
+                'tag_id' => 'index'
+            ,   'pid' => 'index'
+            ,   'ptable,field' => 'index'
             ]
         ]
     ]
