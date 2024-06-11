@@ -33,6 +33,7 @@ class TagsExtension extends Extension {
             new FileLocator(__DIR__.'/../Resources/config')
         );
 
+        $loader->load('commands.yml');
         $loader->load('listener.yml');
         $loader->load('services.yml');
         $loader->load('migrations.yml');

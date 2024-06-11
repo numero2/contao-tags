@@ -1,0 +1,14 @@
+services:
+    _defaults:
+        autoconfigure: true
+
+    _instanceof:
+        Contao\CoreBundle\Framework\FrameworkAwareInterface:
+            calls:
+                - [setFramework, ['@contao.framework']]
+
+
+    numero2_tags.command.purge_tags:
+        class: numero2\TagsBundle\Command\PurgeTagsCommand
+        arguments:
+            - '@numero2_tags.automator.purge_tags'

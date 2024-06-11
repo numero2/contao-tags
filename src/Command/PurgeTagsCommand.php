@@ -12,9 +12,7 @@
 
 namespace numero2\TagsBundle\Command;
 
-use Contao\CoreBundle\Framework\ContaoFramework;
-use Contao\Database;
-use Contao\System;
+use numero2\TagsBundle\PurgeTags;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,17 +21,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 class PurgeTagsCommand extends Command {
 
 
-    // usage: vendor/bin/contao-console numero2:purgeTags
-    protected static $defaultName = 'numero2:purgeTags';
+    protected static $defaultName = 'contao:tags:purge';
     protected static $defaultDescription = 'Delete unused Tags';
 
-    private ContaoFramework $framework;
+    /**
+     * @var numero2\TagsBundle\PurgeTags;
+     */
+    private PurgeTags $purgeTags;
 
 
-    public function __construct( ContaoFramework $framework ) {
+    public function __construct( PurgeTags $purgeTags ) {
 
-        $this->framework = $framework;
-        $this->framework->initialize();
+        $this->purgeTags = $purgeTags;
 
         parent::__construct();
     }
@@ -41,14 +40,7 @@ class PurgeTagsCommand extends Command {
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
 
-        $db = $this->framework->createInstance(Database::getInstance());
-
-        $sql = 'DELETE tl_tags FROM tl_tags
-            LEFT JOIN tl_tags_rel ON tl_tags.id = tl_tags_rel.tag_id
-            WHERE tl_tags_rel.tag_id IS NULL';
-        $db->execute($sql);
-
-        System::getContainer()->get('monolog.logger.contao.cron')->info('Purged unused tags via console');
+        $this->purgeTags->__invoke();
 
         $output->writeln('Unused Tags deleted.');
 

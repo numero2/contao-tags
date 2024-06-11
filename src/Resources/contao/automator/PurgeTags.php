@@ -6,30 +6,110 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 20232, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
  */
 
 
 namespace numero2\TagsBundle;
 
-use Contao\Automator;
-use Contao\Database;
-use Contao\System;
+use Contao\CoreBundle\Monolog\ContaoContext;
+use Doctrine\DBAL\Connection;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 
-class PurgeTags extends Automator {
+class PurgeTags {
 
 
-    public function execute(): void {
+    /**
+     * @var Doctrine\DBAL\Connection
+     */
+    private Connection $connection;
 
-        $db = Database::getInstance();
-        
-        $sql ='DELETE tl_tags FROM tl_tags 
-            LEFT JOIN tl_tags_rel ON tl_tags.id = tl_tags_rel.tag_id
-            WHERE tl_tags_rel.tag_id IS NULL';
-        $result = $db->execute($sql);
+    /**
+     * @var Psr\Log\LoggerInterface
+     */
+    private $logger;
 
-        System::getContainer()->get('monolog.logger.contao.cron')->info('Purged unused tags');
+
+    public function __construct( Connection $connection, LoggerInterface $logger ) {
+
+        $this->connection = $connection;
+        $this->logger = $logger;
+    }
+
+
+    public function __invoke(): void {
+
+        $tTag = TagsModel::getTable();
+        $tRel = TagsRelModel::getTable();
+
+        $schemaManager = $this->connection->getSchemaManager();
+
+        // get used table, field from relations
+        $result = $this->connection->executeQuery(
+            "SELECT DISTINCT ptable, field FROM $tRel"
+        );
+
+        if( $result && $result->rowCount() ) {
+
+            $entries = [];
+            $rows = $result->fetchAll();
+
+            foreach( $rows as $row ) {
+                $entries[$row['ptable']][] = $row['field'];
+            }
+
+            foreach( $entries as $table => $fields ) {
+
+                if( empty($table) || !$schemaManager->tablesExist([$table]) ) {
+
+                    // remove tag relation where ptable not exists
+                    $this->connection->executeStatement(
+                        "DELETE FROM $tRel WHERE ptable=:table"
+                    ,   ['table'=>$table]
+                    );
+                    continue;
+                }
+
+                foreach( $fields as $field ) {
+
+                    $columns = $schemaManager->listTableColumns($table);
+
+                    if( empty($field) || !isset($columns[$field]) ) {
+
+                        // remove tag relation where field in table not exists
+                        $this->connection->executeStatement(
+                            "DELETE FROM $tRel WHERE ptable=:table AND field=:field"
+                        ,   ['table'=>$table, 'field'=>$field]
+                        );
+                        continue;
+                    }
+
+                    // remove tag relation where pid in table not exists
+                    $this->connection->executeStatement(
+                        "DELETE FROM $tRel WHERE pid NOT IN (SELECT id from $table) AND ptable=:table"
+                    ,   ['table'=>$table]
+                    );
+                }
+            }
+        }
+
+        // remove tag relation where tag is missing
+        $this->connection->executeStatement(
+            "DELETE rel FROM $tRel AS rel
+            LEFT JOIN $tTag AS tag ON (tag.id=rel.tag_id)
+            WHERE ISNULL(tag.id)"
+        );
+
+        // remove tag if none relation exists
+        $this->connection->executeStatement(
+            "DELETE tag FROM $tTag AS tag
+            LEFT JOIN $tRel AS rel ON tag.id=rel.tag_id
+            WHERE ISNULL(rel.tag_id)"
+        );
+
+        $this->logger->log(LogLevel::INFO, 'Purged unused tags', ['contao' => new ContaoContext(__METHOD__, ContaoContext::CRON)]);
     }
 }
 

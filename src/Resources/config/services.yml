@@ -11,10 +11,9 @@ services:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 
 
-    numero2.purgeTagsCommand:
-        class: numero2\TagsBundle\Command\PurgeTagsCommand
+    numero2_tags.automator.purge_tags:
+        class: numero2\TagsBundle\PurgeTags
         public: true
         arguments:
-            - '@contao.framework'
-        tags:
-            - { name: console.command }
+            - '@database_connection'
+            - '@logger'

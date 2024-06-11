@@ -16,7 +16,6 @@ use numero2\TagsBundle\ModuleEventlistRelatedTags;
 use numero2\TagsBundle\ModuleEventlistTags;
 use numero2\TagsBundle\ModuleNewsListRelatedTags;
 use numero2\TagsBundle\ModuleNewsListTags;
-use numero2\TagsBundle\PurgeTags;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
 
@@ -53,5 +52,5 @@ $GLOBALS['BE_MOD']['system']['contao_tags'] = [
  * PURGE
  */
 $GLOBALS['TL_PURGE']['custom']['purgeTags'] = [
-    'callback' => [PurgeTags::class, 'execute']
+    'callback' => ['numero2_tags.automator.purge_tags', '__invoke']
 ];
