@@ -154,6 +154,27 @@ class TagsListener {
 
 
     /**
+     * Load tags from rel table
+     *
+     * @param mixed $varValue
+     * @param Contao\DataContainer $dc
+     *
+     * @return array|null
+     */
+    public function loadTags( $varValue, DataContainer $dc ): ?array {
+
+        $tags = TagsModel::findByIdForFieldAndTable($dc->activeRecord->id, $dc->field, $dc->table);
+
+        if( $tags ) {
+
+            return $tags->fetchEach('id');
+        }
+
+        return [];
+    }
+
+
+    /**
      * Add tag merge button to the select section and handle it
      *
      * @param array $buttons

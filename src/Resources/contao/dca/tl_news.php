@@ -35,6 +35,7 @@ if( class_exists(ContaoNewsBundle::class) ) {
     ,   'inputType'         => 'select'
     ,   'foreignKey'        => 'tl_tags.tag'
     ,   'options_callback'  => ['numero2_tags.listener.data_container.tags', 'getTagOptions']
+    ,   'load_callback'     => [['numero2_tags.listener.data_container.tags', 'loadTags']]
     ,   'save_callback'     => [['numero2_tags.listener.data_container.tags', 'saveTags']]
     ,   'eval'              => ['multiple'=>true, 'size'=>8, 'tl_class'=>'clr long tags', 'chosen'=>true]
     ,   'sql'               => "blob NULL"

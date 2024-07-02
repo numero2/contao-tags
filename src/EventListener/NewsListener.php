@@ -80,6 +80,8 @@ class NewsListener {
             $articles = null;
             $articles = $this->newsListFetchItems($newsArchives, $blnFeatured, 0, 0, $module);
 
+            #dd($articles);
+
             return count($articles);
         }
 
@@ -201,7 +203,7 @@ class NewsListener {
                             continue;
                         }
 
-                        $newsTags = $article->getRelated('tags');
+                        $newsTags = TagsModel::findByIdForFieldAndTable($article->id, 'tags', NewsModel::getTable());
 
                         if( empty($newsTags) ) {
                             $newsTags = [];
