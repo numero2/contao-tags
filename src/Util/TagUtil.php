@@ -110,6 +110,10 @@ class TagUtil {
         $aTag = $tag->row();
         $aTag['title'] = $tag->getTranslationData()['title'] ?? $tag->tag;
 
+        if( empty($aTag['title']) ) {
+            $aTag['title'] = $tag->tag;
+        }
+
         return $aTag;
     }
 }
