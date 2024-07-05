@@ -65,6 +65,31 @@ class TagsListener {
             $blnAbsolute = \in_array('absolute', $flags, true);
 
             return TagUtil::generateUrlWithTags($page, $tagNames, $blnGetParameter, $blnAbsolute);
+
+        } else if( $tag[0] === 'tags_active' ) {
+
+            $glue = $tag[1] ?? ', ';
+            $glueLast = $tag[2] ?? null;
+
+            $tags = TagUtil::getTagsFromUrl();
+            $tags[] ='dlas';
+            $tags[] ='dddlas';
+
+            if( empty($tags) ) {
+                return '';
+            } else if( count($tags) === 1 ) {
+                return array_pop($tags);
+            }
+
+            if( $glueLast === null ) {
+                return implode($glue, $tags);
+            } else {
+                $lastTag = array_pop($tags);
+
+                return implode($glue, $tags) . $glueLast . $lastTag;
+            }
+
+            return '';
         }
 
         return false;
