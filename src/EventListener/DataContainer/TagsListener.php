@@ -163,7 +163,7 @@ class TagsListener {
      */
     public function loadTags( $varValue, DataContainer $dc ): ?array {
 
-        $tags = TagsModel::findByIdForFieldAndTable($dc->activeRecord->id, $dc->field, $dc->table);
+        $tags = TagsModel::findByIdForFieldAndTable($dc->activeRecord->id??'', $dc->field, $dc->table);
 
         if( $tags ) {
 
