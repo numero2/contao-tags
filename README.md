@@ -42,8 +42,11 @@ This extensions comes with a couple of Insert-Tags that can be used to link to a
 | {{tag_link::1::foo}} | Creates a link URL to the page with ID 1 and the tag `foo` |
 | {{tag_link::1::foo::bar}} | Creates a link URL to the page with ID 1 and the tags `foo` and `bar` |
 | {{tag_link::1::foo&#124;absolute}} | Creates an absolute link URL to the page with ID 1 and the tag `foo` |
-| {{tag_link::1::foo&#124;get}} | Creates an link URL to the page with ID 1 and the tag `foo` using GET parameters |
+| {{tag_link::1::foo&#124;get}} | Creates a link URL to the page with ID 1 and the tag `foo` using GET parameters |
 | {{tag_link::1::foo&#124;absolute&#124;get}} | Creates an absolute link URL to the page with ID 1 and the tag `foo` using GET parameters |
+| {{tags_active}} | Creates a list of all active tags seperated by `, `, e.g. `tag1, tag2, tag3` |
+| {{tags_active:: + }} | Creates a list of all active tags seperated by the given string ` + `, e.g. `tag1 + tag2 + tag3` |
+| {{tags_active::, :: and }} | Creates a list of all tags seperated by `, ` but the last tag is added with ` and `, e.g. `tag1, tag2, tag3 and tag4` |
 
 A more robust way for the links would be to use the tag's ID instead of its name (which can be changed under `System › Tags`).
 So instead of `{{tag_link::1::foo}}` you could also write `{{tag_link::1::69}}` (assuming the ID of `foo` is 69).
