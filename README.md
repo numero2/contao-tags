@@ -15,6 +15,8 @@ Adds the possibility to assign tags to individual elements.
 
 * Install via Contao Manager or Composer (`composer require numero2/contao-tags`)
 
+### News
+
 * Add the following code snippet into your `news_(full|latest|short|simple).html5` template
 
   ```php
@@ -27,11 +29,48 @@ Adds the possibility to assign tags to individual elements.
   <?php endif; ?>
   ```
 
-* Configure your `Newslist` or `Newsreader` front end modules and set a `Redirect page for tags`
+* Configure your `Newslist` or `Newsreader` front end modules and set a `Redirect page for tags` (optional)
 
 * Additionally add the `News Tag Cloud` module anywhere on your page
 
-* All of the above is now also possible for the templates `event_(full|list|teaser|upcoming).html5`, used in `Eventlist` or `Eventreader` and there is an `Events Tag Cloud` module
+### Events
+
+* Add the following code snippet into your `event_(full|list|teaser|upcoming).html5` template
+
+  ```php
+  <?php if( $this->tags ): ?>
+    <div class="tags">
+      <?php foreach( $this->tags as $tag ): ?>
+        <?= $tag; ?>
+      <?php endforeach; ?>
+   </div>
+  <?php endif; ?>
+  ```
+
+  > ⚠️ Note: Contao does not provide any Hooks for the Eventreader module, therefore we need to add some logic at the beginning of our template to parse the Tags correctly.
+
+  ```php
+  <?php
+
+  use Contao\ModuleEventReader;
+  use Contao\ModuleModel;
+  use Contao\System;
+
+  $moduleModel = ModuleModel::findOneById(69); // replace with the ID of your actual EventReader module
+  $module = new ModuleEventReader($moduleModel);
+
+  $tagListener = System::getContainer()->get('numero2_tags.listener.events');
+  $event = $tagListener->parseEvent($this->arrData, $module);
+
+  $this->tags = $event['tags'];
+  $this->tagsRaw = $event['tagsRaw'];
+
+  ?>
+  ```
+
+* Configure your `Eventlist` or `Eventreader` front end modules and set a `Redirect page for tags` (optional)
+
+* Additionally add the `Events Tag Cloud` module anywhere on your page
 
 ## Insert-Tags
 
