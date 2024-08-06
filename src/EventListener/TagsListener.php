@@ -94,4 +94,38 @@ class TagsListener {
 
         return false;
     }
+
+
+    /**
+     * Replace flags for tag inserttags
+     *
+     * @param string $flag
+     * @param string $tag
+     * @param string $cachedValue
+     * @param array $flags
+     * @param bool $useCache
+     * @param array $tags
+     * @param array $cache
+     * @param int $_rit
+     * @param int $_cnt
+     *
+     * @return string|bool
+     *
+     * @Hook("insertTagFlags")
+     */
+    public function insertTagFlags( string $flag, string $tag, string $cachedValue, array $flags, bool $useCache, array $tags, array $cache, int $_rit, int $_cnt ) {
+
+        // Note: This function does not do anything, it is just there to let Contao know that we've already taken care of the flags for our insert tags
+
+        $tag = explode('::', $tag);
+
+        if( $tag[0] === 'tag_link' ) {
+
+            if( in_array($flag,['get','absolute']) ) {
+                return $cachedValue;
+            }
+        }
+
+        return false;
+    }
 }
