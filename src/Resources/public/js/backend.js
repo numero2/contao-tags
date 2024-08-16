@@ -1,76 +1,68 @@
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded', () => {
 
-    var selects = document.querySelectorAll('.widget.tags select[multiple].tl_chosen');
+    const selects = document.querySelectorAll('.widget.tags select[multiple].tl_chosen, .widget select[multiple][name^="tags"]');
 
-    if( selects && selects.length ) {
+    if( selects.length === 0 ) {
+        return;
+    }
 
-        var initTagsSelector = function(el) {
+    const initTagsSelector = (el) => {
 
-            var tags = el.parentNode.querySelector('.chzn-container');
-            var input = tags?tags.querySelector('.chzn-container input[type="text"]'):null;
+        const tags = el.parentNode.querySelector('.chzn-container');
+        const input = tags ? tags.querySelector('.chzn-container input[type="text"]') : null;
 
-            if( !tags || !input ) {
+        if( !tags || !input ) {
+            return;
+        }
+
+        input._tagsContainer = tags;
+        input._tagsSelect = el;
+
+        input.addEventListener('keydown', (e)=>{
+
+            const ENTER_KEY = 13;
+            const COMMA_KEY = 188;
+            const TAB_KEY = 9;
+
+            if( ![ENTER_KEY, COMMA_KEY, TAB_KEY].includes(e.keyCode) ) {
                 return;
             }
 
-            input._tagsContainer = tags;
-            input._tagsSelect = el;
+            if( [TAB_KEY, COMMA_KEY].includes(e.keyCode) ) {
+                e.preventDefault();
+            }
 
-            input.addEventListener('keydown', function(e) {
+            const results = input._tagsContainer.querySelector('ul.chzn-results');
+            let alreadyExists = Boolean(results.querySelector('li.highlighted'));
 
-                // enter, comma, tab
-                if( [13,188,9].indexOf(e.keyCode) == -1 ) {
-                    return;
-                }
+            if( !alreadyExists ) {
+                alreadyExists = [...input._tagsSelect.querySelectorAll('option')].some(option => option.value === input.value);
+            }
 
-                if( [9,188].indexOf(e.keyCode) != -1 ) {
-                    e.preventDefault();
-                }
+            if( !alreadyExists ) {
 
-                var results = this._tagsContainer.querySelector('ul.chzn-results');
+                const option = document.createElement('option');
+                option.text = input.value;
+                option.value = input.value;
+                option.selected = true;
 
-                // check if value already in given suggestions ...
-                var alreadyExists = results.querySelector('li.highlighted') ? true : false;
+                input._tagsSelect.appendChild(option);
 
-                // .. if not check if already an option in the original select
-                if( !alreadyExists ) {
+                const container = input._tagsSelect.parentNode;
 
-                    [].forEach.call(this._tagsSelect.querySelectorAll('option'), function(option){
-                        if( option.value == this.value ) {
-                            alreadyExists = true;
-                        }
-                    });
-                }
+                new Chosen(input._tagsSelect);
 
-                if( !alreadyExists ) {
+                const nodes = document.querySelectorAll(`#${input._tagsContainer.id}`);
+                nodes[nodes.length - 1].parentNode.removeChild(nodes[nodes.length - 1]);
 
-                    // add new option to select
-                    var option = document.createElement('option');
-                    option.text = this.value;
-                    option.value = this.value;
-                    option.selected = true;
+                setTimeout(() => {
+                    container.querySelector('input[type="text"]').focus();
+                }, 100);
 
-                    this._tagsSelect.appendChild(option);
+                initTagsSelector(input._tagsSelect);
+            }
+        });
+    };
 
-                    var container = this._tagsSelect.parentNode;
-
-                    // make new instance of chosen
-                    new Chosen(this._tagsSelect);
-
-                    // destroy old instance
-                    var nodes = document.querySelectorAll('#'+input._tagsContainer.id);
-                    nodes[nodes.length- 1].parentNode.removeChild(nodes[nodes.length- 1]);
-
-                    // set focus to new text field
-                    setTimeout(function(){
-                        container.querySelector('input[type="text"]').focus();
-                    },100);
-
-                    initTagsSelector(this._tagsSelect);
-                }
-            });
-        };
-
-        [].forEach.call(selects, initTagsSelector);
-    }
+    [...selects].forEach(initTagsSelector);
 });

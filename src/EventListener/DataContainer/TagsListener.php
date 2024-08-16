@@ -189,7 +189,7 @@ class TagsListener {
         // start merge selected tags
         if( Input::post('FORM_SUBMIT') === 'tl_select' && isset($_POST['tags_merge']) ) {
 
-            $objSession = System::getContainer()->get('session');
+            $objSession = System::getContainer()->get('request_stack')->getMainRequest()->getSession();
             $session = $objSession->all();
             $ids = $session['CURRENT']['IDS'] ?? [];
 
