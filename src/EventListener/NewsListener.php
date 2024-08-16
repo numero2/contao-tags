@@ -80,8 +80,6 @@ class NewsListener {
             $articles = null;
             $articles = $this->newsListFetchItems($newsArchives, $blnFeatured, 0, 0, $module);
 
-            #dd($articles);
-
             return count($articles);
         }
 
@@ -104,6 +102,7 @@ class NewsListener {
      */
     public function newsListFetchItems( $newsArchives, $blnFeatured, $limit, $offset, ModuleNewsList $module ) {
 
+        // TODO: replace
         global $objPage;
 
         $preSelectedNews = [];
@@ -145,10 +144,10 @@ class NewsListener {
 
         } else if( $module instanceof ModuleNewsListTags ) {
 
-            $tags = StringUtil::deserialize($module->news_tags, true);
+            $moduleTags = StringUtil::deserialize($module->news_tags, true);
             $blnMatchAll = !empty($module->tags_match_all);
 
-            $news = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMatchAll, 0, 0, $arrOptions);
+            $news = TagsRelModel::findPublishedNewsByTags($moduleTags, $newsArchives, $blnFeatured, $blnMatchAll, 0, 0, $arrOptions);
 
             // fill array with news matching the pre-selected tag
             if( $news ) {
@@ -160,17 +159,20 @@ class NewsListener {
             return false;
         }
 
-        $tags = TagUtil::getTagsFromUrl();
+        $urlTags = TagUtil::getTagsFromUrl();
 
         // filter by given tag
-        if( !empty($tags) ) {
+        if( !empty($urlTags) || !empty($preSelectedNews) ) {
 
-            // set current page to noindex
-            $objPage->robots = 'noindex,nofollow';
+            if( !empty($urlTags) ) {
 
-            // add canonical (if not enabled in the core)
-            if( !$objPage->enableCanonical ) {
-                $GLOBALS['TL_HEAD'][] = '<link rel="canonical" href="'.$objPage->getAbsoluteUrl().'" />';
+                // set current page to noindex
+                $objPage->robots = 'noindex,nofollow';
+
+                // add canonical (if not enabled in the core)
+                if( !$objPage->enableCanonical ) {
+                    $GLOBALS['TL_HEAD'][] = '<link rel="canonical" href="'.$objPage->getAbsoluteUrl().'" />';
+                }
             }
 
             // TODO: Replace with custom query
@@ -181,48 +183,48 @@ class NewsListener {
             $articles = $collection->getModels();
 
             // sort out non matching tags
-            if( !empty($tags) ) {
+            if( !empty($urlTags) ) {
 
                 // get tags id
-                $aTags = [];
-                foreach( $tags as $tag ) {
+                $aUrlTags = [];
+                foreach( $urlTags as $tag ) {
                     $oTag = TagsModel::findOneByTag($tag);
                     if( $oTag ) {
-                        $aTags[] = $oTag->id;
+                        $aUrlTags[] = $oTag->id;
                     }
                 }
+            }
 
-                if( !empty($aTags) ) {
+            foreach( $articles as $i => $article ) {
 
-                    foreach( $articles as $i => $article ) {
+                // remove all news that do not match the pre-selected set of results
+                if( !empty($preSelectedNews) && !in_array($article->id, $preSelectedNews) ) {
 
-                        // remove all news that do not match the pre-selected set of results
-                        if( !empty($preSelectedNews) && !in_array($article->id, $preSelectedNews) ) {
+                    unset($articles[$i]);
+                    continue;
+                }
 
-                            unset($articles[$i]);
+                $newsTags = TagsModel::findByIdForFieldAndTable($article->id, 'tags', NewsModel::getTable());
+
+                if( empty($newsTags) ) {
+                    $newsTags = [];
+                } else {
+                    $newsTags = $newsTags->fetchEach('id');
+                }
+
+                if( !empty($aUrlTags) ) {
+
+                    if( !empty($module->tags_match_all) ) {
+                        if( count(array_intersect($aUrlTags, $newsTags)) === count($aUrlTags) ) {
                             continue;
                         }
-
-                        $newsTags = TagsModel::findByIdForFieldAndTable($article->id, 'tags', NewsModel::getTable());
-
-                        if( empty($newsTags) ) {
-                            $newsTags = [];
-                        } else {
-                            $newsTags = $newsTags->fetchEach('id');
+                    } else {
+                        if( count(array_intersect($aUrlTags, $newsTags)) ) {
+                            continue;
                         }
-
-                        if( !empty($module->tags_match_all) ) {
-                            if( count(array_intersect($aTags, $newsTags)) === count($aTags) ) {
-                                continue;
-                            }
-                        } else {
-                            if( count(array_intersect($aTags, $newsTags)) ) {
-                                continue;
-                            }
-                        }
-
-                        unset($articles[$i]);
                     }
+
+                    unset($articles[$i]);
                 }
             }
 
