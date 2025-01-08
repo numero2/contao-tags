@@ -12,6 +12,7 @@
 
 namespace numero2\TagsBundle\EventListener;
 
+use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\FrontendTemplate;
 use Contao\Input;
@@ -21,6 +22,7 @@ use Contao\ModuleNewsList;
 use Contao\NewsModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Contao\System;
 use numero2\TagsBundle\ModuleNewsListRelatedTags;
 use numero2\TagsBundle\ModuleNewsListTags;
 use numero2\TagsBundle\TagsModel;
@@ -102,9 +104,6 @@ class NewsListener {
      */
     public function newsListFetchItems( $newsArchives, $blnFeatured, $limit, $offset, ModuleNewsList $module ) {
 
-        // TODO: replace
-        global $objPage;
-
         $preSelectedNews = [];
         $news = null;
 
@@ -166,16 +165,29 @@ class NewsListener {
 
             if( !empty($urlTags) ) {
 
-                // set current page to noindex
-                $objPage->robots = 'noindex,nofollow';
+                if( System::getContainer()->has('contao.routing.response_context_accessor') ) {
 
-                // add canonical (if not enabled in the core)
-                if( !$objPage->enableCanonical ) {
-                    $GLOBALS['TL_HEAD'][] = '<link rel="canonical" href="'.$objPage->getAbsoluteUrl().'" />';
+                    $responseContext = System::getContainer()->get('contao.routing.response_context_accessor')->getResponseContext();
+
+                    if( $responseContext && $responseContext->has(HtmlHeadBag::class) ) {
+
+                        $htmlHeadBag = $responseContext->get(HtmlHeadBag::class);
+
+                        $htmlHeadBag->setMetaRobots('noindex,nofollow');
+
+                        // overwrite canoncial
+                        $requestStack = System::getContainer()->get('request_stack');
+                        $request = $requestStack->getCurrentRequest();
+                        $page = $request->get('pageModel');
+
+                        if( $page->enableCanonical ) {
+                            $url = $page->getAbsoluteUrl();
+                            $htmlHeadBag->setCanonicalUri($url);
+                        }
+                    }
                 }
             }
 
-            // TODO: Replace with custom query
             $collection = null;
             $collection = NewsModel::findPublishedByPids($newsArchives, $blnFeatured, 0, 0, $arrOptions);
 
