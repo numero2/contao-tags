@@ -72,8 +72,6 @@ class TagsListener {
             $glueLast = $tag[2] ?? null;
 
             $tags = TagUtil::getTagsFromUrl();
-            $tags[] ='dlas';
-            $tags[] ='dddlas';
 
             if( empty($tags) ) {
                 return '';
