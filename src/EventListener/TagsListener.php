@@ -73,18 +73,31 @@ class TagsListener {
 
             $tags = TagUtil::getTagsFromUrl();
 
-            if( empty($tags) ) {
+            $tagTitles = [];
+
+            foreach( $tags as $tag ) {
+
+                $oTag = TagsModel::findByIdOrName($tag, ['limit' => 1, 'return' => 'Model']);
+
+                if( $oTag ) {
+                    $aTag = TagUtil::parseTag($oTag);
+
+                    $tagTitles[] = $aTag['title'];
+                }
+            }
+
+            if( empty($tagTitles) ) {
                 return '';
-            } else if( count($tags) === 1 ) {
-                return array_pop($tags);
+            } else if( count($tagTitles) === 1 ) {
+                return array_pop($tagTitles);
             }
 
             if( $glueLast === null ) {
-                return implode($glue, $tags);
+                return implode($glue, $tagTitles);
             } else {
-                $lastTag = array_pop($tags);
+                $lastTitle = array_pop($tagTitles);
 
-                return implode($glue, $tags) . $glueLast . $lastTag;
+                return implode($glue, $tagTitles) . $glueLast . $lastTitle;
             }
 
             return '';
