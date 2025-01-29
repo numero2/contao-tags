@@ -12,6 +12,7 @@ services:
         class: numero2\TagsBundle\EventListener\DataContainer\TagsListener
         arguments:
             - '@database_connection'
+            - '@security.helper'
 
 
     numero2_tags.listener.events:

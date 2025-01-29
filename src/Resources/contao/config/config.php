@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -54,3 +54,9 @@ $GLOBALS['BE_MOD']['system']['contao_tags'] = [
 $GLOBALS['TL_PURGE']['custom']['purgeTags'] = [
     'callback' => ['numero2_tags.automator.purge_tags', '__invoke']
 ];
+
+
+/**
+ * PERMISSIONS
+ */
+$GLOBALS['TL_PERMISSIONS'][] = 'tags_disable_add_new';

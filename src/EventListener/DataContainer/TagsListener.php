@@ -6,23 +6,32 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
  */
 
 
 namespace numero2\TagsBundle\EventListener\DataContainer;
 
 use Contao\Backend;
+use Contao\BackendUser;
 use Contao\Controller;
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\Database;
 use Contao\DataContainer;
 use Contao\Input;
 use Contao\StringUtil;
 use Contao\System;
+use Contao\Template;
 use Doctrine\DBAL\Connection;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
+use Symfony\Bundle\SecurityBundle\Security;
+
+// Contao 4.13 compatibility
+if( !class_exists('Symfony\Bundle\SecurityBundle\Security') ) {
+    class_alias('Symfony\Component\Security\Core\Security', 'Symfony\Bundle\SecurityBundle\Security');
+}
 
 
 class TagsListener {
@@ -33,10 +42,16 @@ class TagsListener {
      */
     private $connection;
 
+    /**
+     * @var Symfony\Component\Security\Core\Security
+     */
+    private $security;
 
-    public function __construct( Connection $connection ) {
+
+    public function __construct( Connection $connection, Security $security ) {
 
         $this->connection = $connection;
+        $this->security = $security;
     }
 
 
@@ -51,6 +66,20 @@ class TagsListener {
 
         $tagsSelected = Input::post($dc->inputName);
 
+        $preventAddingNewTags = (!$this->security->isGranted('ROLE_ADMIN') && $this->security->isGranted('contao_user.tags_disable_add_new'));
+
+        // Contao 4.13 compatibility
+        if( version_compare(ContaoCoreBundle::getVersion(),'4.13.0', '>=') && version_compare(ContaoCoreBundle::getVersion(),'5.0.0', '<') ) {
+
+            $user = BackendUser::getInstance();
+            $preventAddingNewTags = !empty($user->tags_disable_add_new);
+        }
+
+        // add inline-script to TL_MOOTOOLS so we can figure out if users are prohibited from adding new tags
+        if( $preventAddingNewTags ) {
+            $GLOBALS['TL_MOOTOOLS'][] = Template::generateInlineScript("window.tagsDisableAddNew = true;");
+        }
+
         // adds a newly created tag on POST
         if( $tagsSelected ) {
 
@@ -62,6 +91,12 @@ class TagsListener {
                 }
 
                 if( !is_numeric($tag) ) {
+
+                    // normal users might be prohibited from adding new tags
+                    if( $preventAddingNewTags ) {
+                        unset($tagsSelected[$i]);
+                        continue;
+                    }
 
                     $model = TagsModel::findByTag($tag);
 

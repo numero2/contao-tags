@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<xliff version="1.1">
+<file>
+<body>
+    <!-- LEGENDS -->
+    <trans-unit id="tl_user.tags_legend">
+        <source>Tags permissions</source>
+        <target>Tags-Rechte</target>
+    </trans-unit>
+    <!-- FIELDS -->
+    <trans-unit id="tl_user.tags_disable_add_new.0">
+        <source>Prohibit creating new tags</source>
+        <target>Anlegen neuer Tags verbieten</target>
+    </trans-unit>
+    <trans-unit id="tl_user.tags_disable_add_new.1">
+        <source>Users can only select from existing tags and cannot create new tags.</source>
+        <target>Nutzer können lediglich aus bestehenden Tags auswählen und keine neuen Tags anlegen.</target>
+    </trans-unit>
+</body>
+</file>
+</xliff>
