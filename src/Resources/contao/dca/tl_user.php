@@ -30,5 +30,5 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['tags_disable_add_new'] = [
     'exclude'       => true
 ,   'inputType'     => 'checkbox'
 ,   'eval'          => ['tl_class'=>'w50 m12']
-,   'sql'           => "char(1) NOT NULL default ''"
+,   'sql'           => "blob NULL"
 ];
