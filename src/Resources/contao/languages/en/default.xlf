@@ -5,6 +5,9 @@
     <trans-unit id="MSC.tagsMergeSelected">
         <source>Merge</source>
     </trans-unit>
+    <trans-unit id="MSC.pressEnterToAdd">
+        <source>Press enter to add "%s"</source>
+    </trans-unit>
     <trans-unit id="mod_tag_cloud.reset_filter">
         <source>Reset filter</source>
     </trans-unit>

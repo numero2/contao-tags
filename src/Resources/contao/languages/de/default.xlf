@@ -6,6 +6,10 @@
         <source>Merge</source>
         <target>Zusammenführen</target>
     </trans-unit>
+    <trans-unit id="MSC.pressEnterToAdd">
+        <source>Press enter to add "%s"</source>
+        <target>Drücke Eingabe um "%s" hinzuzufügen</target>
+    </trans-unit>
     <trans-unit id="mod_tag_cloud.reset_filter">
         <source>Reset filter</source>
         <target>Filter zurücksetzen</target>

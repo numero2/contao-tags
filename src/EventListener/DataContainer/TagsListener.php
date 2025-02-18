@@ -73,6 +73,11 @@ class TagsListener {
 
             $user = BackendUser::getInstance();
             $preventAddingNewTags = !empty($user->tags_disable_add_new);
+
+        } else {
+
+            // add message for Choices.js
+            $GLOBALS['TL_MOOTOOLS'][] = Template::generateInlineScript("window.Contao.lang.enterAdd = '".$GLOBALS['TL_LANG']['MSC']['pressEnterToAdd']."';");
         }
 
         // add inline-script to TL_MOOTOOLS so we can figure out if users are prohibited from adding new tags
