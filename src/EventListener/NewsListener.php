@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -179,6 +179,10 @@ class NewsListener {
                         $requestStack = System::getContainer()->get('request_stack');
                         $request = $requestStack->getCurrentRequest();
                         $page = $request->get('pageModel');
+
+                        if( !($page instanceof PageModel) ) {
+                            $page = PageModel::findById($page);
+                        }
 
                         if( $page->enableCanonical ) {
                             $url = $page->getAbsoluteUrl();
