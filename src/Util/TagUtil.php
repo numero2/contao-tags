@@ -59,7 +59,7 @@ class TagUtil {
         }
 
         // for nicer url allow one tag to be used directly if it only got nice charatcers
-        if( count($tags) === 1 && preg_match("/^[\w]+$/", $tags[0]) ) {
+        if( count($tags) === 1 && preg_match("/^[\w\-_]+$/", $tags[0]) ) {
             return $tags[0];
         }
 
