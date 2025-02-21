@@ -23,14 +23,29 @@ use Contao\NewsModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
+use numero2\TagsBundle\Event\TagsEvents;
+use numero2\TagsBundle\Event\TagsGetListEvent;
 use numero2\TagsBundle\ModuleNewsListRelatedTags;
 use numero2\TagsBundle\ModuleNewsListTags;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
 use numero2\TagsBundle\Util\TagUtil;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 
 class NewsListener {
+
+
+    /**
+     * @var Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+
+    public function __construct( EventDispatcherInterface $eventDispatcher ) {
+
+        $this->eventDispatcher = $eventDispatcher;
+    }
 
 
     /**
@@ -267,7 +282,7 @@ class NewsListener {
 
 
     /**
-     * Adds our additional data to the article
+     * Adds tags data to the article
      *
      * @param FrontendTemplate $objTemplate
      * @param $arrArticle
@@ -290,6 +305,11 @@ class NewsListener {
 
             $oTags = null;
             $oTags = TagsModel::findByIdForFieldAndTable($arrArticle['id'], 'tags', NewsModel::getTable());
+
+            // filter tags
+            $event = new TagsGetListEvent($oTags, 'tags', NewsModel::getTable(), $objModule->getModel());
+            $this->eventDispatcher->dispatch($event, TagsEvents::TAGS_GET_LIST);
+            $oTags = $event->getTags();
 
             if( $oTags ) {
 

@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -19,13 +19,35 @@ use Contao\ModuleModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\Template;
+use numero2\TagsBundle\Event\TagsEvents;
+use numero2\TagsBundle\Event\TagsGetListEvent;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\Util\TagUtil;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
 abstract class AbstractTagCloudController extends AbstractFrontendModuleController {
+
+
+    /**
+     * @var string
+     */
+    protected $field;
+
+    /**
+     * @var string
+     */
+    protected $table;
+
+    /**
+     * @var Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+
+    abstract public function __construct( EventDispatcherInterface $eventDispatcher );
 
 
     /**
@@ -36,6 +58,11 @@ abstract class AbstractTagCloudController extends AbstractFrontendModuleControll
         $page = $this->getPageModel();
 
         $oTags = $this->getTags($model, $request);
+
+        // filter tags
+        $event = new TagsGetListEvent($oTags, $this->field??'', $this->table??'', $model);
+        $this->eventDispatcher->dispatch($event, TagsEvents::TAGS_GET_LIST);
+        $oTags = $event->getTags();
 
         if( $oTags ) {
 

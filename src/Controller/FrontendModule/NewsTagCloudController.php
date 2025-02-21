@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -17,10 +17,12 @@ use Contao\CoreBundle\ServiceAnnotation\FrontendModule;
 use Contao\Model\Collection;
 use Contao\ModuleModel;
 use Contao\NewsArchiveModel;
+use Contao\NewsModel;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
 use numero2\TagsBundle\TagsModel;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 
@@ -31,6 +33,15 @@ use Symfony\Component\HttpFoundation\Request;
  * )
  */
 class NewsTagCloudController extends AbstractTagCloudController {
+
+
+    public function __construct( EventDispatcherInterface $eventDispatcher ) {
+
+        $this->field = 'tags';
+        $this->table = NewsModel::getTable();
+
+        $this->eventDispatcher = $eventDispatcher;
+    }
 
 
     /**

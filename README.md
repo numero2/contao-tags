@@ -118,3 +118,24 @@ In the `eval` section we add a class called `tags` - this is also needed for the
 | Option             | Description                                                                                                                                                                                                                                     |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `groupTagsByField` | If set to `true` the user will only be able to select from a list of tags that have been already used on this specific field in the current table. If set to `false`or not set at all, the user will be able to choose from all tags available. |
+
+### Events
+
+If you want to filter the tags shown in events and/or news, you can use the `contao.tags_get_list` event to modify the tags that will be used in the templates.
+
+```php
+// src/EventListener/TagGetListListener.php
+namespace App\EventListener;
+
+use numero2\TagsBundle\Event\TagsEvents;
+use numero2\TagsBundle\Event\TagsGetListEvent;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+
+#[AsEventListener(TagsEvents::TAGS_GET_LIST)]
+class TagGetListListener {
+
+    public function __invoke( TagsGetListEvent $event ): void {
+        // …
+    }
+}
+```

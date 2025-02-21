@@ -17,9 +17,13 @@ services:
 
     numero2_tags.listener.events:
         class: numero2\TagsBundle\EventListener\EventsListener
+        arguments:
+            - '@event_dispatcher'
 
     numero2_tags.listener.news:
         class: numero2\TagsBundle\EventListener\NewsListener
+        arguments:
+            - '@event_dispatcher'
 
     numero2_tags.listener.tags:
         class: numero2\TagsBundle\EventListener\TagsListener

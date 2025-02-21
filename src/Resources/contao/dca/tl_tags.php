@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
  */
 
 use Contao\DataContainer;
@@ -29,7 +29,7 @@ $GLOBALS['TL_DCA']['tl_tags'] = [
             'mode'                  => DataContainer::MODE_SORTABLE
         ,   'fields'                => ['tag']
         ,   'flag'                  => DataContainer::SORT_INITIAL_LETTER_ASC
-        ,   'panelLayout'           => 'sort,search,limit'
+        ,   'panelLayout'           => 'filter;sort,search,limit'
         ]
     ,   'label' => [
             'fields'                => ['tag']

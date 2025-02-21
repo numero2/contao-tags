@@ -6,12 +6,13 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
  */
 
 
 namespace numero2\TagsBundle\Controller\FrontendModule;
 
+use Contao\CalendarEventsModel;
 use Contao\CalendarModel;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
 use Contao\CoreBundle\ServiceAnnotation\FrontendModule;
@@ -22,6 +23,7 @@ use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
 use numero2\TagsBundle\TagsModel;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 
@@ -32,6 +34,15 @@ use Symfony\Component\HttpFoundation\Request;
  * )
  */
 class EventsTagCloudController extends AbstractTagCloudController {
+
+
+    public function __construct( EventDispatcherInterface $eventDispatcher ) {
+
+        $this->field = 'tags';
+        $this->table = CalendarEventsModel::getTable();
+
+        $this->eventDispatcher = $eventDispatcher;
+    }
 
 
     /**
