@@ -114,6 +114,8 @@ class TagUtil {
             $aTag['title'] = $tag->tag;
         }
 
+        $aTag['title'] = StringUtil::restoreBasicEntities($aTag['title']);
+
         return $aTag;
     }
 }
