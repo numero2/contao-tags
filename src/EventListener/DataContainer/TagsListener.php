@@ -88,6 +88,11 @@ class TagsListener {
         // adds a newly created tag on POST
         if( $tagsSelected ) {
 
+            // might not be an array if multiple=>false
+            if( !is_array($tagsSelected) ) {
+                $tagsSelected = [$tagsSelected];
+            }
+
             foreach( $tagsSelected as $i => $tag ) {
 
                 if( empty($tag) ) {
