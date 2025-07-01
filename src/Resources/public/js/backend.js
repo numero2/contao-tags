@@ -24,27 +24,15 @@
                 input._tagsContainer = tags;
                 input._tagsSelect = el;
 
-                input.addEventListener('keydown', (e)=>{
-
-                    const ENTER_KEY = 13;
-                    const COMMA_KEY = 188;
-                    const TAB_KEY = 9;
-
-                    if( ![ENTER_KEY, COMMA_KEY, TAB_KEY].includes(e.keyCode) ) {
-                        return;
-                    }
-
-                    if( [TAB_KEY, COMMA_KEY].includes(e.keyCode) ) {
-                        e.preventDefault();
-                    }
+                const handleInput = ()=>{
 
                     const results = input._tagsContainer.querySelector('ul.chzn-results');
                     let alreadyExists = Boolean(results.querySelector('li.highlighted'));
 
                     if( !alreadyExists ) {
                         alreadyExists = [...input._tagsSelect.querySelectorAll('option')].some(option => option.value === input.value);
-
                     }
+
                     if( !alreadyExists ) {
 
                         // prevent user from adding new tag if prohibited
@@ -72,6 +60,34 @@
 
                         initTagsSelector(input._tagsSelect);
                     }
+                };
+
+                input.addEventListener('input', (e)=>{
+
+                    if( e.data !== ',' ) {
+                        return;
+                    }
+
+                    input.value = input.value.slice(0, -1);
+                    handleInput();
+                });
+
+                input.addEventListener('keydown', (e)=>{
+
+                    const ENTER_KEY = 13;
+                    const COMMA_KEY = 188;
+                    const COMMA_KEY_NUMPAD = 108;
+                    const TAB_KEY = 9;
+
+                    if( ![ENTER_KEY, COMMA_KEY, COMMA_KEY_NUMPAD, TAB_KEY].includes(e.keyCode) ) {
+                        return;
+                    }
+
+                    if( [TAB_KEY, COMMA_KEY, COMMA_KEY_NUMPAD].includes(e.keyCode) ) {
+                        e.preventDefault();
+                    }
+
+                    handleInput();
                 });
             };
 
