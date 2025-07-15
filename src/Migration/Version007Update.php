@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -40,14 +40,14 @@ class Version007Update extends AbstractMigration {
 
         $this->framework = $framework;
         $this->framework->initialize();
-        
+
         $this->connection = $connection;
     }
 
 
     public function shouldRun(): bool {
 
-        $schemaManager = $this->connection->getSchemaManager();
+        $schemaManager = $this->connection->createSchemaManager();
 
         $t = TagsModel::getTable();
 
@@ -71,7 +71,7 @@ class Version007Update extends AbstractMigration {
                             if( !array_key_exists($dca,$this->fields) ) {
                                 $this->fields[$dca] = [];
                             }
-                            
+
                             if( in_array($field,$this->fields[$dca]) === false ) {
                                 $this->fields[$dca][] = $field;
                             }
@@ -94,7 +94,7 @@ class Version007Update extends AbstractMigration {
                     if( in_array($field, $columns) ) {
 
                         $res = $this->connection->prepare("SELECT 1 FROM $dca WHERE $field IS NOT NULL AND $field NOT LIKE '%:\"%'; ")->executeQuery();
-    
+
                         // return as soon as we found our first value in the wrong format
                         if( $res && $res->rowCount() ) {
                             return true;
@@ -123,15 +123,14 @@ class Version007Update extends AbstractMigration {
                         $value = StringUtil::deserialize($row[$field]);
 
                         if( !empty($value) ) {
-                            
+
                             // cast each id explicitly into a string
                             $value = array_map(fn($v): string => (string)$v, $value);
 
                             $row[$field] = serialize($value);
 
                             // update the row
-                            $updateStmt = $this->connection->prepare("UPDATE $dca SET $field = :$field WHERE id = :id");
-                            $updateStmt->execute($row);
+                            $updateStmt = $this->connection->executeStatement("UPDATE $dca SET $field = :$field WHERE id = :id", $row);
                         }
                     }
                 }

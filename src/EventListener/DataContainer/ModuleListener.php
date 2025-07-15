@@ -138,21 +138,20 @@ class ModuleListener {
         $result = null;
         if( $ptable ) {
 
-            $result = $this->connection
-                ->prepare(
-                    "SELECT DISTINCT tag.id, tag.tag
-                    FROM $tTag AS tag
-                    JOIN $tRel AS rel ON (rel.tag_id=tag.id AND rel.ptable=:ptable AND rel.field=:field)
-                    ORDER BY tag.tag ASC")
-                ->executeQuery(['ptable'=>$ptable, 'field'=>'tags'])
-            ;
+            $result = $this->connection->executeQuery(
+                "SELECT DISTINCT tag.id, tag.tag
+                FROM $tTag AS tag
+                JOIN $tRel AS rel ON (rel.tag_id=tag.id AND rel.ptable=:ptable AND rel.field=:field)
+                ORDER BY tag.tag ASC"
+            ,   ['ptable'=>$ptable, 'field'=>'tags']
+            );
         }
 
         $tags = [];
 
         if( $result && $result->rowCount() ) {
 
-            $rows = $result->fetchAll();
+            $rows = $result->fetchAllAssociative();
 
             foreach( $rows as $row ) {
                 $tags[$row['id']] = $row['tag'];

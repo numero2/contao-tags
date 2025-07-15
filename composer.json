@@ -11,7 +11,7 @@
     ],
     "require": {
         "contao/core-bundle": "^4.13 || ^5.0",
-        "doctrine/dbal": "^3.3",
+        "doctrine/dbal": "^3.6 || ^4.3",
         "psr/log": "^1.1 || 2.0 || ^3.0",
         "symfony/config": "^5.4 || ^6.4 || ^7.0",
         "symfony/console": "^5.4 || ^6.4 || ^7.0",

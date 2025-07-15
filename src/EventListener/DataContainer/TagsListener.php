@@ -170,10 +170,10 @@ class TagsListener {
         $tRel = TagsRelModel::getTable();
 
         // remove all tag relations for this element
-        $this->connection
-            ->prepare("DELETE FROM $tRel WHERE pid=? AND ptable=? AND field=?")
-            ->executeStatement([$dc->activeRecord->id, $dc->table, $dc->field])
-        ;
+        $this->connection->executeStatement(
+            "DELETE FROM $tRel WHERE pid=? AND ptable=? AND field=?"
+        ,   [$dc->activeRecord->id, $dc->table, $dc->field]
+        );
 
         if( !empty($varValue) ) {
 
@@ -182,10 +182,10 @@ class TagsListener {
             // add tag relations for this element
             foreach( $tags as $i => $id ) {
 
-                $this->connection
-                    ->prepare("INSERT INTO $tRel (tag_id, pid, ptable, field) VALUES (?,?,?,?)")
-                    ->executeStatement([$id, $dc->activeRecord->id, $dc->table, $dc->field])
-                ;
+                $this->connection->executeStatement(
+                    "INSERT INTO $tRel (tag_id, pid, ptable, field) VALUES (?,?,?,?)"
+                ,   [$id, $dc->activeRecord->id, $dc->table, $dc->field]
+                );
 
                 // explicitly cast the id into a string, otherwise the filter options in the backend won't work
                 $tags[$i] = (string)$id;
@@ -267,10 +267,10 @@ class TagsListener {
 
                             if( $rel['tag_id'] != $newId ) {
 
-                                $this->connection
-                                    ->prepare("INSERT INTO $tRel (tag_id, pid, ptable, field) VALUES (?,?,?,?)")
-                                    ->executeStatement([$newId, $rel['pid'], $rel['ptable'], $rel['field']])
-                                ;
+                                $this->connection->executeStatement(
+                                    "INSERT INTO $tRel (tag_id, pid, ptable, field) VALUES (?,?,?,?)"
+                                ,   [$newId, $rel['pid'], $rel['ptable'], $rel['field']]
+                                );
                             }
                         }
                     }
@@ -278,10 +278,10 @@ class TagsListener {
                     // delete rel for other tags
                     foreach( $rowsProcessed as $hash => $rel ) {
 
-                        $this->connection
-                            ->prepare("DELETE FROM $tRel WHERE tag_id!=? AND pid=? AND ptable=? AND field=?")
-                            ->executeStatement([$newId, $rel['pid'], $rel['ptable'], $rel['field']])
-                        ;
+                        $this->connection->executeStatement(
+                            "DELETE FROM $tRel WHERE tag_id!=? AND pid=? AND ptable=? AND field=?"
+                        ,   [$newId, $rel['pid'], $rel['ptable'], $rel['field']]
+                        );
                     }
 
                     // delete tag for other tags
