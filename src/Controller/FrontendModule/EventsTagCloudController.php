@@ -179,7 +179,7 @@ class EventsTagCloudController extends AbstractTagCloudController {
 
         // Create the date object
         $objDate = null;
-        $strFormat = null;
+        $strFormat = $model->cal_format;
         if( $blnDynamicFormat && $intYear ) {
             $objDate = new Date($intYear, 'Y');
             $strFormat = 'cal_year';
