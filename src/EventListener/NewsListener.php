@@ -65,7 +65,7 @@ class NewsListener {
 
         if( $module instanceof ModuleNewsListRelatedTags ) {
 
-            $alias = Input::get('items');
+            $alias = Input::get('items') ?? Input::get('auto_item');
             $currentNews = NewsModel::findPublishedByParentAndIdOrAlias($alias, $newsArchives);
 
             $news = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured);
@@ -149,7 +149,7 @@ class NewsListener {
 
         if( $module instanceof ModuleNewsListRelatedTags ) {
 
-            $alias = Input::get('items');
+            $alias = Input::get('items') ?? Input::get('auto_item');
             $currentNews = NewsModel::findPublishedByParentAndIdOrAlias($alias, $newsArchives);
 
             $news = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured, $limit, $offset, $arrOptions);

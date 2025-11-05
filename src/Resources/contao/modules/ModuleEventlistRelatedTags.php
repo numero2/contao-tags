@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -50,7 +50,7 @@ class ModuleEventlistRelatedTags extends ModuleEventlist {
         }
 
         // Return an empty string if "events" is not set, because cannot find related without event
-        if( !Input::get('events') ) {
+        if( !Input::get('events') && !Input::get('auto_item') ) {
             return '';
         }
 

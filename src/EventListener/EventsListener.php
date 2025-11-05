@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -46,7 +46,7 @@ class EventsListener {
 
         if( $module instanceof ModuleEventlistRelatedTags ) {
 
-            $alias = Input::get('events');
+            $alias = Input::get('events') ?? Input::get('auto_item');
             $currentEvent = CalendarEventsModel::findPublishedByParentAndIdOrAlias($alias, $calendars);
 
             $eventTags = TagsModel::findByIdForFieldAndTable($currentEvent->id, 'tags', CalendarEventsModel::getTable());
