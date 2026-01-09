@@ -268,7 +268,7 @@ class NewsListener {
         }
 
         // limit articles
-        if( $module instanceof ModuleNewsListTags && ($limit || $offset) ) {
+        if( $news !== null && $module instanceof ModuleNewsListTags && ($limit || $offset) ) {
 
             $articles = [];
             $articles = $news->getModels();
