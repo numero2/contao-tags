@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -15,6 +15,8 @@ use Contao\NewsBundle\ContaoNewsBundle;
 
 
 if( class_exists(ContaoNewsBundle::class) ) {
+
+    $GLOBALS['TL_DCA']['tl_news']['config']['oncopy_callback'][] = ['numero2_tags.listener.data_container.tags', 'onCopy'];
 
     $pm = PaletteManipulator::create()
         ->addLegend('tags_legend', 'teaser_legend', 'before')
