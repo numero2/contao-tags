@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -216,6 +216,49 @@ class TagsListener {
         }
 
         return [];
+    }
+
+
+    /**
+     * On copy also copy all entries in tag relation table, except for the fields with doNotCopy
+     *
+     * @param mixed $insertId
+     * @param Contao\DataContainer $dc
+     */
+    public function onCopy( $insertId, DataContainer $dc ): void {
+
+        $srcId = $dc->id;
+        $table = $dc->table;
+        $destId = $insertId;
+
+        $t = TagsRelModel::getTable();
+        $rows = $this->connection->executeQuery(
+            "SELECT * FROM $t WHERE ptable=:ptable AND pid=:pid"
+        ,   ['ptable'=> $table,'pid'=>$srcId]
+        )->fetchAllAssociative();
+
+        // get present rows as md5
+        $present = $this->connection->executeQuery(
+            "SELECT MD5(CONCAT_WS(';',tag_id,pid,ptable,field)) FROM $t WHERE ptable=:ptable AND pid=:pid"
+        ,   ['ptable'=> $table,'pid'=>$destId]
+        )->fetchFirstColumn();
+
+        foreach( $rows as $row ) {
+
+            if( $GLOBALS['TL_DCA']['tl_news']['fields'][$row['field']]['eval']['doNotCopy'] ?? false ) {
+                continue;
+            }
+
+            $md5NewRow = md5(implode(';', [$row['tag_id'], $destId, $row['ptable'], $row['field']]));
+            if( in_array($md5NewRow, $present) ) {
+                continue;
+            }
+
+            $this->connection->executeStatement(
+                "INSERT INTO $t (tag_id, pid, ptable, field) VALUES (:tagId, :pid, :ptable, :field)"
+            ,   ['tagId'=>$row['tag_id'], 'pid'=>$destId, 'ptable'=>$row['ptable'], 'field'=>$row['field']]
+            );
+        }
     }
 
 

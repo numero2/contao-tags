@@ -113,6 +113,13 @@ $GLOBALS['TL_DCA']['tl_my_extension']['fields']['my_tags'] = [
 `foreignKey`, `options_callback`and `save_callback`are mandatory.
 In the `eval` section we add a class called `tags` - this is also needed for the JavaScript handling. There are some more options which can be defined in `eval`.
 
+If you also want to enable copying tags while copying an entry, you must add following code to your dca
+```php
+$GLOBALS['TL_DCA']['tl_my_extension']['config']['oncopy_callback'][] = ['numero2_tags.listener.data_container.tags', 'onCopy'];
+```
+This will copy all tags for the copied entry, except the fields excluded by `doNotCopy`.
+
+
 ### Eval-Options
 
 | Option             | Description                                                                                                                                                                                                                                     |
