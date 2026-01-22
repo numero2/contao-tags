@@ -11,8 +11,8 @@
         <target>Tags</target>
     </trans-unit>
     <trans-unit id="tl_news.tags.1">
-        <source>List of tags / keywords describing this news item.</source>
-        <target>Liste von Tags / Schlagwörtern die diese Nachricht beschreiben.</target>
+        <source>Tags are used to clearly categorize this news. Enter a tag and confirm with ENTER to add it.</source>
+        <target>Tags helfen dabei, diese Nachricht eindeutig zuzuordnen. Geben Sie einen Tag ein und bestätigen Sie mit ENTER, um ihn hinzuzufügen.</target>
     </trans-unit>
 </body>
 </file>

@@ -9,7 +9,7 @@
         <source>Tags</source>
     </trans-unit>
     <trans-unit id="tl_news.tags.1">
-        <source>List of tags / keywords describing this news item.</source>
+        <source>Tags are used to clearly categorize this news. Enter a tag and confirm with ENTER to add it.</source>
     </trans-unit>
 </body>
 </file>

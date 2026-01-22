@@ -9,7 +9,7 @@
         <source>Tags</source>
     </trans-unit>
     <trans-unit id="tl_calendar_events.tags.1">
-        <source>List of tags / keywords describing this event.</source>
+        <source>Tags are used to clearly categorize this event. Enter a tag and confirm with ENTER to add it.</source>
     </trans-unit>
 </body>
 </file>
