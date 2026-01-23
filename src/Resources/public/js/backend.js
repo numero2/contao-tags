@@ -117,12 +117,12 @@
                         const options = Array.from(select.options).map(option => option.textContent);
                         return !options.includes(value);
                     },
-                    shouldSort: false,
+                    shouldSort: true,
                     duplicateItemsAllowed: false,
                     allowHTML: false,
                     removeItemButton: true,
                     renderSelectedChoices: false,
-                    searchEnabled: select.options.length > 7,
+                    searchEnabled: true,
                     classNames: {
                         containerOuter: ['choices', ...Array.from(select.classList)],
                         flippedState: '',
