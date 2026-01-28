@@ -23,6 +23,7 @@ use Contao\Input;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
@@ -291,7 +292,7 @@ class TagsListener {
                 $tagsRel = $this->connection->executeQuery(
                     "SELECT * FROM $tRel WHERE tag_id in (:ids)"
                 ,   ['ids'=>$ids]
-                ,   ['ids'=>Connection::PARAM_INT_ARRAY]
+                ,   ['ids'=>ArrayParameterType::INTEGER]
                 )->fetchAllAssociative();
 
                 if( !empty($tagsRel) ) {
@@ -330,7 +331,7 @@ class TagsListener {
                     $this->connection->executeStatement(
                         "DELETE FROM $tTag WHERE id!=:id AND id in (:ids)"
                     ,   ['id'=>$newId, 'ids'=>$ids]
-                    ,   ['ids'=>Connection::PARAM_INT_ARRAY]
+                    ,   ['ids'=>ArrayParameterType::INTEGER]
                     );
                 }
 
