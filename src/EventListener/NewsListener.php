@@ -39,7 +39,7 @@ class NewsListener {
     /**
      * @var Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
 
     public function __construct( EventDispatcherInterface $eventDispatcher ) {

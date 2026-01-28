@@ -38,10 +38,10 @@ class EventsTagCloudController extends AbstractTagCloudController {
 
     public function __construct( EventDispatcherInterface $eventDispatcher ) {
 
+        parent::__construct($eventDispatcher);
+
         $this->field = 'tags';
         $this->table = CalendarEventsModel::getTable();
-
-        $this->eventDispatcher = $eventDispatcher;
     }
 
 

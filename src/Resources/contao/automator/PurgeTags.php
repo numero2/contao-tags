@@ -29,7 +29,7 @@ class PurgeTags {
     /**
      * @var Psr\Log\LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
 
     public function __construct( Connection $connection, LoggerInterface $logger ) {
@@ -44,17 +44,16 @@ class PurgeTags {
         $tTag = TagsModel::getTable();
         $tRel = TagsRelModel::getTable();
 
-        $schemaManager = $this->connection->getSchemaManager();
+        $schemaManager = $this->connection->createSchemaManager();
 
         // get used table, field from relations
-        $result = $this->connection->executeQuery(
+        $rows = $this->connection->executeQuery(
             "SELECT DISTINCT ptable, field FROM $tRel"
-        );
+        )->fetchAllAssociative();
 
-        if( $result && $result->rowCount() ) {
+        if( !empty($rows) ) {
 
             $entries = [];
-            $rows = $result->fetchAll();
 
             foreach( $rows as $row ) {
                 $entries[$row['ptable']][] = $row['field'];
@@ -75,8 +74,11 @@ class PurgeTags {
                 foreach( $fields as $field ) {
 
                     $columns = $schemaManager->listTableColumns($table);
+                    $columns = array_map(function( $column ) {
+                        return $column->getName();
+                    }, $columns);
 
-                    if( empty($field) || !isset($columns[$field]) ) {
+                    if( empty($field) || !in_array($field, $columns) ) {
 
                         // remove tag relation where field in table not exists
                         $this->connection->executeStatement(

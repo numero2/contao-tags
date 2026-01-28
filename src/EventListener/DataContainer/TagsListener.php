@@ -40,12 +40,12 @@ class TagsListener {
     /**
      * @var Doctrine\DBAL\Connection
      */
-    private $connection;
+    private Connection $connection;
 
     /**
      * @var Symfony\Component\Security\Core\Security
      */
-    private $security;
+    private Security $security;
 
 
     public function __construct( Connection $connection, Security $security ) {
@@ -234,13 +234,13 @@ class TagsListener {
         $t = TagsRelModel::getTable();
         $rows = $this->connection->executeQuery(
             "SELECT * FROM $t WHERE ptable=:ptable AND pid=:pid"
-        ,   ['ptable'=> $table,'pid'=>$srcId]
+        ,   ['ptable'=> $table, 'pid'=>$srcId]
         )->fetchAllAssociative();
 
         // get present rows as md5
         $present = $this->connection->executeQuery(
             "SELECT MD5(CONCAT_WS(';',tag_id,pid,ptable,field)) FROM $t WHERE ptable=:ptable AND pid=:pid"
-        ,   ['ptable'=> $table,'pid'=>$destId]
+        ,   ['ptable'=> $table, 'pid'=>$destId]
         )->fetchFirstColumn();
 
         foreach( $rows as $row ) {
@@ -288,15 +288,14 @@ class TagsListener {
 
                 $newId = $ids[0];
 
-                $res = $this->connection->executeQuery(
+                $tagsRel = $this->connection->executeQuery(
                     "SELECT * FROM $tRel WHERE tag_id in (:ids)"
                 ,   ['ids'=>$ids]
                 ,   ['ids'=>Connection::PARAM_INT_ARRAY]
-                );
+                )->fetchAllAssociative();
 
-                if( $res && $res->rowCount() ) {
+                if( !empty($tagsRel) ) {
 
-                    $tagsRel = $res->fetchAll();
                     $rowsProcessed = [];
 
                     // create rel for first tag and gather entries
@@ -328,7 +327,7 @@ class TagsListener {
                     }
 
                     // delete tag for other tags
-                    $res = $this->connection->executeStatement(
+                    $this->connection->executeStatement(
                         "DELETE FROM $tTag WHERE id!=:id AND id in (:ids)"
                     ,   ['id'=>$newId, 'ids'=>$ids]
                     ,   ['ids'=>Connection::PARAM_INT_ARRAY]

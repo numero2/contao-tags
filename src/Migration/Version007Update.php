@@ -26,14 +26,17 @@ class Version007Update extends AbstractMigration {
     /**
      * @var Contao\CoreBundle\Framework\ContaoFramework
      */
-    private $framework;
+    private ContaoFramework $framework;
 
     /**
      * @var Doctrine\DBAL\Connection
      */
-    private $connection;
+    private Connection $connection;
 
-    private $fields = [];
+    /**
+     * @var array
+     */
+    private array $fields = [];
 
 
     public function __construct( ContaoFramework $framework, Connection $connection ) {
@@ -59,7 +62,7 @@ class Version007Update extends AbstractMigration {
         // check which DataContainer contain a tags field
         if( !empty($GLOBALS['TL_DCA']) ) {
 
-            foreach( $GLOBALS['TL_DCA'] as $dca => $config ) {
+            foreach( $GLOBALS['TL_DCA'] as $dca => $configArray ) {
 
                 if( !empty($GLOBALS['TL_DCA'][$dca]['fields']) ) {
 
@@ -68,11 +71,11 @@ class Version007Update extends AbstractMigration {
                         // if a field references our tags table it's a match
                         if( !empty($config['foreignKey']) && stripos($config['foreignKey'], $t.'.') !== false ) {
 
-                            if( !array_key_exists($dca,$this->fields) ) {
+                            if( !array_key_exists($dca, $this->fields) ) {
                                 $this->fields[$dca] = [];
                             }
 
-                            if( in_array($field,$this->fields[$dca]) === false ) {
+                            if( in_array($field, $this->fields[$dca]) === false ) {
                                 $this->fields[$dca][] = $field;
                             }
                         }
@@ -84,19 +87,24 @@ class Version007Update extends AbstractMigration {
         // check if any of these fields contain data that needs to be altered
         if( !empty($this->fields) ) {
 
-            foreach( $this->fields as $dca => $fields ) {
+            foreach( $this->fields as $table => $fields ) {
 
                 foreach( $fields as $field ) {
 
                     // check if field already exists
-                    $columns = $schemaManager->listTableColumns($dca);
+                    $columns = $schemaManager->listTableColumns($table);
+                    $columns = array_map(function( $column ) {
+                        return $column->getName();
+                    }, $columns);
 
                     if( in_array($field, $columns) ) {
 
-                        $res = $this->connection->prepare("SELECT 1 FROM $dca WHERE $field IS NOT NULL AND $field NOT LIKE '%:\"%'; ")->executeQuery();
+                        $count = $this->connection->executeQuery(
+                            "SELECT count(1) FROM $table WHERE $field IS NOT NULL AND $field NOT LIKE '%:\"%'; "
+                        )->fetchOne();
 
                         // return as soon as we found our first value in the wrong format
-                        if( $res && $res->rowCount() ) {
+                        if( intval($count) > 0 ) {
                             return true;
                         }
                     }
@@ -110,15 +118,17 @@ class Version007Update extends AbstractMigration {
 
     public function run(): MigrationResult {
 
-        foreach( $this->fields as $dca => $fields ) {
+        foreach( $this->fields as $table => $fields ) {
 
             foreach( $fields as $field ) {
 
-                $selectStmt = $this->connection->prepare("SELECT id, $field FROM $dca WHERE $field IS NOT NULL AND $field NOT LIKE '%:\"%'; ")->executeQuery();
+                $rows = $this->connection->executeQuery(
+                    "SELECT id, $field FROM $table WHERE $field IS NOT NULL AND $field NOT LIKE '%:\"%'; "
+                )->fetchAllAssociative();
 
-                if( $selectStmt && $selectStmt->rowCount() ) {
+                if( !empty($rows) ) {
 
-                    foreach( $selectStmt->fetchAll() as $row ) {
+                    foreach( $rows as $row ) {
 
                         $value = StringUtil::deserialize($row[$field]);
 
@@ -130,7 +140,7 @@ class Version007Update extends AbstractMigration {
                             $row[$field] = serialize($value);
 
                             // update the row
-                            $updateStmt = $this->connection->executeStatement("UPDATE $dca SET $field = :$field WHERE id = :id", $row);
+                            $this->connection->executeStatement("UPDATE $table SET $field = :$field WHERE id = :id", $row);
                         }
                     }
                 }

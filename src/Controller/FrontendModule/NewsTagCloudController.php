@@ -37,10 +37,10 @@ class NewsTagCloudController extends AbstractTagCloudController {
 
     public function __construct( EventDispatcherInterface $eventDispatcher ) {
 
+        parent::__construct($eventDispatcher);
+
         $this->field = 'tags';
         $this->table = NewsModel::getTable();
-
-        $this->eventDispatcher = $eventDispatcher;
     }
 
 

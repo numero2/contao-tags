@@ -34,20 +34,23 @@ abstract class AbstractTagCloudController extends AbstractFrontendModuleControll
     /**
      * @var string
      */
-    protected $field;
+    protected string $field;
 
     /**
      * @var string
      */
-    protected $table;
+    protected string $table;
 
     /**
      * @var Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
-    protected $eventDispatcher;
+    protected EventDispatcherInterface $eventDispatcher;
 
 
-    abstract public function __construct( EventDispatcherInterface $eventDispatcher );
+    public function __construct( EventDispatcherInterface $eventDispatcher ) {
+
+        $this->eventDispatcher = $eventDispatcher;
+    }
 
 
     /**

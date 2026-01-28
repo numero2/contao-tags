@@ -132,7 +132,7 @@ class TagsListener {
 
         if( $tag[0] === 'tag_link' ) {
 
-            if( in_array($flag,['get','absolute']) ) {
+            if( in_array($flag, ['get', 'absolute']) ) {
                 return $cachedValue;
             }
         }
