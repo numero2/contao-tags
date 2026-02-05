@@ -17,7 +17,8 @@ $GLOBALS['TL_DCA']['tl_tags'] = [
 
     'config' => [
         'dataContainer'             => DC_Table::class
-    ,   'closed'                    => true
+    ,   'notCreatable'              => true
+    ,   'notCopyable'               => true
     ,   'sql' => [
             'keys' => [
                 'id' => 'primary'
@@ -50,7 +51,7 @@ $GLOBALS['TL_DCA']['tl_tags'] = [
         ]
     ]
 ,   'palettes' => [
-        'default'                   => '{title_legend},tag,translation'
+        'default'                   => '{title_legend},tag,translation;{publish_legend},invisible;'
     ]
 ,   'fields' => [
 
@@ -78,6 +79,12 @@ $GLOBALS['TL_DCA']['tl_tags'] = [
             ,   'tl_class' => 'clr'
             ]
         ,   'sql'                   => "blob NULL"
+        ]
+    ,   'invisible' => [
+            'inputType'             => 'checkbox'
+        ,   'filter'                => true
+        ,   'eval'                  => ['tl_class'=>'w50']
+        ,   'sql'                   => "char(1) NOT NULL default ''"
         ]
     ]
 ];

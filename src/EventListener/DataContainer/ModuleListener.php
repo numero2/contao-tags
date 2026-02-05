@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -51,13 +51,17 @@ class ModuleListener {
         if( class_exists(ContaoCalendarBundle::class) ) {
 
             PaletteManipulator::create()
-                ->addField(['ignoreTags', 'tags_match_all'], 'config_legend', 'append')
+                ->addField(['jumpToTags', 'ignoreTags', 'tags_match_all'], 'config_legend', PaletteManipulator::POSITION_APPEND)
                 ->applyToPalette('eventlist', $dc->table);
 
-            $pm = PaletteManipulator::create()
-                ->addField('jumpToTags', 'config_legend', 'append');
+            PaletteManipulator::create()
+                ->addField(['jumpToTags'], 'config_legend', PaletteManipulator::POSITION_APPEND)
+                ->applyToPalette('eventreader', $dc->table);
 
-            foreach( ['eventlist', 'eventreader', 'eventlist_related_tags', 'eventlist_tags'] as $palette ) {
+            $pm = PaletteManipulator::create()
+                ->addField(['jumpToTags', 'ignoreTags', 'tags_match_all', 'tags_exclude'], 'config_legend', PaletteManipulator::POSITION_APPEND);
+
+            foreach( ['eventlist_related_tags', 'eventlist_tags'] as $palette ) {
                 $pm->applyToPalette($palette, $dc->table);
             }
 
@@ -66,8 +70,7 @@ class ModuleListener {
                 ->applyToPalette('eventlist_related_tags', $dc->table);
 
             PaletteManipulator::create()
-                ->addField('event_tags', 'cal_calendar', 'after')
-                ->addField('tags_match_all', 'config_legend', 'append')
+                ->addField('event_tags', 'cal_calendar', PaletteManipulator::POSITION_AFTER)
                 ->applyToPalette('eventlist_tags', $dc->table);
 
         }
@@ -75,13 +78,17 @@ class ModuleListener {
         if( class_exists(ContaoNewsBundle::class) ) {
 
             PaletteManipulator::create()
-                ->addField(['ignoreTags', 'tags_match_all'], 'config_legend', 'append')
+                ->addField(['jumpToTags', 'ignoreTags', 'tags_match_all'], 'config_legend', PaletteManipulator::POSITION_APPEND)
                 ->applyToPalette('newslist', $dc->table);
 
-            $pm = PaletteManipulator::create()
-                ->addField('jumpToTags', 'config_legend', 'append');
+            PaletteManipulator::create()
+                ->addField(['jumpToTags'], 'config_legend', PaletteManipulator::POSITION_APPEND)
+                ->applyToPalette('newsreader', $dc->table);
 
-            foreach( ['newslist', 'newsreader', 'newslist_related_tags', 'newslist_tags'] as $palette ) {
+            $pm = PaletteManipulator::create()
+                ->addField(['jumpToTags', 'ignoreTags', 'tags_match_all', 'tags_exclude'], 'config_legend', PaletteManipulator::POSITION_APPEND);
+
+            foreach( ['newslist_related_tags', 'newslist_tags'] as $palette ) {
                 $pm->applyToPalette($palette, $dc->table);
             }
 
@@ -90,8 +97,7 @@ class ModuleListener {
                 ->applyToPalette('newslist_related_tags', $dc->table);
 
             PaletteManipulator::create()
-                ->addField('news_tags', 'news_archives', 'after')
-                ->addField('tags_match_all', 'config_legend', 'append')
+                ->addField('news_tags', 'news_archives', PaletteManipulator::POSITION_AFTER)
                 ->applyToPalette('newslist_tags', $dc->table);
         }
     }
@@ -108,7 +114,7 @@ class ModuleListener {
      */
     public function changeFieldToNotMandatory( $value,  DataContainer $dc ) {
 
-        if( in_array($dc->activeRecord->type, ['events_tag_cloud', 'news_tag_cloud']) ) {
+        if( in_array($dc->activeRecord->type, ['events_tag_cloud', 'news_tag_cloud']) || $dc->activeRecord->tags_exclude ) {
             $GLOBALS['TL_DCA']['tl_module']['fields'][$dc->field]['eval']['mandatory'] = false;
         }
 
@@ -116,12 +122,13 @@ class ModuleListener {
     }
 
     /**
-     * Get all tags for news
+     * Get all tags for for the current type of module
      *
      * @param Contao\DataContainer $dc
      *
      * @Callback(table="tl_module", target="fields.event_tags.options")
      * @Callback(table="tl_module", target="fields.news_tags.options")
+     * @Callback(table="tl_module", target="fields.tags_exclude_list.options")
      */
     public function getTags( DataContainer $dc ): array {
 
@@ -129,9 +136,9 @@ class ModuleListener {
         $tRel = TagsRelModel::getTable();
 
         $ptable = null;
-        if( $dc->field === 'event_tags' ) {
+        if( $dc->field === 'event_tags' || in_array($dc->activeRecord->type, ['events_tag_cloud', 'eventlist_related_tags', 'eventlist_tags']) ) {
             $ptable = CalendarEventsModel::getTable();
-        } else if( $dc->field === 'news_tags' ) {
+        } else if( $dc->field === 'news_tags' || in_array($dc->activeRecord->type, ['news_tag_cloud', 'newslist_related_tags', 'newslist_tags']) ) {
             $ptable = NewsModel::getTable();
         }
 

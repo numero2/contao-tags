@@ -32,6 +32,18 @@
     <trans-unit id="tl_module.tags_match_all.1">
         <source>If set only items will be display that matches all selected tags.</source>
     </trans-unit>
+    <trans-unit id="tl_module.tags_exclude.0">
+        <source>Exclude certain tags</source>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_exclude.1">
+        <source>If set, only entries that do not contain certain tags will be displayed.</source>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_exclude_list.0">
+        <source>Tags to exclude</source>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_exclude_list.1">
+        <source>Please select one or more tags to exclude.</source>
+    </trans-unit>
     <trans-unit id="tl_module.event_tags.0">
         <source>Event tags</source>
     </trans-unit>

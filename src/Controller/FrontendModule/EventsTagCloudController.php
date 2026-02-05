@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -66,14 +66,19 @@ class EventsTagCloudController extends AbstractTagCloudController {
 
         $aTags = StringUtil::deserialize($model->event_tags, true);
 
+        $aExcludeTags = [];
+        if( $model->tags_exclude ) {
+            $aExcludeTags = StringUtil::deserialize($model->tags_exclude_list, true);
+        }
+
         if( !empty($aTags) ) {
 
             $blnMatchAll = !empty($model->tags_match_all);
 
-            return TagsModel::findByTagsAndCalendar($aTags, $aCalendar, $blnMatchAll, $intStart, $intEnd, $blnFeatured);
+            return TagsModel::findByTagsAndCalendar($aTags, $aCalendar, $blnMatchAll, $intStart, $intEnd, $blnFeatured, [], $aExcludeTags);
         }
 
-        return TagsModel::findByCalendar($aCalendar, $intStart, $intEnd, $blnFeatured);
+        return TagsModel::findByCalendar($aCalendar, $intStart, $intEnd, $blnFeatured, [], $aExcludeTags);
     }
 
 
@@ -98,14 +103,19 @@ class EventsTagCloudController extends AbstractTagCloudController {
 
         $aTags = StringUtil::deserialize($model->event_tags, true);
 
+        $aExcludeTags = [];
+        if( $model->tags_exclude ) {
+            $aExcludeTags = StringUtil::deserialize($model->tags_exclude_list, true);
+        }
+
         if( !empty($aTags) ) {
 
             $blnMatchAll = !empty($model->tags_match_all);
 
-            return TagsModel::countByIdAndTagsAndCalendar($tag->id, $aTags, $aCalendar, $blnMatchAll, $intStart, $intEnd, $blnFeatured);
+            return TagsModel::countByIdAndTagsAndCalendar($tag->id, $aTags, $aCalendar, $blnMatchAll, $intStart, $intEnd, $blnFeatured, [], $aExcludeTags);
         }
 
-        return TagsModel::countByIdAndCalendar($tag->id, $aCalendar);
+        return TagsModel::countByIdAndCalendar($tag->id, $aCalendar, null, null, null, [], $aExcludeTags);
     }
 
 

@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -63,14 +63,19 @@ class NewsTagCloudController extends AbstractTagCloudController {
 
         $aTags = StringUtil::deserialize($model->news_tags, true);
 
+        $aExcludeTags = [];
+        if( $model->tags_exclude ) {
+            $aExcludeTags = StringUtil::deserialize($model->tags_exclude_list, true);
+        }
+
         if( !empty($aTags) ) {
 
             $blnMatchAll = !empty($model->tags_match_all);
 
-            return TagsModel::findByTagsAndNewsArchives($aTags, $aArchives, $blnMatchAll, $blnFeatured);
+            return TagsModel::findByTagsAndNewsArchives($aTags, $aArchives, $blnMatchAll, $blnFeatured, [], $aExcludeTags);
         }
 
-        return TagsModel::findByNewsArchives($aArchives, $blnFeatured);
+        return TagsModel::findByNewsArchives($aArchives, $blnFeatured, [], $aExcludeTags);
     }
 
 
@@ -93,14 +98,19 @@ class NewsTagCloudController extends AbstractTagCloudController {
 
         $aTags = StringUtil::deserialize($model->news_tags, true);
 
+        $aExcludeTags = [];
+        if( $model->tags_exclude ) {
+            $aExcludeTags = StringUtil::deserialize($model->tags_exclude_list, true);
+        }
+
         if( !empty($aTags) ) {
 
             $blnMatchAll = !empty($model->tags_match_all);
 
-            return TagsModel::countByIdAndTagsAndNewsArchives($tag->id, $aTags, $aArchives, $blnMatchAll, $blnFeatured);
+            return TagsModel::countByIdAndTagsAndNewsArchives($tag->id, $aTags, $aArchives, $blnMatchAll, $blnFeatured, [], $aExcludeTags);
         }
 
-        return TagsModel::countByIdAndNewsArchives($tag->id, $aArchives, $blnFeatured);
+        return TagsModel::countByIdAndNewsArchives($tag->id, $aArchives, $blnFeatured, [], $aExcludeTags);
     }
 
 

@@ -5,6 +5,9 @@
     <trans-unit id="tl_tags.title_legend">
         <source>Title</source>
     </trans-unit>
+    <trans-unit id="tl_tags.publish_legend">
+        <source>Publish settings</source>
+    </trans-unit>
     <trans-unit id="tl_tags.tag.0">
         <source>Tag</source>
     </trans-unit>
@@ -16,6 +19,12 @@
     </trans-unit>
     <trans-unit id="tl_tags.translation.1">
         <source>Here you can enter the tag translations. To add a language, create a matching root page in the site structure.</source>
+    </trans-unit>
+    <trans-unit id="tl_tags.invisible.0">
+        <source>Invisible</source>
+    </trans-unit>
+    <trans-unit id="tl_tags.invisible.1">
+        <source>Hide the tag on the website.</source>
     </trans-unit>
 </body>
 </file>

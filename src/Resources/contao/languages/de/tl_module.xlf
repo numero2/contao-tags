@@ -16,7 +16,7 @@
     </trans-unit>
     <trans-unit id="tl_module.ignoreTags.1">
         <source>If set this module will not be changed by any selected tag.</source>
-        <target>Wenn gesetzt wird dieses Modul nicht durch eventuell gesetzte Tags beinflusst.</target>
+        <target>Wenn gesetzt, wird dieses Modul nicht durch eventuell gesetzte Tags beinflusst.</target>
     </trans-unit>
     <trans-unit id="tl_module.tags_select_multiple.0">
         <source>Select multiple tags</source>
@@ -24,7 +24,7 @@
     </trans-unit>
     <trans-unit id="tl_module.tags_select_multiple.1">
         <source>If set the user can select multiple tags.</source>
-        <target>Wenn gesetzt kann der Nutzer mehrere Tags auswählen.</target>
+        <target>Wenn gesetzt, kann der Nutzer mehrere Tags auswählen.</target>
     </trans-unit>
     <trans-unit id="tl_module.use_get_parameter.0">
         <source>Use GET-Parameter</source>
@@ -32,7 +32,7 @@
     </trans-unit>
     <trans-unit id="tl_module.use_get_parameter.1">
         <source>If set this module will use GET-Parameter to set the selected tags instead of auto_item.</source>
-        <target>Wenn gesetzt wird das Modul GET-Parameter verwenden um die ausgewählten Tags zu setzen, anstatt dem auto_item. Das ist notwendig falls die Liste- und Leser-Seite den gleichen Seitenalias besitzen.</target>
+        <target>Wenn gesetzt, wird das Modul GET-Parameter verwenden um die ausgewählten Tags zu setzen, anstatt dem auto_item. Das ist notwendig falls die Liste- und Leser-Seite den gleichen Seitenalias besitzen.</target>
     </trans-unit>
     <trans-unit id="tl_module.tags_match_all.0">
         <source>All tags must match</source>
@@ -40,7 +40,23 @@
     </trans-unit>
     <trans-unit id="tl_module.tags_match_all.1">
         <source>If set only items will be display that matches all selected tags.</source>
-        <target>Wenn gesetzt werden nur Einträge angezeigt, die alle ausgewählten Tags beinhalten.</target>
+        <target>Wenn gesetzt, werden nur Einträge angezeigt, die alle ausgewählten Tags beinhalten.</target>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_exclude.0">
+        <source>Exclude certain tags</source>
+        <target>Bestimmte Tags ausschließen</target>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_exclude.1">
+        <source>If set, only entries that do not contain certain tags will be displayed.</source>
+        <target>Wenn gesetzt, werden nur Einträge angezeigt, die bestimmte Tags nicht enthalten.</target>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_exclude_list.0">
+        <source>Tags to exclude</source>
+        <target>Auszuschließende Tags</target>
+    </trans-unit>
+    <trans-unit id="tl_module.tags_exclude_list.1">
+        <source>Please select one or more tags to exclude.</source>
+        <target>Bitte wählen Sie ein oder mehrere Tags..</target>
     </trans-unit>
     <trans-unit id="tl_module.event_tags.0">
         <source>Event tags</source>

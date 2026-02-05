@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -80,6 +80,11 @@ abstract class AbstractTagCloudController extends AbstractFrontendModuleControll
 
             foreach( $oTags as $oTag ) {
 
+                // do not add "invisible" tags to the template
+                if( $oTag->invisible ) {
+                    continue;
+                }
+
                 $aTag = TagUtil::parseTag($oTag);
                 $alias = $aTag['tag'];
 
@@ -101,16 +106,21 @@ abstract class AbstractTagCloudController extends AbstractFrontendModuleControll
                     }
                 }
 
-                $href = TagUtil::generateUrlWithTags($oPageRedirect, $parameterTags, !empty($model->use_get_parameter));
+                $count = $this->getTagCount($oTag, $model, $request);
 
-                $aTags[] = [
-                    'label' => $aTag['title']
-                ,   'active'=> $active
-                ,   'href'  => $href
-                ,   'count' => $this->getTagCount($oTag, $model, $request)
-                ,   'class' => 'tag_' . StringUtil::standardize($aTag['tag']).($active?' active':'')
-                ,   'tag'   => $aTag
-                ];
+                if( $count > 0 ) {
+
+                    $href = TagUtil::generateUrlWithTags($oPageRedirect, $parameterTags, !empty($model->use_get_parameter));
+
+                    $aTags[] = [
+                        'label' => $aTag['title']
+                    ,   'active'=> $active
+                    ,   'href'  => $href
+                    ,   'count' => $count
+                    ,   'class' => 'tag_' . StringUtil::standardize($aTag['tag']).($active?' active':'')
+                    ,   'tag'   => $aTag
+                    ];
+                }
             }
 
             $template->tags = $aTags;

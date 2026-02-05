@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -68,34 +68,52 @@ class TagsModel extends Model {
      * @param int|null $end
      * @param bool|null $blnFeatured
      * @param array $aOptions
+     * @param array $aExcludedTags
      *
      * @return Collection|TagsModel|null A collection of models or null if there are no tags
      */
-    public static function findByCalendar( array $aCalendar, $start=null, $end=null, $blnFeatured=null, array $aOptions=[] ) {
+    public static function findByCalendar( array $aCalendar, $start=null, $end=null, $blnFeatured=null, array $aOptions=[], array $aExcludedTags=[] ) {
 
         $aCalendar = array_map('\intval', $aCalendar);
+        $aExcludedTags = array_map('\intval', $aExcludedTags);
+
         if( !count($aCalendar) ) {
             return null;
         }
 
-        $publishedEvent = '';
+        $publishedEvents = '';
 
         if( $start !== null ) {
-            $publishedEvent .= " AND e.startTime>=".intval($start);
+            $publishedEvents .= " AND e.startTime>=".intval($start);
         }
         if( $end !== null ) {
-            $publishedEvent .= " AND e.startTime<=".intval($end);
+            $publishedEvents .= " AND e.startTime<=".intval($end);
         }
 
         if( $blnFeatured === true ) {
-            $publishedEvent .= " AND e.featured='1'";
+            $publishedEvents .= " AND e.featured='1'";
         } else if( $blnFeatured === false ) {
-            $publishedEvent .= " AND e.featured=''";
+            $publishedEvents .= " AND e.featured=''";
         }
 
         if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
-            $publishedEvent .= " AND e.published='1' AND (e.start='' OR e.start<=$time) AND (e.stop='' OR e.stop>$time)";
+            $publishedEvents .= " AND e.published='1' AND (e.start='' OR e.start<=$time) AND (e.stop='' OR e.stop>$time)";
+        }
+
+        // ignore any events that contain any of the excluded tags
+        if( !empty($aExcludedTags) ) {
+
+            $publishedEvents .= "
+                AND NOT EXISTS (
+                    SELECT 1
+                        FROM ".TagsRelModel::getTable()." r2
+                    WHERE r2.pid = e.id
+                        AND r2.ptable = '".CalendarEventsModel::getTable()."'
+                        AND r2.field = 'tags'
+                        AND r2.tag_id IN (".implode(',', $aExcludedTags).")
+                )
+            ";
         }
 
         $objResult = Database::getInstance()->prepare("
@@ -106,7 +124,7 @@ class TagsModel extends Model {
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = e.id AND r.ptable = '".CalendarEventsModel::getTable()."' AND r.field = 'tags')
                 JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
             WHERE
-                c.id in (".implode(',', $aCalendar).")".$publishedEvent."
+                c.id in (".implode(',', $aCalendar).")".$publishedEvents."
             ORDER BY t.tag ASC
         ")->execute();
 
@@ -123,35 +141,52 @@ class TagsModel extends Model {
      * @param int|null $end
      * @param bool|null $blnFeatured
      * @param array $aOptions
+     * @param array $aExcludedTags
      *
      * @return int
      */
-    public static function countByIdAndCalendar( $id, array $aCalendar, $start=null, $end=null, $blnFeatured=null, array $aOptions=[] ): int {
+    public static function countByIdAndCalendar( $id, array $aCalendar, $start=null, $end=null, $blnFeatured=null, array $aOptions=[], array $aExcludedTags=[] ): int {
 
         $aCalendar = array_map('\intval', $aCalendar);
+        $aExcludedTags = array_map('\intval', $aExcludedTags);
+
         if( !count($aCalendar) ) {
             return null;
         }
 
-        $publishedEvent = '';
+        $publishedEvents = '';
 
         if( $start !== null ) {
-            $publishedEvent .= " AND e.startTime>=".intval($start);
+            $publishedEvents .= " AND e.startTime>=".intval($start);
         }
         if( $end !== null ) {
-            $publishedEvent .= " AND e.startTime<=".intval($end);
+            $publishedEvents .= " AND e.startTime<=".intval($end);
         }
 
         if( $blnFeatured === true ) {
-            $publishedEvent .= " AND e.featured='1'";
+            $publishedEvents .= " AND e.featured='1'";
         } else if( $blnFeatured === false ) {
-            $publishedEvent .= " AND e.featured=''";
+            $publishedEvents .= " AND e.featured=''";
         }
 
-        $publishedEvent = '';
         if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
-            $publishedEvent .= " AND e.published='1' AND (e.start='' OR e.start<=$time) AND (e.stop='' OR e.stop>$time)";
+            $publishedEvents .= " AND e.published='1' AND (e.start='' OR e.start<=$time) AND (e.stop='' OR e.stop>$time)";
+        }
+
+        // ignore any events that contain any of the excluded tags
+        if( !empty($aExcludedTags) ) {
+
+            $publishedEvents .= "
+                AND NOT EXISTS (
+                    SELECT 1
+                        FROM ".TagsRelModel::getTable()." r2
+                    WHERE r2.pid = e.id
+                        AND r2.ptable = '".CalendarEventsModel::getTable()."'
+                        AND r2.field = 'tags'
+                        AND r2.tag_id IN (".implode(',', $aExcludedTags).")
+                )
+            ";
         }
 
         $objResult = Database::getInstance()->prepare("
@@ -162,7 +197,7 @@ class TagsModel extends Model {
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = e.id AND r.ptable = '".CalendarEventsModel::getTable()."' AND r.field = 'tags')
                 JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
             WHERE
-                c.id in (".implode(',', $aCalendar).") AND t.id=? ".$publishedEvent."
+                c.id in (".implode(',', $aCalendar).") AND t.id=? ".$publishedEvents."
         ")->execute($id);
 
         return (int)$objResult->count;
@@ -179,35 +214,53 @@ class TagsModel extends Model {
      * @param int|null $end
      * @param bool|null $blnFeatured
      * @param array $aOptions
+     * @param array $aExcludedTags
      *
      * @return Collection|TagsModel|null A collection of models or null if there are no tags
      */
-    public static function findByTagsAndCalendar( array $aTags, array $aCalendar, bool $blnMatchAll, $start=null, $end=null, $blnFeatured=null, array $aOptions=[] ) {
+    public static function findByTagsAndCalendar( array $aTags, array $aCalendar, bool $blnMatchAll, $start=null, $end=null, $blnFeatured=null, array $aOptions=[], array $aExcludedTags=[] ) {
 
         $aTags = array_map('\intval', $aTags);
         $aCalendar = array_map('\intval', $aCalendar);
+        $aExcludedTags = array_map('\intval', $aExcludedTags);
+
         if( !count($aTags) || !count($aCalendar) ) {
             return null;
         }
 
-        $publishedEvent = '';
+        $publishedEvents = '';
 
         if( $start !== null ) {
-            $publishedEvent .= " AND e.startTime>=".intval($start);
+            $publishedEvents .= " AND e.startTime>=".intval($start);
         }
         if( $end !== null ) {
-            $publishedEvent .= " AND e.startTime<=".intval($end);
+            $publishedEvents .= " AND e.startTime<=".intval($end);
         }
 
         if( $blnFeatured === true ) {
-            $publishedEvent .= " AND e.featured='1'";
+            $publishedEvents .= " AND e.featured='1'";
         } else if( $blnFeatured === false ) {
-            $publishedEvent .= " AND e.featured=''";
+            $publishedEvents .= " AND e.featured=''";
         }
 
         if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
-            $publishedEvent .= " AND e.published='1' AND (e.start='' OR e.start<=$time) AND (e.stop='' OR e.stop>$time)";
+            $publishedEvents .= " AND e.published='1' AND (e.start='' OR e.start<=$time) AND (e.stop='' OR e.stop>$time)";
+        }
+
+        // ignore any events that contain any of the excluded tags
+        if( !empty($aExcludedTags) ) {
+
+            $publishedEvents .= "
+                AND NOT EXISTS (
+                    SELECT 1
+                        FROM ".TagsRelModel::getTable()." r2
+                    WHERE r2.pid = e.id
+                        AND r2.ptable = '".CalendarEventsModel::getTable()."'
+                        AND r2.field = 'tags'
+                        AND r2.tag_id IN (".implode(',', $aExcludedTags).")
+                )
+            ";
         }
 
         $objResult = null;
@@ -228,7 +281,7 @@ class TagsModel extends Model {
                             JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = e.id AND r.ptable = '".CalendarEventsModel::getTable()."' AND r.field = 'tags')
                             JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
                         WHERE
-                            rTags.tag_id in (".implode(',', $aTags).") AND c.id in (".implode(',', $aCalendar).")".$publishedEvent."
+                            rTags.tag_id in (".implode(',', $aTags).") AND c.id in (".implode(',', $aCalendar).")".$publishedEvents."
                         GROUP BY t.id, rTags.tag_id
                     ) AS s
                     GROUP BY s.id
@@ -249,7 +302,7 @@ class TagsModel extends Model {
                     JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = e.id AND r.ptable = '".CalendarEventsModel::getTable()."' AND r.field = 'tags')
                     JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
                 WHERE
-                    rTags.tag_id in (".implode(',', $aTags).") AND c.id in (".implode(',', $aCalendar).")".$publishedEvent."
+                    rTags.tag_id in (".implode(',', $aTags).") AND c.id in (".implode(',', $aCalendar).")".$publishedEvents."
                 ORDER BY t.tag ASC
             ")->execute();
         }
@@ -269,36 +322,53 @@ class TagsModel extends Model {
      * @param int|null $end
      * @param bool|null $blnFeatured
      * @param array $aOptions
+     * @param array $aExcludedTags
      *
      * @return int
      */
-    public static function countByIdAndTagsAndCalendar( $id, array $aTags, array $aCalendar, bool $blnMatchAll, $start=null, $end=null, $blnFeatured=null, array $aOptions=[] ): int {
+    public static function countByIdAndTagsAndCalendar( $id, array $aTags, array $aCalendar, bool $blnMatchAll, $start=null, $end=null, $blnFeatured=null, array $aOptions=[], array $aExcludedTags=[] ): int {
 
         $aTags = array_map('\intval', $aTags);
         $aCalendar = array_map('\intval', $aCalendar);
+        $aExcludedTags = array_map('\intval', $aExcludedTags);
+
         if( !count($aTags) || !count($aCalendar) ) {
             return null;
         }
 
-        $publishedEvent = '';
+        $publishedEvents = '';
 
         if( $start !== null ) {
-            $publishedEvent .= " AND e.startTime>=".intval($start);
+            $publishedEvents .= " AND e.startTime>=".intval($start);
         }
         if( $end !== null ) {
-            $publishedEvent .= " AND e.startTime<=".intval($end);
+            $publishedEvents .= " AND e.startTime<=".intval($end);
         }
 
         if( $blnFeatured === true ) {
-            $publishedEvent .= " AND e.featured='1'";
+            $publishedEvents .= " AND e.featured='1'";
         } else if( $blnFeatured === false ) {
-            $publishedEvent .= " AND e.featured=''";
+            $publishedEvents .= " AND e.featured=''";
         }
 
-        $publishedEvent = '';
         if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
-            $publishedEvent .= " AND e.published='1' AND (e.start='' OR e.start<=$time) AND (e.stop='' OR e.stop>$time)";
+            $publishedEvents .= " AND e.published='1' AND (e.start='' OR e.start<=$time) AND (e.stop='' OR e.stop>$time)";
+        }
+
+        // ignore any events that contain any of the excluded tags
+        if( !empty($aExcludedTags) ) {
+
+            $publishedEvents .= "
+                AND NOT EXISTS (
+                    SELECT 1
+                        FROM ".TagsRelModel::getTable()." r2
+                    WHERE r2.pid = e.id
+                        AND r2.ptable = '".CalendarEventsModel::getTable()."'
+                        AND r2.field = 'tags'
+                        AND r2.tag_id IN (".implode(',', $aExcludedTags).")
+                )
+            ";
         }
 
         $objResult = null;
@@ -319,7 +389,7 @@ class TagsModel extends Model {
                             JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = e.id AND r.ptable = '".CalendarEventsModel::getTable()."' AND r.field = 'tags')
                             JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
                         WHERE
-                            rTags.tag_id in (".implode(',', $aTags).") AND c.id in (".implode(',', $aCalendar).") AND t.id=? ".$publishedEvent."
+                            rTags.tag_id in (".implode(',', $aTags).") AND c.id in (".implode(',', $aCalendar).") AND t.id=? ".$publishedEvents."
                         GROUP BY t.id, rTags.tag_id
                     ) AS s
                     GROUP BY s.id
@@ -340,7 +410,7 @@ class TagsModel extends Model {
                     JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = e.id AND r.ptable = '".CalendarEventsModel::getTable()."' AND r.field = 'tags')
                     JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
                 WHERE
-                    rTags.tag_id in (".implode(',', $aTags).") AND c.id in (".implode(',', $aCalendar).") AND t.id=? ".$publishedEvent."
+                    rTags.tag_id in (".implode(',', $aTags).") AND c.id in (".implode(',', $aCalendar).") AND t.id=? ".$publishedEvents."
             ")->execute($id);
         }
 
@@ -354,12 +424,15 @@ class TagsModel extends Model {
      * @param array $aArchives
      * @param boolean|null $blnFeature
      * @param array $aOptions
+     * @param array $aExcludedTags
      *
      * @return Collection|TagsModel|null A collection of models or null if there are no tags
      */
-    public static function findByNewsArchives( array $aArchives, $blnFeatured=null, array $aOptions=[] ) {
+    public static function findByNewsArchives( array $aArchives, $blnFeatured=null, array $aOptions=[], array $aExcludedTags=[] ) {
 
         $aArchives = array_map('\intval', $aArchives);
+        $aExcludedTags = array_map('\intval', $aExcludedTags);
+
         if( !count($aArchives) ) {
             return null;
         }
@@ -377,6 +450,21 @@ class TagsModel extends Model {
             $publishedNews .= " AND n.published='1' AND (n.start='' OR n.start<=$time) AND (n.stop='' OR n.stop>$time)";
         }
 
+        // ignore any news that contains any of the excluded tags
+        if( !empty($aExcludedTags) ) {
+
+            $publishedNews .= "
+                AND NOT EXISTS (
+                    SELECT 1
+                        FROM ".TagsRelModel::getTable()." r2
+                    WHERE r2.pid = n.id
+                        AND r2.ptable = '".NewsModel::getTable()."'
+                        AND r2.field = 'tags'
+                        AND r2.tag_id IN (".implode(',', $aExcludedTags).")
+                )
+            ";
+        }
+
         $objResult = Database::getInstance()->prepare("
             SELECT DISTINCT
                 t.*
@@ -385,7 +473,7 @@ class TagsModel extends Model {
                 JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = n.id AND r.ptable = '".NewsModel::getTable()."' AND r.field = 'tags')
                 JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
             WHERE
-                a.id in (".implode(',', $aArchives).")".$publishedNews."
+                a.id IN (".implode(',', $aArchives).")".$publishedNews."
             ORDER BY t.tag ASC
         ")->execute();
 
@@ -400,12 +488,15 @@ class TagsModel extends Model {
      * @param array $aArchives
      * @param boolean|null $blnFeature
      * @param array $aOptions
+     * @param array $aExcludedTags
      *
      * @return int
      */
-    public static function countByIdAndNewsArchives( $id, array $aArchives, $blnFeatured=null, array $aOptions=[] ): int {
+    public static function countByIdAndNewsArchives( $id, array $aArchives, $blnFeatured=null, array $aOptions=[], array $aExcludedTags=[] ): int {
 
         $aArchives = array_map('\intval', $aArchives);
+        $aExcludedTags = array_map('\intval', $aExcludedTags);
+
         if( !count($aArchives) ) {
             return null;
         }
@@ -421,6 +512,21 @@ class TagsModel extends Model {
         if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
             $publishedNews .= " AND n.published='1' AND (n.start='' OR n.start<=$time) AND (n.stop='' OR n.stop>$time)";
+        }
+
+        // ignore any news that contains any of the excluded tags
+        if( !empty($aExcludedTags) ) {
+
+            $publishedNews .= "
+                AND NOT EXISTS (
+                    SELECT 1
+                        FROM ".TagsRelModel::getTable()." r2
+                    WHERE r2.pid = n.id
+                        AND r2.ptable = '".NewsModel::getTable()."'
+                        AND r2.field = 'tags'
+                        AND r2.tag_id IN (".implode(',', $aExcludedTags).")
+                )
+            ";
         }
 
         $objResult = Database::getInstance()->prepare("
@@ -439,20 +545,23 @@ class TagsModel extends Model {
 
 
     /**
-     * Find all used tags in the given archives nad are related to the given tags
+     * Find all used tags in the given archives that are related to the given tags
      *
      * @param array $aTags
      * @param array $aArchives
      * @param boolean $blnMatchAll
      * @param boolean|null $blnFeature
      * @param array $aOptions
+     * @param array $aExcludedTags
      *
      * @return Collection|TagsModel|null A collection of models or null if there are no tags
      */
-    public static function findByTagsAndNewsArchives( array $aTags, array $aArchives, bool $blnMatchAll, $blnFeatured=null, array $aOptions=[] ) {
+    public static function findByTagsAndNewsArchives( array $aTags, array $aArchives, bool $blnMatchAll, $blnFeatured=null, array $aOptions=[], array $aExcludedTags=[] ) {
 
         $aTags = array_map('\intval', $aTags);
         $aArchives = array_map('\intval', $aArchives);
+        $aExcludedTags = array_map('\intval', $aExcludedTags);
+
         if( !count($aTags) || !count($aArchives) ) {
             return null;
         }
@@ -468,6 +577,21 @@ class TagsModel extends Model {
         if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
             $publishedNews .= " AND n.published='1' AND (n.start='' OR n.start<=$time) AND (n.stop='' OR n.stop>$time)";
+        }
+
+        // ignore any news that contains any of the excluded tags
+        if( !empty($aExcludedTags) ) {
+
+            $publishedNews .= "
+                AND NOT EXISTS (
+                    SELECT 1
+                        FROM ".TagsRelModel::getTable()." r2
+                    WHERE r2.pid = n.id
+                        AND r2.ptable = '".NewsModel::getTable()."'
+                        AND r2.field = 'tags'
+                        AND r2.tag_id IN (".implode(',', $aExcludedTags).")
+                )
+            ";
         }
 
         $objResult = null;
@@ -519,7 +643,7 @@ class TagsModel extends Model {
 
 
     /**
-     * Count all used tags in the given archives nad are related to the given tags
+     * Count all used tags in the given archives that are related to the given tags
      *
      * @param string $id
      * @param array $aTags
@@ -527,13 +651,16 @@ class TagsModel extends Model {
      * @param boolean $blnMatchAll
      * @param boolean|null $blnFeature
      * @param array $aOptions
+     * @param array $aExcludedTags
      *
      * @return Collection|TagsModel|null A collection of models or null if there are no tags
      */
-    public static function countByIdAndTagsAndNewsArchives( $id, array $aTags, array $aArchives, bool $blnMatchAll, $blnFeatured=null, array $aOptions=[] ) {
+    public static function countByIdAndTagsAndNewsArchives( $id, array $aTags, array $aArchives, bool $blnMatchAll, $blnFeatured=null, array $aOptions=[], array $aExcludedTags=[] ) {
 
         $aTags = array_map('\intval', $aTags);
         $aArchives = array_map('\intval', $aArchives);
+        $aExcludedTags = array_map('\intval', $aExcludedTags);
+
         if( !count($aTags) || !count($aArchives) ) {
             return null;
         }
@@ -549,6 +676,21 @@ class TagsModel extends Model {
         if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
             $publishedNews .= " AND n.published='1' AND (n.start='' OR n.start<=$time) AND (n.stop='' OR n.stop>$time)";
+        }
+
+        // ignore any news that contains any of the excluded tags
+        if( !empty($aExcludedTags) ) {
+
+            $publishedNews .= "
+                AND NOT EXISTS (
+                    SELECT 1
+                        FROM ".TagsRelModel::getTable()." r2
+                    WHERE r2.pid = n.id
+                        AND r2.ptable = '".NewsModel::getTable()."'
+                        AND r2.field = 'tags'
+                        AND r2.tag_id IN (".implode(',', $aExcludedTags).")
+                )
+            ";
         }
 
         $objResult = null;
@@ -576,21 +718,25 @@ class TagsModel extends Model {
                     HAVING count>=?
                 ) AS tagCount
                 JOIN ".static::$strTable." AS tag ON (tag.id = tagCount.id)
-                ")->execute($id, count($aTags));
+            ")->execute($id, count($aTags));
 
         } else {
 
             $objResult = Database::getInstance()->prepare("
                 SELECT
                     COUNT(*) as count
-                FROM ".NewsArchiveModel::getTable()." AS a
-                    JOIN ".NewsModel::getTable()." AS n ON (n.pid = a.id)
-                    JOIN ".TagsRelModel::getTable()." AS rTags ON (rTags.pid = n.id AND rTags.ptable = '".NewsModel::getTable()."' AND rTags.field = 'tags')
-                    JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = n.id AND r.ptable = '".NewsModel::getTable()."' AND r.field = 'tags')
-                    JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
-                WHERE
-                    rTags.tag_id in (".implode(',', $aTags).") AND a.id in (".implode(',', $aArchives).") AND t.id=?".$publishedNews."
-                ")->execute($id);
+                FROM (
+                    SELECT DISTINCT
+                        n.id
+                    FROM ".NewsArchiveModel::getTable()." AS a
+                        JOIN ".NewsModel::getTable()." AS n ON (n.pid = a.id)
+                        JOIN ".TagsRelModel::getTable()." AS rTags ON (rTags.pid = n.id AND rTags.ptable = '".NewsModel::getTable()."' AND rTags.field = 'tags')
+                        JOIN ".TagsRelModel::getTable()." AS r ON (r.pid = n.id AND r.ptable = '".NewsModel::getTable()."' AND r.field = 'tags')
+                        JOIN ".static::$strTable." AS t ON (t.id = r.tag_id)
+                    WHERE
+                        a.id in (".implode(',', $aArchives).") AND t.id=?".$publishedNews."
+                ) AS c
+            ")->execute($id);
         }
 
         return (int)$objResult->count;

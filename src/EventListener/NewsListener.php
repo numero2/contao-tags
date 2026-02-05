@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -17,6 +17,8 @@ use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\Model\Collection;
+use Contao\Module;
+use Contao\ModuleModel;
 use Contao\ModuleNews;
 use Contao\ModuleNewsList;
 use Contao\NewsModel;
@@ -63,12 +65,17 @@ class NewsListener {
 
         $tag = Input::get('tag');
 
+        $aExcludeTags = [];
+        if( $module->tags_exclude ) {
+            $aExcludeTags = array_map('\intval', StringUtil::deserialize($module->tags_exclude_list, true));
+        }
+
         if( $module instanceof ModuleNewsListRelatedTags ) {
 
             $alias = Input::get('items') ?? Input::get('auto_item');
             $currentNews = NewsModel::findPublishedByParentAndIdOrAlias($alias, $newsArchives);
 
-            $news = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured);
+            $news = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured, 0, 0, [], $aExcludeTags);
 
             if( $news ) {
                 return $news->count();
@@ -81,7 +88,14 @@ class NewsListener {
             $tags = StringUtil::deserialize($module->news_tags, true);
             $blnMultiple = !empty($module->tags_match_all);
 
-            $news = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMultiple);
+            // gather all available tags if no tags have been defined and we need to filter out specific tags
+            if( empty($tags) && $module->tags_exclude ) {
+
+                $tags = TagsModel::findByNewsArchives($newsArchives);
+                $tags = $tags ? $tags->fetchEach('id') : [];
+            }
+
+            $news = TagsRelModel::findPublishedNewsByTags($tags, $newsArchives, $blnFeatured, $blnMultiple, 0, 0, [], $aExcludeTags);
 
             if( $news && !$tag ) {
                 return $news->count();
@@ -94,10 +108,10 @@ class NewsListener {
 
         if( !empty($tag) ) {
 
-            $articles = null;
-            $articles = $this->newsListFetchItems($newsArchives, $blnFeatured, 0, 0, $module);
+            $news = null;
+            $news = $this->newsListFetchItems($newsArchives, $blnFeatured, 0, 0, $module);
 
-            return count($articles);
+            return count($news);
         }
 
         return false;
@@ -147,12 +161,17 @@ class NewsListener {
             }
         }
 
+        $aExcludeTags = [];
+        if( $module->tags_exclude ) {
+            $aExcludeTags = array_map('\intval', StringUtil::deserialize($module->tags_exclude_list, true));
+        }
+
         if( $module instanceof ModuleNewsListRelatedTags ) {
 
             $alias = Input::get('items') ?? Input::get('auto_item');
             $currentNews = NewsModel::findPublishedByParentAndIdOrAlias($alias, $newsArchives);
 
-            $news = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured, $limit, $offset, $arrOptions);
+            $news = TagsRelModel::findPublishedRelatedNewsByID($currentNews->id, $newsArchives, $blnFeatured, $limit, $offset, $arrOptions, $aExcludeTags);
 
             return $news;
 
@@ -161,7 +180,7 @@ class NewsListener {
             $moduleTags = StringUtil::deserialize($module->news_tags, true);
             $blnMatchAll = !empty($module->tags_match_all);
 
-            $news = TagsRelModel::findPublishedNewsByTags($moduleTags, $newsArchives, $blnFeatured, $blnMatchAll, 0, 0, $arrOptions);
+            $news = TagsRelModel::findPublishedNewsByTags($moduleTags, $newsArchives, $blnFeatured, $blnMatchAll, 0, 0, $arrOptions, $aExcludeTags);
 
             // fill array with news matching the pre-selected tag
             if( $news ) {
@@ -176,7 +195,7 @@ class NewsListener {
         $urlTags = TagUtil::getTagsFromUrl();
 
         // filter by given tag
-        if( !empty($urlTags) || !empty($preSelectedNews) ) {
+        if( !empty($urlTags) || !empty($preSelectedNews) || $module->tags_exclude ) {
 
             if( !empty($urlTags) ) {
 
@@ -208,7 +227,7 @@ class NewsListener {
             }
 
             $collection = null;
-            $collection = NewsModel::findPublishedByPids($newsArchives, $blnFeatured, 0, 0, $arrOptions);
+            $collection = TagsRelModel::findPublishedNewsByPids($newsArchives, $blnFeatured, 0, 0, $arrOptions, $aExcludeTags);
 
             $articles = [];
             $articles = $collection->getModels();
@@ -321,6 +340,11 @@ class NewsListener {
                     $aTag = TagUtil::parseTag($tag);
 
                     $tagsRaw[] = $aTag;
+
+                    // do not add "invisible" tags to the template
+                    if( $tag->invisible ) {
+                        continue;
+                    }
 
                     if( $pageList ) {
 

@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2023, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -71,14 +71,17 @@ class TagsRelModel extends Model {
      * @param integer $intLimit
      * @param integer $intOffset
      * @param array $aOptions
+     * @param array $aExcludedTags
      *
      * @return Collection|NewsModel|null
      */
-    public static function findPublishedRelatedNewsByID( $id, $aPids, $blnFeatured=null, $intLimit=0, $intOffset=0, array $aOptions=[] ) {
+    public static function findPublishedRelatedNewsByID( $id, $aPids, $blnFeatured=null, $intLimit=0, $intOffset=0, array $aOptions=[], array $aExcludedTags=[]  ) {
 
         if( empty($aPids) || !is_array($aPids) ) {
             return null;
         }
+
+        $aExcludedTags = array_map('\intval', $aExcludedTags);
 
         $t = NewsModel::getTable();
         $aColumns = ["$t.pid IN (" . implode(',', array_map('\intval', $aPids)) . ")"];
@@ -92,6 +95,21 @@ class TagsRelModel extends Model {
         if( !static::isPreviewMode($aOptions) ) {
             $time = Date::floorToMinute();
             $aColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
+        }
+
+        // ignore any news that contains any of the excluded tags
+        if( !empty($aExcludedTags) ) {
+
+            $aColumns[] .= "
+                NOT EXISTS (
+                    SELECT 1
+                        FROM ".self::getTable()." r2
+                    WHERE r2.pid = $t.id
+                        AND r2.ptable = '$t'
+                        AND r2.field = 'tags'
+                        AND r2.tag_id IN (".implode(',', $aExcludedTags).")
+                )
+            ";
         }
 
         if( !isset($aOptions['order']) ) {
@@ -156,10 +174,13 @@ class TagsRelModel extends Model {
      * @param integer $intLimit
      * @param integer $intOffset
      * @param array $aOptions
+     * @param array $aExcludedTags
      *
      * @return Collection|NewsModel|null
      */
-    public static function findPublishedNewsByTags( $tagsIds, $aPids, $blnFeatured=null, $blnMatchAll=null, $intLimit=0, $intOffset=0, array $aOptions=[] ) {
+    public static function findPublishedNewsByTags( $tagsIds, $aPids, $blnFeatured=null, $blnMatchAll=null, $intLimit=0, $intOffset=0, array $aOptions=[], array $aExcludedTags=[] ) {
+
+        $aExcludedTags = array_map('\intval', $aExcludedTags);
 
         if( empty($tagsIds) || !is_array($tagsIds) ) {
             return null;
@@ -182,6 +203,21 @@ class TagsRelModel extends Model {
             $aColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
         }
 
+        // ignore any news that contains any of the excluded tags
+        if( !empty($aExcludedTags) ) {
+
+            $aColumns[] .= "
+                NOT EXISTS (
+                    SELECT 1
+                        FROM ".self::getTable()." r2
+                    WHERE r2.pid = $t.id
+                        AND r2.ptable = '$t'
+                        AND r2.field = 'tags'
+                        AND r2.tag_id IN (".implode(',', $aExcludedTags).")
+                )
+            ";
+        }
+
         if( !isset($aOptions['order']) ) {
             $aOptions['order']  = "$t.date DESC";
         }
@@ -190,5 +226,65 @@ class TagsRelModel extends Model {
         $aOptions['offset'] = $intOffset;
 
         return self::findNewsByTags($tagsIds, $blnMatchAll, $aColumns, [], $aOptions);
+    }
+
+
+	/**
+	 * Find published news items by their parent ID
+	 *
+	 * @param array $aPids An array of news archive IDs
+	 * @param boolean $blnFeatured If true, return only featured news, if false, return only unfeatured news
+	 * @param integer $intLimit An optional limit
+	 * @param integer $intOffset An optional offset
+	 * @param array $aOptions  An optional options array
+     * @param array $aExcludedTags A list of tags that excludes all news containing any of these tags
+	 *
+	 * @return Collection<NewsModel>|null A collection of models or null if there are no news
+	 */
+    public static function findPublishedNewsByPids( array $aPids, $blnFeatured=null, $intLimit=0, $intOffset=0, array $aOptions=[], array $aExcludedTags=[] ) {
+
+        $aExcludedTags = array_map('\intval', $aExcludedTags);
+
+        if( empty($aPids) || !\is_array($aPids) ) {
+			return null;
+		}
+
+		$t = NewsModel::getTable();
+		$aColumns = ["$t.pid IN(" . implode(',', array_map('\intval', $aPids)) . ")"];
+
+		if( $blnFeatured === true ) {
+			$aColumns[] = "$t.featured=1";
+		} elseif( $blnFeatured === false ) {
+			$aColumns[] = "$t.featured=0";
+		}
+
+		if( !static::isPreviewMode($aOptions) ) {
+			$time = Date::floorToMinute();
+			$aColumns[] = "$t.published=1 AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
+		}
+
+        // ignore any news that contains any of the excluded tags
+        if( !empty($aExcludedTags) ) {
+
+            $aColumns[] .= "
+                NOT EXISTS (
+                    SELECT 1
+                        FROM ".self::getTable()." r2
+                    WHERE r2.pid = $t.id
+                        AND r2.ptable = '$t'
+                        AND r2.field = 'tags'
+                        AND r2.tag_id IN (".implode(',', $aExcludedTags).")
+                )
+            ";
+        }
+
+		if( !isset($aOptions['order']) ) {
+			$aOptions['order']  = "$t.date DESC";
+		}
+
+		$aOptions['limit']  = $intLimit;
+		$aOptions['offset'] = $intOffset;
+
+		return NewsModel::findBy($aColumns, null, $aOptions);
     }
 }

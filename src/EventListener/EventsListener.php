@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -100,7 +100,6 @@ class EventsListener {
             }
         }
 
-
         // parse events
         foreach( $events as $day => $tstamps ) {
             foreach( $tstamps as $ts => $entries ) {
@@ -128,9 +127,17 @@ class EventsListener {
 
         $blnMultiple = !empty($module->tags_match_all);
 
-        if( !empty($tagsIds) ) {
+        $aExcludeTags = [];
+        if( $module->tags_exclude ) {
+            $aExcludeTags = array_map('\intval', StringUtil::deserialize($module->tags_exclude_list, true));
+        }
+
+        if( !empty($tagsIds) || $module->tags_exclude ) {
+
             foreach( $events as $day => $tstamps ) {
+
                 foreach( $tstamps as $ts => $entries ) {
+
                     foreach( $entries as $i => $entry ) {
 
                         $e = &$events[$day][$ts][$i];
@@ -143,14 +150,26 @@ class EventsListener {
                             $eventTags = $eventTags->fetchEach('id');
                         }
 
-                        if( $blnMultiple ) {
-                            if( count(array_intersect($tagsIds, $eventTags)) === count($tagsIds) ) {
-                                continue;
+                        // check if event contains any of the excluded tags
+                        if( !empty($aExcludeTags) && count(array_intersect($eventTags, $aExcludeTags)) > 0 ) {
+                            unset($events[$day][$ts][$i]);
+                            continue;
+                        }
+
+                        if( !empty($tagsIds) ) {
+
+                            if( $blnMultiple ) {
+                                if( count(array_intersect($tagsIds, $eventTags)) === count($tagsIds) ) {
+                                    continue;
+                                }
+                            } else {
+                                if( count(array_intersect($tagsIds, $eventTags)) ) {
+                                    continue;
+                                }
                             }
+
                         } else {
-                            if( count(array_intersect($tagsIds, $eventTags)) ) {
-                                continue;
-                            }
+                            continue;
                         }
 
                         unset($events[$day][$ts][$i]);
@@ -204,6 +223,11 @@ class EventsListener {
                     $aTag = TagUtil::parseTag($tag);
 
                     $tagsRaw[] = $aTag;
+
+                    // do not add "invisible" tags to the template
+                    if( $tag->invisible ) {
+                        continue;
+                    }
 
                     if( $pageList ) {
 
