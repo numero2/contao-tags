@@ -75,29 +75,31 @@ class EventsListener {
                 }
             }
 
-        } else if( $module instanceof ModuleEventlistTags ) {
+        } else {
 
-            $tags = StringUtil::deserialize($module->event_tags, true);
+            $tags = [];
 
-            $events = $this->filterEventsByTags($events, $tags, $module);
-
-        } else if( $module instanceof ModuleEventlist ) {
+            if( $module instanceof ModuleEventlistTags ) {
+                $tags = StringUtil::deserialize($module->event_tags, true);
+            }
 
             if( empty($module->ignoreTags) && !empty(Input::get('tag')) ) {
 
-                $tags = TagUtil::getTagsFromUrl();
+                $urlTags = TagUtil::getTagsFromUrl();
 
                 // get tags id
-                $tagIds = [];
-                foreach( $tags as $tag ) {
+                $additionalTags = [];
+                foreach( $urlTags as $tag ) {
                     $oTag = TagsModel::findOneByTag($tag);
                     if( $oTag ) {
-                        $tagIds[] = $oTag->id;
+                        $additionalTags[] = $oTag->id;
                     }
                 }
 
-                $events = $this->filterEventsByTags($events, $tagIds, $module);
+                $tags = array_merge($tags, $additionalTags);
             }
+
+            $events = $this->filterEventsByTags($events, $tags, $module);
         }
 
         // parse events
