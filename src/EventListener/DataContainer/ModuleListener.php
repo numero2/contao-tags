@@ -61,7 +61,7 @@ class ModuleListener {
             $pm = PaletteManipulator::create()
                 ->addField(['jumpToTags', 'ignoreTags', 'tags_match_all', 'tags_exclude'], 'config_legend', PaletteManipulator::POSITION_APPEND);
 
-            foreach( ['eventlist_related_tags', 'eventlist_tags'] as $palette ) {
+            foreach( ['eventlist_related_tags', 'eventlist_tags', 'calendar_tags'] as $palette ) {
                 $pm->applyToPalette($palette, $dc->table);
             }
 
@@ -71,7 +71,8 @@ class ModuleListener {
 
             PaletteManipulator::create()
                 ->addField('event_tags', 'cal_calendar', PaletteManipulator::POSITION_AFTER)
-                ->applyToPalette('eventlist_tags', $dc->table);
+                ->applyToPalette('eventlist_tags', $dc->table)
+                ->applyToPalette('calendar_tags', $dc->table);
 
         }
 
@@ -121,6 +122,7 @@ class ModuleListener {
         return $value;
     }
 
+
     /**
      * Get all tags for for the current type of module
      *
@@ -136,7 +138,7 @@ class ModuleListener {
         $tRel = TagsRelModel::getTable();
 
         $ptable = null;
-        if( $dc->field === 'event_tags' || in_array($dc->activeRecord->type, ['events_tag_cloud', 'eventlist_related_tags', 'eventlist_tags']) ) {
+        if( $dc->field === 'event_tags' || in_array($dc->activeRecord->type, ['events_tag_cloud', 'eventlist_related_tags', 'eventlist_tags', 'calendar_tags']) ) {
             $ptable = CalendarEventsModel::getTable();
         } else if( $dc->field === 'news_tags' || in_array($dc->activeRecord->type, ['news_tag_cloud', 'newslist_related_tags', 'newslist_tags']) ) {
             $ptable = NewsModel::getTable();

@@ -6,12 +6,13 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
 use Contao\CalendarBundle\ContaoCalendarBundle;
 use Contao\NewsBundle\ContaoNewsBundle;
+use numero2\TagsBundle\ModuleCalendarTags;
 use numero2\TagsBundle\ModuleEventlistRelatedTags;
 use numero2\TagsBundle\ModuleEventlistTags;
 use numero2\TagsBundle\ModuleNewsListRelatedTags;
@@ -31,6 +32,7 @@ $GLOBALS['TL_MODELS'][TagsRelModel::getTable()] = TagsRelModel::class;
  * FRONTEND MODULES
  */
 if( class_exists(ContaoCalendarBundle::class) ) {
+    $GLOBALS['FE_MOD']['events']['calendar_tags'] = ModuleCalendarTags::class;
     $GLOBALS['FE_MOD']['events']['eventlist_related_tags'] = ModuleEventlistRelatedTags::class;
     $GLOBALS['FE_MOD']['events']['eventlist_tags'] = ModuleEventlistTags::class;
 }

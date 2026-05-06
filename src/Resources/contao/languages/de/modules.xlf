@@ -27,6 +27,14 @@
         <source>Adds a list of events to the page which are pre-filtered by chosen tags.</source>
         <target>Fügt der Seite eine Eventliste hinzu die nach ausgewählten Tags vorgefiltert ist.</target>
     </trans-unit>
+    <trans-unit id="FMD.calendar_tags.0">
+        <source>Calendar (filtered by tags)</source>
+        <target>Kalender (nach Tags gefiltert)</target>
+    </trans-unit>
+    <trans-unit id="FMD.calendar_tags.1">
+        <source>Adds a calendar to the page which is pre-filtered by chosen tags.</source>
+        <target>Fügt der Seite einen Kalender hinzu welcher nach ausgewählten Tags vorgefiltert ist.</target>
+    </trans-unit>
     <trans-unit id="FMD.news_tag_cloud.0">
         <source>News Tag Cloud</source>
         <target>Nachrichten Tag Cloud</target>

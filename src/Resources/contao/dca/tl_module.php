@@ -19,6 +19,7 @@ if( class_exists(ContaoCalendarBundle::class) ) {
     $GLOBALS['TL_DCA']['tl_module']['palettes']['events_tag_cloud'] = '{title_legend},name,headline,type;{config_legend},cal_calendar,event_tags,cal_format,cal_featured,tags_match_all,tags_exclude;{redirect_legend},jumpToTags,tags_select_multiple,use_get_parameter;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
     $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist_related_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist'];
     $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['eventlist'];
+    $GLOBALS['TL_DCA']['tl_module']['palettes']['calendar_tags'] = $GLOBALS['TL_DCA']['tl_module']['palettes']['calendar'];
 }
 
 if( class_exists(ContaoNewsBundle::class) ) {

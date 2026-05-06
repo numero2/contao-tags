@@ -20,6 +20,7 @@ use Contao\Module;
 use Contao\ModuleEventlist;
 use Contao\PageModel;
 use Contao\StringUtil;
+use numero2\TagsBundle\ModuleCalendarTags;
 use numero2\TagsBundle\ModuleEventlistRelatedTags;
 use numero2\TagsBundle\ModuleEventlistTags;
 use numero2\TagsBundle\TagsModel;
@@ -79,7 +80,7 @@ class EventsListener {
 
             $tags = [];
 
-            if( $module instanceof ModuleEventlistTags ) {
+            if( $module instanceof ModuleEventlistTags || $module instanceof ModuleCalendarTags ) {
                 $tags = StringUtil::deserialize($module->event_tags, true);
             }
 
@@ -175,22 +176,21 @@ class EventsListener {
                         }
 
                         unset($events[$day][$ts][$i]);
-
-                        if( empty($events[$day][$ts]) ) {
-                            unset($events[$day][$ts]);
-                        }
-
-                        if( empty($events[$day]) ) {
-                            unset($events[$day]);
-                        }
                     }
+
+                    if( empty($events[$day][$ts]) ) {
+                        unset($events[$day][$ts]);
+                    }
+                }
+
+                if( empty($events[$day]) ) {
+                    unset($events[$day]);
                 }
             }
         }
 
         return $events;
     }
-
 
 
     /**
