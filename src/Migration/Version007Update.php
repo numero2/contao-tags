@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -100,7 +100,7 @@ class Version007Update extends AbstractMigration {
                     if( in_array($field, $columns) ) {
 
                         $count = $this->connection->executeQuery(
-                            "SELECT count(1) FROM $table WHERE $field IS NOT NULL AND $field NOT LIKE '%:\"%'; "
+                            "SELECT count(1) FROM $table WHERE $field IS NOT NULL AND $field != '' AND $field NOT LIKE 'a:0:%' AND $field NOT LIKE '%:\"%'; "
                         )->fetchOne();
 
                         // return as soon as we found our first value in the wrong format
@@ -123,7 +123,7 @@ class Version007Update extends AbstractMigration {
             foreach( $fields as $field ) {
 
                 $rows = $this->connection->executeQuery(
-                    "SELECT id, $field FROM $table WHERE $field IS NOT NULL AND $field NOT LIKE '%:\"%'; "
+                    "SELECT id, $field FROM $table WHERE $field IS NOT NULL AND $field != '' AND $field NOT LIKE 'a:0:%' AND $field NOT LIKE '%:\"%'; "
                 )->fetchAllAssociative();
 
                 if( !empty($rows) ) {
