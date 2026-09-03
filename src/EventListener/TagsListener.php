@@ -6,13 +6,13 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
 namespace numero2\TagsBundle\EventListener;
 
-use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\PageModel;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\Util\TagUtil;
@@ -30,9 +30,8 @@ class TagsListener {
      * @param array $flags
      *
      * @return string|bool
-     *
-     * @Hook("replaceInsertTags")
      */
+    #[AsHook('replaceInsertTags')]
     public function replaceInsertTags( string $insertTag, bool $useCache, string $cachedValue, array $flags ) {
 
         $tag = explode('::', $insertTag);
@@ -121,9 +120,8 @@ class TagsListener {
      * @param int $_cnt
      *
      * @return string|bool
-     *
-     * @Hook("insertTagFlags")
      */
+    #[AsHook('insertTagFlags')]
     public function insertTagFlags( string $flag, string $tag, string $cachedValue, array $flags, bool $useCache, array $tags, array $cache, int $_rit, int $_cnt ) {
 
         // Note: This function does not do anything, it is just there to let Contao know that we've already taken care of the flags for our insert tags

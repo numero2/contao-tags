@@ -13,11 +13,10 @@
 namespace numero2\TagsBundle\EventListener;
 
 use Contao\CalendarEventsModel;
-use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\Events;
 use Contao\Input;
 use Contao\Module;
-use Contao\ModuleEventlist;
 use Contao\PageModel;
 use Contao\StringUtil;
 use numero2\TagsBundle\ModuleCalendarTags;
@@ -40,9 +39,8 @@ class EventsListener {
      * @param Contao\Module $module
      *
      * @return array
-     *
-     * @Hook("getAllEvents")
      */
+    #[AsHook('getAllEvents')]
     public function getAllEvents( array $events, array $calendars, int $timeStart, int $timeEnd, Module $module ): array {
 
         if( $module instanceof ModuleEventlistRelatedTags ) {
@@ -131,11 +129,11 @@ class EventsListener {
         $blnMultiple = !empty($module->tags_match_all);
 
         $aExcludeTags = [];
-        if( $module->tags_exclude ) {
+        if( !empty($module->tags_exclude) ) {
             $aExcludeTags = array_map('\intval', StringUtil::deserialize($module->tags_exclude_list, true));
         }
 
-        if( !empty($tagsIds) || $module->tags_exclude ) {
+        if( !empty($tagsIds) || !empty($module->tags_exclude) ) {
 
             foreach( $events as $day => $tstamps ) {
 
@@ -197,7 +195,7 @@ class EventsListener {
      * Adds our additional data to the event
      *
      * @param array $aEvent
-     * @param Contao\ModuleNews $module
+     * @param Contao\Module $module
      *
      * @return array
      */
@@ -227,7 +225,7 @@ class EventsListener {
                     $tagsRaw[] = $aTag;
 
                     // do not add "invisible" tags to the template
-                    if( $tag->invisible ) {
+                    if( !empty($tag->invisible) ) {
                         continue;
                     }
 

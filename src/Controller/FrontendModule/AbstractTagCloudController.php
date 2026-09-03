@@ -13,12 +13,12 @@
 namespace numero2\TagsBundle\Controller\FrontendModule;
 
 use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
+use Contao\CoreBundle\Twig\FragmentTemplate;
 use Contao\Input;
 use Contao\Model\Collection;
 use Contao\ModuleModel;
 use Contao\PageModel;
 use Contao\StringUtil;
-use Contao\Template;
 use numero2\TagsBundle\Event\TagsEvents;
 use numero2\TagsBundle\Event\TagsGetListEvent;
 use numero2\TagsBundle\TagsModel;
@@ -56,7 +56,7 @@ abstract class AbstractTagCloudController extends AbstractFrontendModuleControll
     /**
      * {@inheritdoc}
      */
-    protected function getResponse( Template $template, ModuleModel $model, Request $request ): Response {
+    protected function getResponse( FragmentTemplate $template, ModuleModel $model, Request $request ): Response {
 
         $page = $this->getPageModel();
 
@@ -81,7 +81,7 @@ abstract class AbstractTagCloudController extends AbstractFrontendModuleControll
             foreach( $oTags as $oTag ) {
 
                 // do not add "invisible" tags to the template
-                if( $oTag->invisible ) {
+                if( !empty($oTag->invisible) ) {
                     continue;
                 }
 

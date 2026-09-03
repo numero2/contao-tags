@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -26,24 +26,24 @@ class TagsExtension extends Extension {
     /**
      * {@inheritdoc}
      */
-    public function load(array $mergedConfig, ContainerBuilder $container): void {
+    public function load( array $mergedConfig, ContainerBuilder $container ): void {
 
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__.'/../Resources/config')
+            new FileLocator(__DIR__.'/../../config')
         );
 
-        $loader->load('commands.yml');
-        $loader->load('listener.yml');
-        $loader->load('services.yml');
-        $loader->load('migrations.yml');
+        $loader->load('commands.yaml');
+        $loader->load('listener.yaml');
+        $loader->load('services.yaml');
+        $loader->load('migrations.yaml');
 
         //only load some services if bundle it depends on exists
         if( class_exists(ContaoCalendarBundle::class) ) {
-            $loader->load('services_events.yml');
+            $loader->load('services_events.yaml');
         }
         if( class_exists(ContaoNewsBundle::class) ) {
-            $loader->load('services_news.yml');
+            $loader->load('services_news.yaml');
         }
     }
 }

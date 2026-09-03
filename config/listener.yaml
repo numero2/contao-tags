@@ -1,5 +1,7 @@
 services:
     _defaults:
+        autowire: true
+        autoconfigure: true
         public: true
 
 
@@ -11,6 +13,7 @@ services:
     numero2_tags.listener.data_container.tags:
         class: numero2\TagsBundle\EventListener\DataContainer\TagsListener
         arguments:
+            - '@request_stack'
             - '@database_connection'
             - '@security.helper'
 
@@ -23,7 +26,9 @@ services:
     numero2_tags.listener.news:
         class: numero2\TagsBundle\EventListener\NewsListener
         arguments:
+            - '@request_stack'
             - '@event_dispatcher'
+            - '@contao.routing.response_context_accessor'
 
     numero2_tags.listener.tags:
         class: numero2\TagsBundle\EventListener\TagsListener

@@ -9,7 +9,7 @@ Adds the possibility to assign tags to individual elements.
 
 ## System requirements
 
-* [Contao 4.13 or newer](https://github.com/contao/contao)
+* [Contao 5.3 or newer](https://github.com/contao/contao)
 
 ## Installation & Configuration
 

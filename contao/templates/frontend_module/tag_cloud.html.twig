@@ -1,0 +1,51 @@
+{% extends "@Contao/frontend_module/_base.html.twig" %}
+{% trans_default_domain 'contao_default' %}
+
+{% set searchable = false %}
+
+{% block wrapper %}
+    {% if tags|length %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+    {% block tag_list %}
+    <ul>
+        {% for tag in tags %}
+            {% block tag_entry %}
+            <li{% if tag.active %} class="active"{% endif %}>
+
+                {% if not tag.active or selectMultiple %}
+                    <a href="{{ tag.href }}" class="{{ tag.class }}" rel="noindex nofollow">
+                {% endif %}
+
+                {% if tag.active %}
+                    <strong class="{{ tag.class }}">
+                {% endif %}
+
+                    {{ tag.label }}<span class="count">{{ tag.count }}</span>
+
+                {% if tag.active %}
+                    </strong>
+                {% endif %}
+
+                {% if not tag.active or selectMultiple %}
+                    </a>
+                {% endif %}
+
+            </li>
+            {% endblock %}
+        {% endfor %}
+    </ul>
+    {% endblock %}
+
+    {% block tag_reset %}
+    {% if resetHref is defined and resetHref is not empty %}
+        <a class="reset" href="{{ resetHref }}">
+            <span>{{ 'mod_tag_cloud.reset_filter'|trans }}</span>
+        </a>
+    {% endif %}
+    {% endblock %}
+{% endblock %}

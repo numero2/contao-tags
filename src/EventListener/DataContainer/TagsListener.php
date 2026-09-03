@@ -16,27 +16,27 @@ use Contao\Backend;
 use Contao\BackendUser;
 use Contao\Controller;
 use Contao\CoreBundle\ContaoCoreBundle;
-use Contao\CoreBundle\ServiceAnnotation\Callback;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\Database;
 use Contao\DataContainer;
 use Contao\Input;
 use Contao\StringUtil;
-use Contao\System;
 use Contao\Template;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
 use Symfony\Bundle\SecurityBundle\Security;
-
-// Contao 4.13 compatibility
-if( !class_exists('Symfony\Bundle\SecurityBundle\Security') ) {
-    class_alias('Symfony\Component\Security\Core\Security', 'Symfony\Bundle\SecurityBundle\Security');
-}
+use Symfony\Component\HttpFoundation\RequestStack;
 
 
 class TagsListener {
 
+
+    /**
+     * @var Symfony\Component\HttpFoundation\RequestStack
+     */
+    private RequestStack $requestStack;
 
     /**
      * @var Doctrine\DBAL\Connection
@@ -49,8 +49,9 @@ class TagsListener {
     private Security $security;
 
 
-    public function __construct( Connection $connection, Security $security ) {
+    public function __construct( RequestStack $requestStack, Connection $connection, Security $security ) {
 
+        $this->requestStack = $requestStack;
         $this->connection = $connection;
         $this->security = $security;
     }
@@ -63,7 +64,7 @@ class TagsListener {
      *
      * @return array
      */
-    public function getTagOptions( DataContainer $dc ) {
+    public function getTagOptions( DataContainer $dc ): array {
 
         $tagsSelected = Input::post($dc->inputName);
 
@@ -124,6 +125,8 @@ class TagsListener {
             }
 
             Input::setPost($dc->inputName, $tagsSelected);
+            $request = $this->requestStack->getMainRequest();
+            $request->request->set($dc->inputName, $tagsSelected);
         }
 
         // generate a list of all available tags
@@ -169,11 +172,12 @@ class TagsListener {
     public function saveTags( $varValue, DataContainer $dc ): ?string {
 
         $tRel = TagsRelModel::getTable();
+        $activeRecord = $dc->getActiveRecord();
 
         // remove all tag relations for this element
         $this->connection->executeStatement(
             "DELETE FROM $tRel WHERE pid=? AND ptable=? AND field=?"
-        ,   [$dc->activeRecord->id, $dc->table, $dc->field]
+        ,   [$activeRecord['id']??0, $dc->table, $dc->field]
         );
 
         if( !empty($varValue) ) {
@@ -185,7 +189,7 @@ class TagsListener {
 
                 $this->connection->executeStatement(
                     "INSERT INTO $tRel (tag_id, pid, ptable, field) VALUES (?,?,?,?)"
-                ,   [$id, $dc->activeRecord->id, $dc->table, $dc->field]
+                ,   [$id, $activeRecord['id']??0, $dc->table, $dc->field]
                 );
 
                 // explicitly cast the id into a string, otherwise the filter options in the backend won't work
@@ -209,7 +213,8 @@ class TagsListener {
      */
     public function loadTags( $varValue, DataContainer $dc ): ?array {
 
-        $tags = TagsModel::findByIdForFieldAndTable($dc->activeRecord->id??'', $dc->field, $dc->table);
+        $activeRecord = $dc->getActiveRecord();
+        $tags = TagsModel::findByIdForFieldAndTable($activeRecord['id']??0, $dc->field, $dc->table);
 
         if( $tags ) {
 
@@ -269,16 +274,15 @@ class TagsListener {
      * @param array $buttons
      * @param Contao\DataContainer $dc
      *
-     * @return string
-     *
-     * @Callback(table="tl_tags", target="select.buttons")
+     * @return array
      */
+    #[AsCallback('tl_tags', target: 'select.buttons')]
     public function mergeTagSelectButton( $buttons, DataContainer $dc ): array {
 
         // start merge selected tags
         if( Input::post('FORM_SUBMIT') === 'tl_select' && isset($_POST['tags_merge']) ) {
 
-            $objSession = System::getContainer()->get('request_stack')->getMainRequest()->getSession();
+            $objSession = $this->requestStack->getMainRequest()->getSession();
             $session = $objSession->all();
             $ids = $session['CURRENT']['IDS'] ?? [];
 
@@ -326,14 +330,14 @@ class TagsListener {
                         ,   [$newId, $rel['pid'], $rel['ptable'], $rel['field']]
                         );
                     }
-
-                    // delete tag for other tags
-                    $this->connection->executeStatement(
-                        "DELETE FROM $tTag WHERE id!=:id AND id in (:ids)"
-                    ,   ['id'=>$newId, 'ids'=>$ids]
-                    ,   ['ids'=>ArrayParameterType::INTEGER]
-                    );
                 }
+
+                // delete tag for other tags
+                $this->connection->executeStatement(
+                    "DELETE FROM $tTag WHERE id!=:id AND id in (:ids)"
+                ,   ['id'=>$newId, 'ids'=>$ids]
+                ,   ['ids'=>ArrayParameterType::INTEGER]
+                );
 
                 // redirect to edit on that id
                 Controller::redirect(Backend::addToUrl('act=edit&amp;id=' . $newId));

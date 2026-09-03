@@ -12,26 +12,20 @@
 
 namespace numero2\TagsBundle\Controller\FrontendModule;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
-use Contao\CoreBundle\ServiceAnnotation\FrontendModule;
 use Contao\Model\Collection;
 use Contao\ModuleModel;
 use Contao\NewsArchiveModel;
 use Contao\NewsModel;
 use Contao\StringUtil;
 use Contao\System;
-use Contao\Template;
 use numero2\TagsBundle\TagsModel;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 
-/**
- * @FrontendModule("news_tag_cloud",
- *   category="news",
- *   template="mod_news_tag_cloud",
- * )
- */
+#[AsFrontendModule('news_tag_cloud', category: 'news')]
 class NewsTagCloudController extends AbstractTagCloudController {
 
 
@@ -64,7 +58,7 @@ class NewsTagCloudController extends AbstractTagCloudController {
         $aTags = StringUtil::deserialize($model->news_tags, true);
 
         $aExcludeTags = [];
-        if( $model->tags_exclude ) {
+        if( !empty($model->tags_exclude) ) {
             $aExcludeTags = StringUtil::deserialize($model->tags_exclude_list, true);
         }
 
@@ -99,7 +93,7 @@ class NewsTagCloudController extends AbstractTagCloudController {
         $aTags = StringUtil::deserialize($model->news_tags, true);
 
         $aExcludeTags = [];
-        if( $model->tags_exclude ) {
+        if( !empty($model->tags_exclude) ) {
             $aExcludeTags = StringUtil::deserialize($model->tags_exclude_list, true);
         }
 

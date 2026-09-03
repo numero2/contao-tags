@@ -42,35 +42,35 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['ignoreTags'] = [
     'exclude'           => true
 ,   'inputType'         => 'checkbox'
 ,   'eval'              => ['tl_class'=>'w50']
-,   'sql'               => "char(1) NOT NULL default ''"
+,   'sql'               => ['type'=>'boolean', 'default'=>false]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['tags_select_multiple'] = [
     'exclude'           => true
 ,   'inputType'         => 'checkbox'
 ,   'eval'              => ['tl_class'=>'w50']
-,   'sql'               => "char(1) NOT NULL default ''"
+,   'sql'               => ['type'=>'boolean', 'default'=>false]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['use_get_parameter'] = [
     'exclude'           => true
 ,   'inputType'         => 'checkbox'
 ,   'eval'              => ['tl_class'=>'w50']
-,   'sql'               => "char(1) NOT NULL default ''"
+,   'sql'               => ['type'=>'boolean', 'default'=>false]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['tags_match_all'] = [
     'exclude'           => true
 ,   'inputType'         => 'checkbox'
 ,   'eval'              => ['tl_class'=>'clr w50']
-,   'sql'               => "char(1) NOT NULL default ''"
+,   'sql'               => ['type'=>'boolean', 'default'=>false]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['tags_exclude'] = [
     'exclude'           => true
 ,   'inputType'         => 'checkbox'
 ,   'eval'              => ['submitOnChange'=>true, 'tl_class'=>'w50']
-,   'sql'               => "char(1) NOT NULL default ''"
+,   'sql'               => ['type'=>'boolean', 'default'=>false]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['tags_exclude_list'] = [

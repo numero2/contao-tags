@@ -14,25 +14,19 @@ namespace numero2\TagsBundle\Controller\FrontendModule;
 
 use Contao\CalendarEventsModel;
 use Contao\CalendarModel;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
-use Contao\CoreBundle\ServiceAnnotation\FrontendModule;
 use Contao\Date;
 use Contao\Model\Collection;
 use Contao\ModuleModel;
 use Contao\StringUtil;
 use Contao\System;
-use Contao\Template;
 use numero2\TagsBundle\TagsModel;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 
-/**
- * @FrontendModule("events_tag_cloud",
- *   category="events",
- *   template="mod_events_tag_cloud",
- * )
- */
+#[AsFrontendModule('events_tag_cloud', category: 'events')]
 class EventsTagCloudController extends AbstractTagCloudController {
 
 
@@ -67,7 +61,7 @@ class EventsTagCloudController extends AbstractTagCloudController {
         $aTags = StringUtil::deserialize($model->event_tags, true);
 
         $aExcludeTags = [];
-        if( $model->tags_exclude ) {
+        if( !empty($model->tags_exclude) ) {
             $aExcludeTags = StringUtil::deserialize($model->tags_exclude_list, true);
         }
 
@@ -104,7 +98,7 @@ class EventsTagCloudController extends AbstractTagCloudController {
         $aTags = StringUtil::deserialize($model->event_tags, true);
 
         $aExcludeTags = [];
-        if( $model->tags_exclude ) {
+        if( !empty($model->tags_exclude) ) {
             $aExcludeTags = StringUtil::deserialize($model->tags_exclude_list, true);
         }
 

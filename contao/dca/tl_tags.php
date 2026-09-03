@@ -37,17 +37,10 @@ $GLOBALS['TL_DCA']['tl_tags'] = [
         ,   'showColumns'           => true
         ]
     ,   'global_operations' => [
-            'all' => [
-                'href'              => 'act=select'
-            ,   'class'             => 'header_edit_all'
-            ,   'attributes'        => 'onclick="Backend.getScrollOffset()" accesskey="e"'
-            ]
+            'all'
         ]
     ,   'operations' => [
-            'edit' => [
-                'href'              => 'act=edit'
-            ,   'icon'              => 'edit.svg'
-            ]
+            'edit'
         ]
     ]
 ,   'palettes' => [
@@ -84,7 +77,7 @@ $GLOBALS['TL_DCA']['tl_tags'] = [
             'inputType'             => 'checkbox'
         ,   'filter'                => true
         ,   'eval'                  => ['tl_class'=>'w50']
-        ,   'sql'                   => "char(1) NOT NULL default ''"
+        ,   'sql'                   => ['type'=>'boolean', 'default'=>false]
         ]
     ]
 ];

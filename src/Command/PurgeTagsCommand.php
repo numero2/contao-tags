@@ -6,7 +6,7 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2025, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
@@ -26,9 +26,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class PurgeTagsCommand extends Command {
 
 
-    protected static $defaultName = 'contao:tags:purge';
-    protected static $defaultDescription = 'Delete unused Tags';
-
     /**
      * @var numero2\TagsBundle\PurgeTags;
      */
@@ -43,7 +40,7 @@ class PurgeTagsCommand extends Command {
     }
 
 
-    protected function execute(InputInterface $input, OutputInterface $output): int {
+    protected function execute( InputInterface $input, OutputInterface $output ): int {
 
         $this->purgeTags->__invoke();
 

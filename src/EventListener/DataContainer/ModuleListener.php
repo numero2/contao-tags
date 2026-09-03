@@ -15,7 +15,7 @@ namespace numero2\TagsBundle\EventListener\DataContainer;
 use Contao\CalendarBundle\ContaoCalendarBundle;
 use Contao\CalendarEventsModel;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
-use Contao\CoreBundle\ServiceAnnotation\Callback;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
 use Contao\NewsBundle\ContaoNewsBundle;
 use Contao\NewsModel;
@@ -43,9 +43,8 @@ class ModuleListener {
      * Add jumpToTags and ignoreTags to existing modules
      *
      * @param Contao\DataContainer $dc
-     *
-     * @Callback(table="tl_module", target="config.onload")
      */
+    #[AsCallback('tl_module', target: 'config.onload')]
     public function modifyPalettes( DataContainer $dc ): void {
 
         if( class_exists(ContaoCalendarBundle::class) ) {
@@ -110,12 +109,15 @@ class ModuleListener {
      * @param mixed $value
      * @param Contao\DataContainer $dc
      *
-     * @Callback(table="tl_module", target="fields.event_tags.load")
-     * @Callback(table="tl_module", target="fields.news_tags.load")
+     * @return mixed
      */
+    #[AsCallback('tl_module', target: 'fields.event_tags.load')]
+    #[AsCallback('tl_module', target: 'fields.news_tags.load')]
     public function changeFieldToNotMandatory( $value,  DataContainer $dc ) {
 
-        if( in_array($dc->activeRecord->type, ['events_tag_cloud', 'news_tag_cloud']) || $dc->activeRecord->tags_exclude ) {
+        $activeRecord = $dc->getActiveRecord();
+
+        if( in_array($activeRecord['type']??'', ['events_tag_cloud', 'news_tag_cloud']) || !empty($activeRecord['tags_exclude']??null) ) {
             $GLOBALS['TL_DCA']['tl_module']['fields'][$dc->field]['eval']['mandatory'] = false;
         }
 
@@ -128,19 +130,21 @@ class ModuleListener {
      *
      * @param Contao\DataContainer $dc
      *
-     * @Callback(table="tl_module", target="fields.event_tags.options")
-     * @Callback(table="tl_module", target="fields.news_tags.options")
-     * @Callback(table="tl_module", target="fields.tags_exclude_list.options")
+     * @return array
      */
+    #[AsCallback('tl_module', target: 'fields.event_tags.options')]
+    #[AsCallback('tl_module', target: 'fields.news_tags.options')]
+    #[AsCallback('tl_module', target: 'fields.tags_exclude_list.options')]
     public function getTags( DataContainer $dc ): array {
 
         $tTag = TagsModel::getTable();
         $tRel = TagsRelModel::getTable();
+        $activeRecord = $dc->getActiveRecord();
 
         $ptable = null;
-        if( $dc->field === 'event_tags' || in_array($dc->activeRecord->type, ['events_tag_cloud', 'eventlist_related_tags', 'eventlist_tags', 'calendar_tags']) ) {
+        if( $dc->field === 'event_tags' || in_array($activeRecord['type']??'', ['events_tag_cloud', 'eventlist_related_tags', 'eventlist_tags', 'calendar_tags']) ) {
             $ptable = CalendarEventsModel::getTable();
-        } else if( $dc->field === 'news_tags' || in_array($dc->activeRecord->type, ['news_tag_cloud', 'newslist_related_tags', 'newslist_tags']) ) {
+        } else if( $dc->field === 'news_tags' || in_array($activeRecord['type']??'', ['news_tag_cloud', 'newslist_related_tags', 'newslist_tags']) ) {
             $ptable = NewsModel::getTable();
         }
 

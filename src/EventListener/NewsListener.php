@@ -12,19 +12,17 @@
 
 namespace numero2\TagsBundle\EventListener;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
-use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\Model\Collection;
-use Contao\Module;
-use Contao\ModuleModel;
 use Contao\ModuleNews;
 use Contao\ModuleNewsList;
 use Contao\NewsModel;
 use Contao\PageModel;
 use Contao\StringUtil;
-use Contao\System;
 use numero2\TagsBundle\Event\TagsEvents;
 use numero2\TagsBundle\Event\TagsGetListEvent;
 use numero2\TagsBundle\ModuleNewsListRelatedTags;
@@ -33,20 +31,33 @@ use numero2\TagsBundle\TagsModel;
 use numero2\TagsBundle\TagsRelModel;
 use numero2\TagsBundle\Util\TagUtil;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 
 class NewsListener {
 
 
     /**
+     * @var Symfony\Component\HttpFoundation\RequestStack
+     */
+    private RequestStack $requestStack;
+
+    /**
      * @var Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
     private EventDispatcherInterface $eventDispatcher;
 
+    /**
+     * @var Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor
+     */
+    private ResponseContextAccessor $responseContextAccessor;
 
-    public function __construct( EventDispatcherInterface $eventDispatcher ) {
 
+    public function __construct( RequestStack $requestStack, EventDispatcherInterface $eventDispatcher, ResponseContextAccessor $responseContextAccessor ) {
+
+        $this->requestStack = $requestStack;
         $this->eventDispatcher = $eventDispatcher;
+        $this->responseContextAccessor = $responseContextAccessor;
     }
 
 
@@ -54,19 +65,18 @@ class NewsListener {
      * Return number of matching items if tag was given
      *
      * @param array $newsArchives
-     * @param boolean $blnFeatured
-     * @param ModuleNewsList $module
+     * @param bool $blnFeatured
+     * @param Contao\ModuleNewsList $module
      *
      * @return integer|false
-     *
-     * @Hook("newsListCountItems")
      */
+    #[AsHook('newsListCountItems')]
     public function newsListCountItems( $newsArchives, $blnFeatured, ModuleNewsList $module ) {
 
         $tag = Input::get('tag');
 
         $aExcludeTags = [];
-        if( $module->tags_exclude ) {
+        if( !empty($module->tags_exclude) ) {
             $aExcludeTags = array_map('\intval', StringUtil::deserialize($module->tags_exclude_list, true));
         }
 
@@ -89,7 +99,7 @@ class NewsListener {
             $blnMultiple = !empty($module->tags_match_all);
 
             // gather all available tags if no tags have been defined and we need to filter out specific tags
-            if( empty($tags) && $module->tags_exclude ) {
+            if( empty($tags) && !empty($module->tags_exclude) ) {
 
                 $tags = TagsModel::findByNewsArchives($newsArchives);
                 $tags = $tags ? $tags->fetchEach('id') : [];
@@ -102,7 +112,7 @@ class NewsListener {
             }
         }
 
-        if( $module->ignoreTags ) {
+        if( !empty($module->ignoreTags) ) {
             return false;
         }
 
@@ -122,15 +132,14 @@ class NewsListener {
      * Sort out non matching articles if tag was given
      *
      * @param array $newsArchives
-     * @param boolean $blnFeatured
-     * @param integer $limit
-     * @param integer $offset
-     * @param ModuleNewsList $module
+     * @param bool $blnFeatured
+     * @param int $limit
+     * @param int $offset
+     * @param Contao\ModuleNewsList $module
      *
-     * @return Model\Collection|NewsModel|false
-     *
-     * @Hook("newsListFetchItems", priority=100)
+     * @return Contao\Model\Collection|Contao\NewsModel|false
      */
+    #[AsHook('newsListFetchItems', priority: 100)]
     public function newsListFetchItems( $newsArchives, $blnFeatured, $limit, $offset, ModuleNewsList $module ) {
 
         $preSelectedNews = [];
@@ -162,7 +171,7 @@ class NewsListener {
         }
 
         $aExcludeTags = [];
-        if( $module->tags_exclude ) {
+        if( !empty($module->tags_exclude) ) {
             $aExcludeTags = array_map('\intval', StringUtil::deserialize($module->tags_exclude_list, true));
         }
 
@@ -188,40 +197,36 @@ class NewsListener {
             }
         }
 
-        if( $module->ignoreTags ) {
+        if( !empty($module->ignoreTags) ) {
             return false;
         }
 
         $urlTags = TagUtil::getTagsFromUrl();
 
         // filter by given tag
-        if( !empty($urlTags) || !empty($preSelectedNews) || $module->tags_exclude ) {
+        if( !empty($urlTags) || !empty($preSelectedNews) || !empty($module->tags_exclude) ) {
 
             if( !empty($urlTags) ) {
 
-                if( System::getContainer()->has('contao.routing.response_context_accessor') ) {
+                $responseContext = $this->responseContextAccessor->getResponseContext();
 
-                    $responseContext = System::getContainer()->get('contao.routing.response_context_accessor')->getResponseContext();
+                if( $responseContext && $responseContext->has(HtmlHeadBag::class) ) {
 
-                    if( $responseContext && $responseContext->has(HtmlHeadBag::class) ) {
+                    $htmlHeadBag = $responseContext->get(HtmlHeadBag::class);
 
-                        $htmlHeadBag = $responseContext->get(HtmlHeadBag::class);
+                    $htmlHeadBag->setMetaRobots('noindex,nofollow');
 
-                        $htmlHeadBag->setMetaRobots('noindex,nofollow');
+                    // overwrite canoncial
+                    $request = $this->requestStack->getCurrentRequest();
+                    $page = $request->attributes->get('pageModel');
 
-                        // overwrite canoncial
-                        $requestStack = System::getContainer()->get('request_stack');
-                        $request = $requestStack->getCurrentRequest();
-                        $page = $request->get('pageModel');
+                    if( !($page instanceof PageModel) ) {
+                        $page = PageModel::findById($page);
+                    }
 
-                        if( !($page instanceof PageModel) ) {
-                            $page = PageModel::findById($page);
-                        }
-
-                        if( $page->enableCanonical ) {
-                            $url = $page->getAbsoluteUrl();
-                            $htmlHeadBag->setCanonicalUri($url);
-                        }
+                    if( $page->enableCanonical ) {
+                        $url = $page->getAbsoluteUrl();
+                        $htmlHeadBag->setCanonicalUri($url);
                     }
                 }
             }
@@ -303,14 +308,11 @@ class NewsListener {
     /**
      * Adds tags data to the article
      *
-     * @param FrontendTemplate $objTemplate
-     * @param $arrArticle
-     * @param ModuleNews $objModule
-     *
-     * @return none
-     *
-     * @Hook("parseArticles")
+     * @param Contao\FrontendTemplate $objTemplate
+     * @param array $arrArticle
+     * @param Contao\ModuleNews $objModule
      */
+    #[AsHook('parseArticles')]
     public function parseArticles( FrontendTemplate &$objTemplate, $arrArticle, ModuleNews $objModule ) {
 
         // add tags
@@ -342,7 +344,7 @@ class NewsListener {
                     $tagsRaw[] = $aTag;
 
                     // do not add "invisible" tags to the template
-                    if( $tag->invisible ) {
+                    if( !empty($tag->invisible) ) {
                         continue;
                     }
 
