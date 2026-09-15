@@ -84,16 +84,8 @@ class EventsListener {
 
             if( empty($module->ignoreTags) && !empty(Input::get('tag')) ) {
 
-                $urlTags = TagUtil::getTagsFromUrl();
-
-                // get tags id
-                $additionalTags = [];
-                foreach( $urlTags as $tag ) {
-                    $oTag = TagsModel::findOneByTag($tag);
-                    if( $oTag ) {
-                        $additionalTags[] = $oTag->id;
-                    }
-                }
+                // get tags id, throws a 404 if one of the given tags does not exist
+                $additionalTags = TagUtil::getTagIdsFromUrl();
 
                 $tags = array_merge($tags, $additionalTags);
             }

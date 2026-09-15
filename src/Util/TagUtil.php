@@ -6,12 +6,13 @@
  * @author    Benny Born <benny.born@numero2.de>
  * @author    Michael Bösherz <michael.boesherz@numero2.de>
  * @license   LGPL-3.0-or-later
- * @copyright Copyright (c) 2024, numero2 - Agentur für digitales Marketing GbR
+ * @copyright Copyright (c) 2026, numero2 - Agentur für digitales Marketing GbR
  */
 
 
 namespace numero2\TagsBundle\Util;
 
+use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\Input;
 use Contao\PageModel;
 use Contao\StringUtil;
@@ -41,6 +42,49 @@ class TagUtil {
         }
 
         return $tags;
+    }
+
+
+    /**
+     * Get the ids of the tags given in the url
+     *
+     * @param bool $blnThrowOnUnknown
+     *
+     * @return array
+     *
+     * @throws Contao\CoreBundle\Exception\PageNotFoundException
+     */
+    public static function getTagIdsFromUrl( bool $blnThrowOnUnknown=true ): array {
+
+        $tags = self::getTagsFromUrl();
+
+        // json_decode may return anything, only accept a flat list of strings
+        $tags = array_values(array_filter($tags, 'is_string'));
+
+        if( empty($tags) ) {
+            return [];
+        }
+
+        $oTags = null;
+        $oTags = TagsModel::findBy(
+            ['tag IN ('.implode(',', array_fill(0, count($tags), '?')).')']
+        ,   $tags
+        );
+
+        // [id => tag]
+        $aFound = $oTags ? $oTags->fetchEach('tag') : [];
+
+        if( $blnThrowOnUnknown ) {
+
+            // compare case-insensitive as the database collation usually is
+            $aUnknown = array_udiff($tags, $aFound, 'strcasecmp');
+
+            if( !empty($aUnknown) ) {
+                throw new PageNotFoundException('Page not found: unknown tag "'.implode('", "', $aUnknown).'"');
+            }
+        }
+
+        return array_keys($aFound);
     }
 
 

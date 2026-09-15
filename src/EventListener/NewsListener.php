@@ -240,14 +240,8 @@ class NewsListener {
             // sort out non matching tags
             if( !empty($urlTags) ) {
 
-                // get tags id
-                $aUrlTags = [];
-                foreach( $urlTags as $tag ) {
-                    $oTag = TagsModel::findOneByTag($tag);
-                    if( $oTag ) {
-                        $aUrlTags[] = $oTag->id;
-                    }
-                }
+                // get tags id, throws a 404 if one of the given tags does not exist
+                $aUrlTags = TagUtil::getTagIdsFromUrl();
             }
 
             foreach( $articles as $i => $article ) {
