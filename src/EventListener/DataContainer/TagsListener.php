@@ -19,6 +19,7 @@ use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\Database;
 use Contao\DataContainer;
+use Contao\DC_Table;
 use Contao\Input;
 use Contao\StringUtil;
 use Contao\Template;
@@ -172,7 +173,7 @@ class TagsListener {
     public function saveTags( $varValue, DataContainer $dc ): ?string {
 
         $tRel = TagsRelModel::getTable();
-        $activeRecord = $dc->getActiveRecord();
+        $activeRecord = ($dc instanceof DC_Table) ? $dc->getActiveRecord() : $dc->getCurrentRecord();
 
         // remove all tag relations for this element
         $this->connection->executeStatement(
@@ -213,7 +214,8 @@ class TagsListener {
      */
     public function loadTags( $varValue, DataContainer $dc ): ?array {
 
-        $activeRecord = $dc->getActiveRecord();
+        $activeRecord = ($dc instanceof DC_Table) ? $dc->getActiveRecord() : $dc->getCurrentRecord();
+
         $tags = TagsModel::findByIdForFieldAndTable($activeRecord['id']??0, $dc->field, $dc->table);
 
         if( $tags ) {
