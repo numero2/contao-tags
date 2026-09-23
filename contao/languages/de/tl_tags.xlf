@@ -18,6 +18,14 @@
         <source>Enter the name of the tag.</source>
         <target>Geben Sie die Bezeichnung des Tags ein.</target>
     </trans-unit>
+    <trans-unit id="tl_tags.remark.0">
+        <source>Remark (internal)</source>
+        <target>Bemerkung (intern)</target>
+    </trans-unit>
+    <trans-unit id="tl_tags.remark.1">
+        <source>Here you can enter an internal remark, e.g. what this tag should be used for. It is only displayed in the back end and never output on the website.</source>
+        <target>Hier können Sie eine interne Bemerkung hinterlegen, z.B. wofür dieser Tag verwendet werden soll. Sie wird nur im Backend angezeigt und nicht auf der Webseite ausgegeben.</target>
+    </trans-unit>
     <trans-unit id="tl_tags.translation.0">
         <source>Translations</source>
         <target>Übersetzungen</target>

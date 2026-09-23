@@ -10,6 +10,10 @@
         <source>Press enter to add "%s"</source>
         <target>Drücke Eingabe um "%s" hinzuzufügen</target>
     </trans-unit>
+    <trans-unit id="MSC.tagsRemarkTitle">
+        <source>Internal remark - only visible in the back end</source>
+        <target>Interne Bemerkung - nur im Backend sichtbar</target>
+    </trans-unit>
     <trans-unit id="mod_tag_cloud.reset_filter">
         <source>Reset filter</source>
         <target>Filter zurücksetzen</target>

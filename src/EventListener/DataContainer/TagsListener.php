@@ -16,6 +16,7 @@ use Contao\Backend;
 use Contao\BackendUser;
 use Contao\Controller;
 use Contao\CoreBundle\ContaoCoreBundle;
+use Contao\CoreBundle\DataContainer\RecordLabel;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\Database;
 use Contao\DataContainer;
@@ -71,17 +72,8 @@ class TagsListener {
 
         $preventAddingNewTags = (!$this->security->isGranted('ROLE_ADMIN') && $this->security->isGranted('contao_user.tags_disable_add_new'));
 
-        // Contao 4.13 compatibility
-        if( version_compare(ContaoCoreBundle::getVersion(),'4.13.0', '>=') && version_compare(ContaoCoreBundle::getVersion(),'5.0.0', '<') ) {
-
-            $user = BackendUser::getInstance();
-            $preventAddingNewTags = !empty($user->tags_disable_add_new);
-
-        } else {
-
-            // add message for Choices.js
-            $GLOBALS['TL_MOOTOOLS'][] = Template::generateInlineScript("window.Contao.lang.enterAdd = '".$GLOBALS['TL_LANG']['MSC']['pressEnterToAdd']."';");
-        }
+        // add message for Choices.js
+        $GLOBALS['TL_MOOTOOLS'][] = Template::generateInlineScript("window.Contao.lang.enterAdd = '".$GLOBALS['TL_LANG']['MSC']['pressEnterToAdd']."';");
 
         // add inline-script to TL_MOOTOOLS so we can figure out if users are prohibited from adding new tags
         if( $preventAddingNewTags ) {
@@ -158,7 +150,71 @@ class TagsListener {
             }
         }
 
+        $this->addRemarksScript(array_keys($availableTags));
+
         return $availableTags;
+    }
+
+
+    /**
+     * Passes the remarks of the given tags to the JavaScript so they can be shown inside the widget
+     *
+     * @param array $ids
+     */
+    private function addRemarksScript( array $ids ): void {
+
+        if( empty($ids) ) {
+            return;
+        }
+
+        $t = TagsModel::getTable();
+
+        $remarks = $this->connection->executeQuery(
+            "SELECT id, remark FROM $t WHERE remark!='' AND id IN (:ids)"
+        ,   ['ids'=>array_map('\intval', $ids)]
+        ,   ['ids'=>ArrayParameterType::INTEGER]
+        )->fetchAllKeyValue();
+
+        if( empty($remarks) ) {
+            return;
+        }
+
+        $flags = JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_THROW_ON_ERROR;
+
+        $GLOBALS['TL_MOOTOOLS'][] = Template::generateInlineScript(
+            "window.tagsRemarks = Object.assign(window.tagsRemarks || {}, " . json_encode($remarks, $flags) . ");"
+        .   "window.tagsRemarkTitle = " . json_encode($GLOBALS['TL_LANG']['MSC']['tagsRemarkTitle'] ?? '', $flags) . ";"
+        );
+    }
+
+
+    /**
+     * Adds the remark of a tag to its label in the listing
+     *
+     * @param array $row
+     * @param string $label
+     * @param Contao\DataContainer $dc
+     * @param array $args
+     *
+     * @return RecordLabel|array
+     */
+    public function addRemarkToLabel( array $row, string $label, DataContainer $dc, array $args ) {
+
+        if( !empty($row['remark']) ) {
+
+            $args[0] .= sprintf(
+                ' <span class="tags-remark" title="%s">%s</span>'
+            ,   StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['tagsRemarkTitle'] ?? '')
+            ,   StringUtil::specialchars($row['remark'])
+            );
+        }
+
+        // Contao 6+: label callbacks need to return a RecordLabel, a plain array would be escaped
+        if( class_exists(RecordLabel::class) ) {
+            return RecordLabel::fromHtml($args);
+        }
+
+        return $args;
     }
 
 

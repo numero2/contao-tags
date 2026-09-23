@@ -14,6 +14,12 @@
     <trans-unit id="tl_tags.tag.1">
         <source>Enter the name of the tag.</source>
     </trans-unit>
+    <trans-unit id="tl_tags.remark.0">
+        <source>Remark (internal)</source>
+    </trans-unit>
+    <trans-unit id="tl_tags.remark.1">
+        <source>Here you can enter an internal remark, e.g. what this tag should be used for. It is only displayed in the back end and never output on the website.</source>
+    </trans-unit>
     <trans-unit id="tl_tags.translation.0">
         <source>Translations</source>
     </trans-unit>

@@ -36,6 +36,7 @@ $GLOBALS['TL_DCA']['tl_tags'] = [
     ,   'label' => [
             'fields'                => ['tag']
         ,   'showColumns'           => true
+        ,   'label_callback'        => ['numero2_tags.listener.data_container.tags', 'addRemarkToLabel']
         ]
     ,   'global_operations' => [
             'all'
@@ -45,7 +46,7 @@ $GLOBALS['TL_DCA']['tl_tags'] = [
         ]
     ]
 ,   'palettes' => [
-        'default'                   => '{title_legend},tag,translation;{publish_legend},invisible;'
+        'default'                   => '{title_legend},tag,remark,translation;{publish_legend},invisible;'
     ]
 ,   'fields' => [
 
@@ -61,6 +62,12 @@ $GLOBALS['TL_DCA']['tl_tags'] = [
         ,   'flag'                  => DataContainer::SORT_INITIAL_LETTER_ASC
         ,   'search'                => true
         ,   'eval'                  => ['mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50']
+        ,   'sql'                   => "varchar(255) NOT NULL default ''"
+        ]
+    ,   'remark' => [
+            'inputType'             => 'text'
+        ,   'search'                => true
+        ,   'eval'                  => ['maxlength'=>255, 'tl_class'=>'w50']
         ,   'sql'                   => "varchar(255) NOT NULL default ''"
         ]
     ,   'translation' => [

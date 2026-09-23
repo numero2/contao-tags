@@ -72,6 +72,11 @@ Adds the possibility to assign tags to individual elements.
 
 * Additionally add the `Events Tag Cloud` module anywhere on your page
 
+## Remarks
+
+Every tag can be given an internal remark under `System › Tags` (e.g. to explain what the tag should be used for).
+The remark is only shown in the back end - in the tag listing and next to the tag inside the tags widget - and never output on the website.
+
 ## Insert-Tags
 
 This extensions comes with a couple of Insert-Tags that can be used to link to a page which will only show entries with matching tags.

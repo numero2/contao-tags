@@ -45,6 +45,7 @@ class KernelRequestSubscriber implements EventSubscriberInterface {
 
         if( $this->scopeMatcher->isBackendRequest($request) ) {
 
+            $GLOBALS['TL_CSS'][] = 'bundles/tags/css/backend.css';
             $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/tags/js/backend.js';
         }
     }
